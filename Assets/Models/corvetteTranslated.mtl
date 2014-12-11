@@ -1,0 +1,90 @@
+# Blender MTL File: 'shitory.blend'
+# Material Count: 9
+
+newmtl 34490282_dds
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.365000 0.365000 0.365000
+Ni 1.000000
+d 0.000000
+illum 2
+map_Kd Kara Class Cruiser and Nanuchka Class Corvette\34490282.png
+
+newmtl 43ef8f70_dds
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.365000 0.365000 0.365000
+Ni 1.000000
+d 0.000000
+illum 2
+map_Kd Kara Class Cruiser and Nanuchka Class Corvette\43ef8f70.png
+
+newmtl 71a05928_dds
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.365000 0.365000 0.365000
+Ni 1.000000
+d 0.000000
+illum 2
+map_Kd Kara Class Cruiser and Nanuchka Class Corvette\71a05928.png
+
+newmtl Default_Material
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 0.000000
+illum 2
+
+newmtl Material
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl a0326c1d_dds
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.365000 0.365000 0.365000
+Ni 1.000000
+d 0.000000
+illum 2
+map_Kd Kara Class Cruiser and Nanuchka Class Corvette\a0326c1d.png
+
+newmtl acd898fa_dds
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.365000 0.365000 0.365000
+Ni 1.000000
+d 0.000000
+illum 2
+map_Kd Kara Class Cruiser and Nanuchka Class Corvette\acd898fa.png
+
+newmtl d4101197_dds
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.365000 0.365000 0.365000
+Ni 1.000000
+d 0.000000
+illum 2
+map_Kd Kara Class Cruiser and Nanuchka Class Corvette\d4101197.png
+
+newmtl e9cccadb_dds
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.560000 0.560000 0.560000
+Ks 0.365000 0.365000 0.365000
+Ni 1.000000
+d 0.000000
+illum 2
+map_Kd Kara Class Cruiser and Nanuchka Class Corvette\e9cccadb.png

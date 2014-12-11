@@ -1,0 +1,21 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\LearnerUtilities.cs">
+    <Files>
+      <File FileName="Assets\Scripts\AIPlayerMedium.cs" Line="436" Column="4" />
+      <File FileName="Assets\Scripts\Property.cs" Line="473" Column="5" />
+      <File FileName="Assets\Scripts\Player.cs" Line="296" Column="4" />
+      <File FileName="Assets\Scripts\InGameController.cs" Line="338" Column="77" />
+      <File FileName="Assets\Scripts\UnitController.cs" Line="1338" Column="54" />
+      <File FileName="Assets\TerrainBlock.cs" Line="17" Column="2" />
+      <File FileName="Assets\TerrainBuilder.cs" Line="835" Column="4" />
+      <File FileName="Assets\Scripts\LearnerUtilities.cs" Line="184" Column="327" />
+      <File FileName="Assets\Scripts\General.cs" Line="254" Column="135" />
+      <File FileName="Assets\Scripts\MouseEventHandler.cs" Line="79" Column="21" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>

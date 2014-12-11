@@ -1,0 +1,94 @@
+@relation "Exported data block from Strike : 12/9/2014 1:52:58 AM"
+%@attributes row, column
+%Pretty names for each instance are located after the first ARFF comment. Any additional comments should be placed after a second ARFF comment (%).
+@attribute 'MaxPlayers' numeric
+@attribute 'Cities' numeric
+@attribute 'Factories' numeric
+@attribute 'Airports' numeric
+@attribute 'Shipyards' numeric
+@attribute 'ComTowers' numeric
+@attribute 'FogOfWar' numeric
+@attribute 'Terrain River' real
+@attribute 'Terrain Mountain' real
+@attribute 'Terrain Sea' real
+@attribute 'Terrain Shoal' real
+@attribute 'Terrain Road' real
+@attribute 'Terrain Forest' real
+@attribute 'Terrain Hill' real
+@attribute 'Terrain Plain' real
+@attribute 'Turn' numeric
+@attribute 'Funds' numeric
+@attribute 'Player Infantry' real
+@attribute 'Player Stinger' real
+@attribute 'Player Stryker' real
+@attribute 'Player CarpetBomber' real
+@attribute 'Player TacticalFighter' real
+@attribute 'Player Interceptor' real
+@attribute 'Player AttackCopter' real
+@attribute 'Player LiftCopter' real
+@attribute 'Player LightTank' real
+@attribute 'Player MediumTank' real
+@attribute 'Player Rockets' real
+@attribute 'Player Missiles' real
+@attribute 'Player FieldArtillery' real
+@attribute 'Player Mortar' real
+@attribute 'Player SupplyTank' real
+@attribute 'Player UAV' real
+@attribute 'Player Humvee' real
+@attribute 'Player Sniper' real
+@attribute 'Player MobileRadar' real
+@attribute 'Player Corvette' real
+@attribute 'Player Destroyer' real
+@attribute 'Player Submarine' real
+@attribute 'Player Carrier' real
+@attribute 'Player Amphibious' real
+@attribute 'Player SupplyShip' real
+@attribute 'Player AATank' real
+@attribute 'Player Boomer' real
+@attribute 'Player Headquarters' real
+@attribute 'Player City' real
+@attribute 'Player Factory' real
+@attribute 'Player Airport' real
+@attribute 'Player Shipyard' real
+@attribute 'Player ComTower' real
+@attribute 'Player Bridge' real
+@attribute 'Player Bunker' real
+@attribute 'EnemyAverage Infantry' real
+@attribute 'EnemyAverage Stinger' real
+@attribute 'EnemyAverage Stryker' real
+@attribute 'EnemyAverage CarpetBomber' real
+@attribute 'EnemyAverage TacticalFighter' real
+@attribute 'EnemyAverage Interceptor' real
+@attribute 'EnemyAverage AttackCopter' real
+@attribute 'EnemyAverage LiftCopter' real
+@attribute 'EnemyAverage LightTank' real
+@attribute 'EnemyAverage MediumTank' real
+@attribute 'EnemyAverage Rockets' real
+@attribute 'EnemyAverage Missiles' real
+@attribute 'EnemyAverage FieldArtillery' real
+@attribute 'EnemyAverage Mortar' real
+@attribute 'EnemyAverage SupplyTank' real
+@attribute 'EnemyAverage UAV' real
+@attribute 'EnemyAverage Humvee' real
+@attribute 'EnemyAverage Sniper' real
+@attribute 'EnemyAverage MobileRadar' real
+@attribute 'EnemyAverage Corvette' real
+@attribute 'EnemyAverage Destroyer' real
+@attribute 'EnemyAverage Submarine' real
+@attribute 'EnemyAverage Carrier' real
+@attribute 'EnemyAverage Amphibious' real
+@attribute 'EnemyAverage SupplyShip' real
+@attribute 'EnemyAverage AATank' real
+@attribute 'EnemyAverage Boomer' real
+@attribute 'EnemyAverage Headquarters' real
+@attribute 'EnemyAverage City' real
+@attribute 'EnemyAverage Factory' real
+@attribute 'EnemyAverage Airport' real
+@attribute 'EnemyAverage Shipyard' real
+@attribute 'EnemyAverage ComTower' real
+@attribute 'EnemyAverage Bridge' real
+@attribute 'EnemyAverage Bunker' real
+@attribute 'class' {Infantry,Stinger,Stryker,CarpetBomber,TacticalFighter,Interceptor,AttackCopter,LiftCopter,LightTank,MediumTank,Rockets,Missiles,FieldArtillery,Mortar,SupplyTank,UAV,Humvee,Sniper,MobileRadar,Corvette,Destroyer,Submarine,Carrier,Amphibious,SupplyShip,AATank,Boomer,Headquarters,City,Factory,Airport,Shipyard,ComTower,Bridge,Bunker}
+@data
+%Instance 322 29
+2,12,6,2,0,0,0,0,0.5391638,0,0,0.2156655,0.2156655,0.2156655,0.7548294,29,5800,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,4,2,0,0,0,0,0,0,0,0,0,3,0,2,0,0,1,1,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,7,4,2,0,0,0,0,Infantry
