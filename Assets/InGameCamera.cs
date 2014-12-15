@@ -47,7 +47,10 @@ public class InGameCamera : MonoBehaviour {
 						scrollRampup += Time.deltaTime;
 						scrollRampup = Mathf.Clamp01(scrollRampup);
 						scrolling = true;
-						float moveSpeed = (cameraSpeed + .5f * transform.position.y) * scrollRampup * Time.deltaTime;
+						float moveSpeed = (cameraSpeed + transform.position.y) * scrollRampup * Time.deltaTime;
+						if(Input.mousePosition.x < mouseSideScrollOffset){
+							moveSpeed *= (mouseSideScrollOffset - Input.mousePosition.x)/((float)mouseSideScrollOffset);
+						}
 						lookAtPoint -= new Vector3(Mathf.Cos(-eulerAngles.y*Mathf.Deg2Rad), 0, Mathf.Sin(-eulerAngles.y*Mathf.Deg2Rad)) * moveSpeed;
 					}
 					if(Input.GetKey(KeyCode.RightArrow) || (Input.mousePosition.x > Screen.width - mouseSideScrollOffset  && Input.mousePosition.x <= Screen.width))
@@ -56,6 +59,9 @@ public class InGameCamera : MonoBehaviour {
 						scrollRampup = Mathf.Clamp01(scrollRampup);
 						scrolling = true;
 						float moveSpeed = (cameraSpeed + transform.position.y) * scrollRampup * Time.deltaTime;
+						if(Input.mousePosition.x > Screen.width - mouseSideScrollOffset){
+							moveSpeed *= (mouseSideScrollOffset - (Screen.width - Input.mousePosition.x))/((float)mouseSideScrollOffset);
+						}
 						lookAtPoint += new Vector3(Mathf.Cos(-eulerAngles.y*Mathf.Deg2Rad), 0, Mathf.Sin(-eulerAngles.y*Mathf.Deg2Rad)) * moveSpeed;
 					}
 					if(Input.GetKey(KeyCode.UpArrow) || (Input.mousePosition.y > Screen.height - mouseSideScrollOffset  && Input.mousePosition.y <= Screen.height))
@@ -64,6 +70,9 @@ public class InGameCamera : MonoBehaviour {
 						scrollRampup = Mathf.Clamp01(scrollRampup);
 						scrolling = true;
 						float moveSpeed = (cameraSpeed + transform.position.y) * scrollRampup * Time.deltaTime;
+						if(Input.mousePosition.y > Screen.height - mouseSideScrollOffset){
+							moveSpeed *= (mouseSideScrollOffset - (Screen.height - Input.mousePosition.y))/((float)mouseSideScrollOffset);
+						}
 						lookAtPoint += new Vector3(Mathf.Sin(eulerAngles.y*Mathf.Deg2Rad), 0, Mathf.Cos(-eulerAngles.y*Mathf.Deg2Rad)) * moveSpeed;
 					}
 					if(Input.GetKey(KeyCode.DownArrow) || (Input.mousePosition.y < mouseSideScrollOffset  && Input.mousePosition.y >=0))
@@ -72,6 +81,9 @@ public class InGameCamera : MonoBehaviour {
 						scrollRampup = Mathf.Clamp01(scrollRampup);
 						scrolling = true;
 						float moveSpeed = (cameraSpeed + transform.position.y) * scrollRampup * Time.deltaTime;
+						if(Input.mousePosition.y < mouseSideScrollOffset){
+							moveSpeed *= (mouseSideScrollOffset - Input.mousePosition.y)/((float)mouseSideScrollOffset);
+						}
 						lookAtPoint -= new Vector3(Mathf.Sin(eulerAngles.y*Mathf.Deg2Rad), 0, Mathf.Cos(-eulerAngles.y*Mathf.Deg2Rad)) * moveSpeed;
 					}
 				}

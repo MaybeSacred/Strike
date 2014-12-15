@@ -193,7 +193,7 @@ public class AIPlayerMedium : AIPlayer
 		unitsNeedingSupply.Sort(UnitController.CompareBySupplyScore);
 		List<UnitController> targetedUnitsNeedingSupply = new List<UnitController>();
 		List<UnitController> assignedUnits = new List<UnitController>();
-		//list of clustered enemy units
+		//list of clusters of clustered enemy units
 		List<List<AttackableObject>> lists = clusterer.Estimate(InGameController.GetAllEnemyUnits(this));
 		//assign infantry to buildings if possible - easy first step
 		for(int i = 0; i < units.Count; i++)
@@ -209,7 +209,7 @@ public class AIPlayerMedium : AIPlayer
 				}
 			}
 		}
-		//assign all other units to clusters of enemy units or our own units, if theyre support units
+		//assign all other units to clusters of enemy units, or our own units if theyre support units
 		int[] unitsAssignedToCluster = new int[lists.Count];
 		for(int i = 0; i < units.Count; i++)
 		{
@@ -282,6 +282,7 @@ public class AIPlayerMedium : AIPlayer
 		{
 			SetTargetBlock(units[i]);
 		}
+		Debug.Break();
 	}
 	
 	void SetTargetBlock(UnitController inUnit)
@@ -349,6 +350,14 @@ public class AIPlayerMedium : AIPlayer
 			{
 				inUnit.canReachTarget = false;
 			}
+		}
+		if(inUnit.AITarget != null){
+			Debug.Log(inUnit.name + " " + inUnit.AITarget + " " + inUnit.AITarget.GetPosition());
+			Debug.Log(inUnit.AITargetBlock.transform.position);
+		}
+		else{
+			Debug.Log("Has no target: " + inUnit.name);
+			Debug.Log(inUnit.AITargetBlock.transform.position);
 		}
 	}
 	/// <summary>
@@ -563,7 +572,7 @@ public class AIPlayerMedium : AIPlayer
 					float value = 1 - (currentUnit.EffectiveMoveRange()/5);
 					if(position.occupyingUnit.healsCarriedUnits)
 					{
-						if(currentUnit.health < 80)
+						if(currentUnit.health < 50)
 						{
 							value = (1 - ((float)currentUnit.health)/100f);
 						}
@@ -573,7 +582,6 @@ public class AIPlayerMedium : AIPlayer
 						bestOptionValue.value = value * loadModifier;
 						bestOptionValue.bestOrder = UnitOrderOptions.Load;
 					}
-					
 					break;
 				}
 				case UnitOrderOptions.ProduceMissile:
@@ -701,20 +709,20 @@ public class AIPlayerMedium : AIPlayer
 						{
 							if(TerrainBuilder.ManhattanDistance(t, block) <= otherMaxAttackRange)
 							{
-								totalEnemyDamage += DamageValues.CalculateDamage(other, currentUnit);
+								totalEnemyDamage += DamageValues.CalculateDamage(other, currentUnit) * currentUnit.baseCost;
 								break;
 							}
 						}
 					}
 					else if(TerrainBuilder.ManhattanDistance(other.currentBlock, block) >= other.minAttackRange && TerrainBuilder.ManhattanDistance(other.currentBlock, block) <= other.EffectiveAttackRange())
 					{
-						totalEnemyDamage += DamageValues.CalculateDamage(other, currentUnit);
+						totalEnemyDamage += DamageValues.CalculateDamage(other, currentUnit) * currentUnit.baseCost;
 					}
 				}
 			}
 		}
 		InGameController.currentTerrain.LoadIlluminatedBlocks();
-		return totalEnemyDamage / alliedUnits * currentUnit.AIDefensiveness;
+		return totalEnemyDamage / (alliedUnits * currentUnit.AIDefensiveness * 1000);
 	}
 	protected override void ProduceUnits()
 	{

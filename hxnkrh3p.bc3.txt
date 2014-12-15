@@ -1,0 +1,66 @@
+﻿
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+# On branch master
+# Your branch is up-to-date with 'origin/master'.
+#
+# Changes to be committed:
+#	new file:   Assets/Scripts/Health.cs
+#
+# Changes not staged for commit:
+#	modified:   Assembly-CSharp-Editor-vs.csproj
+#	modified:   Assembly-CSharp-Editor.csproj
+#	modified:   Assembly-CSharp-vs.csproj
+#	modified:   Assembly-CSharp.csproj
+#	modified:   Assembly-UnityScript-firstpass-vs.unityproj
+#	modified:   Assembly-UnityScript-firstpass.unityproj
+#	modified:   Assets/InGameCamera.cs
+#	modified:   Assets/Scripts/AIPlayerMedium.cs
+#	modified:   Assets/Scripts/Health.cs
+#	deleted:    Assets/Scripts/HealthBar.cs
+#	deleted:    Assets/Scripts/HealthBar.cs.meta
+#	modified:   Assets/Scripts/Player.cs
+#	modified:   Library/AssetServerCacheV3
+#	modified:   Library/CurrentLayout.dwlt
+#	modified:   Library/InspectorExpandedItems.asset
+#	modified:   Library/ScriptAssemblies/Assembly-CSharp-Editor.dll
+#	modified:   Library/ScriptAssemblies/Assembly-CSharp-Editor.dll.mdb
+#	modified:   Library/ScriptAssemblies/Assembly-CSharp.dll
+#	modified:   Library/ScriptAssemblies/Assembly-CSharp.dll.mdb
+#	modified:   Library/ScriptAssemblies/Assembly-UnityScript-firstpass.dll
+#	modified:   Library/ScriptAssemblies/Assembly-UnityScript-firstpass.dll.mdb
+#	modified:   Library/ScriptMapper
+#	modified:   Library/assetDatabase3
+#	modified:   Library/guidmapper
+#	modified:   Library/metadata/00/00000000000000006100000000000000
+#	modified:   Library/metadata/00/009a0debbebb72b4fb617e283835677b
+#	modified:   Library/metadata/40/403ad4ee2dd9aa9479896f48c80e2294
+#	modified:   Library/metadata/62/62890adb6427cc7468e6c83e2c0bde43
+#	deleted:    Library/metadata/a7/a7cb775c3db89404c8ca2093c11f2e10
+#	modified:   Library/metadata/e8/e83c2f831bb0fd14b92751cdcbe823ec
+#	modified:   Library/shadercompiler-1.log
+#	modified:   ProjectSettings/GraphicsSettings.asset
+#	deleted:    Temp/UnityTempFile-0e151d08a75ce864ab8674fe9f53d0a7
+#	deleted:    Temp/UnityTempFile-4311b4fba27df4d4f9df5eba74b1a55d
+#	deleted:    Temp/UnityTempFile-b7afc81eb992cea4ca464e0f04bc0e8b
+#
+# Untracked files:
+#	Assets/Scripts/Health.cs.meta
+#	Library/metadata/80/80a3616ca19596e4da0f10f14d241e9f
+#	Library/metadata/da/da2a09c6a23ba9d48b38e9d77cead547
+#	Library/metadata/f5/f5f67c52d1564df4a8936ccd202a3bd8
+#	Temp/UnityLockfile
+#	Temp/UnityTempFile-167a122fa78823f41adcf9e484a8b6a7
+#	Temp/UnityTempFile-231c8d412963d004fa54e62c60c677a3
+#	Temp/UnityTempFile-2e3cdfb438cb06f4ca41dadc664ded8e
+#	Temp/UnityTempFile-3ba7c7cafc6449b49b8c2b54489c23f6
+#	Temp/UnityTempFile-887dd762c7a3d74469c23c0d5411a53d
+#	Temp/UnityTempFile-91c4b83bfd7161d4f96eb7fb729fb9fe
+#	Temp/UnityTempFile-9e4a52ada1318834ba0b852091f14b9d
+#	Temp/UnityTempFile-ca94ac687a7ce2844949c9c30c5fbf91
+#	Temp/UnityTempFile-ebe441007b98763469d6769b70b5f3ec
+#	Temp/__EditModeScene
+#	strike-csharp.sln
+#	strike.sln
+#
+

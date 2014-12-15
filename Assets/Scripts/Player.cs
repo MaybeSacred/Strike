@@ -34,6 +34,13 @@ public class Player : MonoBehaviour{
 	protected Vector3 lastCameraPosition;
 	public AILevel aiLevel;
 	private List<Property> comTowers;
+	public int TotalValue(){
+		int value = funds;
+		foreach(UnitController u in units){
+			value += u.baseCost * Utilities.ConvertFixedPointHealth(u.health);
+		}
+		return value;
+	}
 	// Use this for initialization
 	protected virtual void Awake()
 	{
