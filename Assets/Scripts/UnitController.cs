@@ -1335,6 +1335,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 		EndTurn();
 		if(owner.aiLevel != AILevel.Human)
 		{
+			reinforcement.accruedReward = InGameController.TotalValueRelativeToPlayer(owner) - reinforcement.accruedReward;
 			owner.GetComponent<MouseEventHandler>().AddReinforcementInstance(reinforcement);
 		}
 		Destroy(moveIndicatorParticles);
@@ -1740,10 +1741,6 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 			ChangeState(UnitState.AwaitingOrder, UnitState.FinishedMove);
 			break;
 		}
-		}
-		if(health > 0)
-		{
-			reinforcement.accruedReward += order.value;
 		}
 	}
 	void AIBuildBridge()

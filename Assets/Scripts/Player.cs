@@ -34,7 +34,11 @@ public class Player : MonoBehaviour{
 	protected Vector3 lastCameraPosition;
 	public AILevel aiLevel;
 	private List<Property> comTowers;
-	public int TotalValue(){
+	/// <summary>
+	/// Returns the sum of all units' monetary costs, plus player's funds
+	/// </summary>
+	/// <returns>The relative value.</returns>
+	public int TotalRelativeValue(){
 		int value = funds;
 		foreach(UnitController u in units){
 			value += u.baseCost * Utilities.ConvertFixedPointHealth(u.health);

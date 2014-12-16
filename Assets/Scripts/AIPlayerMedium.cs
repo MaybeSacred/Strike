@@ -282,7 +282,7 @@ public class AIPlayerMedium : AIPlayer
 		{
 			SetTargetBlock(units[i]);
 		}
-		Debug.Break();
+		//Debug.Break();
 	}
 	
 	void SetTargetBlock(UnitController inUnit)
@@ -351,14 +351,14 @@ public class AIPlayerMedium : AIPlayer
 				inUnit.canReachTarget = false;
 			}
 		}
-		if(inUnit.AITarget != null){
+		/*if(inUnit.AITarget != null){
 			Debug.Log(inUnit.name + " " + inUnit.AITarget + " " + inUnit.AITarget.GetPosition());
 			Debug.Log(inUnit.AITargetBlock.transform.position);
 		}
 		else{
 			Debug.Log("Has no target: " + inUnit.name);
 			Debug.Log(inUnit.AITargetBlock.transform.position);
-		}
+		}*/
 	}
 	/// <summary>
 	/// Aptitude of a cluster, determined by the sum of the damage inUnit can do to each unit in the cluster minus what each unit can do to inUnit
@@ -443,7 +443,7 @@ public class AIPlayerMedium : AIPlayer
 				bestBlockSoFar = rankings.Values[i];
 			}
 		}
-		Debug.Log(currentUnit.unitClass + " Positions evaluated: " + totalPositionsEvaluated + " / positions at depth 0: " + blocks.Count);
+		//Debug.Log(currentUnit.unitClass + " Positions evaluated: " + totalPositionsEvaluated + " / positions at depth 0: " + blocks.Count);
 		return bestBlockSoFar;
 	}
 	protected PositionEvaluation RecursiveEvaluatePosition(int depth, TerrainBlock block, ref int positionsEvaluated)
@@ -672,6 +672,7 @@ public class AIPlayerMedium : AIPlayer
 			bestOptionValue.value += position.defenseBoost * defensiveTerrainDesireModifier;
 			float danger = EnemyDangerAtBlock(position);
 			bestOptionValue.value -= danger;
+			Debug.Log(danger);
 			bestOptionValue.value += MoveTowardsTarget(position);
 			bestOptionValue.value += UnityEngine.Random.Range(0, randomnessModifier);
 			return bestOptionValue;
@@ -698,7 +699,7 @@ public class AIPlayerMedium : AIPlayer
 				{
 					alliedUnits++;
 				}
-				else if(!other.GetOwner().IsNeutralSide() && other.EffectiveMoveRange() + other.EffectiveAttackRange() >= TerrainBuilder.ManhattanDistance(other.currentBlock, block) && other.gameObject.activeSelf)
+				else if(!other.GetOwner().IsSameSide(currentUnit.GetOwner()) && !other.GetOwner().IsNeutralSide() && other.EffectiveMoveRange() + other.EffectiveAttackRange() >= TerrainBuilder.ManhattanDistance(other.currentBlock, block) && other.gameObject.activeSelf)
 				{
 					float distance = 0;
 					if(other.canMoveAndAttack && other.minAttackRange > 0)
@@ -722,7 +723,7 @@ public class AIPlayerMedium : AIPlayer
 			}
 		}
 		InGameController.currentTerrain.LoadIlluminatedBlocks();
-		return totalEnemyDamage / (alliedUnits * currentUnit.AIDefensiveness * 1000);
+		return (totalEnemyDamage * currentUnit.AIDefensiveness) / (alliedUnits * 15000f);
 	}
 	protected override void ProduceUnits()
 	{

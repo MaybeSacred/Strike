@@ -326,12 +326,24 @@ public class InGameController : MonoBehaviour {
 		}
 		return bestSoFar;
 	}
+	public static int TotalValueRelativeToPlayer(Player relative){
+		int totalEnemyValue = 0;
+		int totalEnemies = 0;
+		for(int i = 1; i < players.Count; i++){
+			if(players[i] != relative){
+				totalEnemyValue += players[i].TotalRelativeValue();
+				totalEnemies++;
+			}
+		}
+		return relative.TotalRelativeValue() - (totalEnemyValue/totalEnemies);
+	}
 	public static Instance CreateInstance(UnitNames unitMade, bool reinforcement)
 	{
 		Instance outInstance;
 		if(reinforcement)
 		{
 			outInstance = new ReinforcementInstance(System.Enum.GetNames(typeof(UnitNames)).Length);
+			((ReinforcementInstance)outInstance).accruedReward = InGameController.TotalValueRelativeToPlayer(players[currentPlayer]);
 		}
 		else
 		{
