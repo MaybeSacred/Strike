@@ -7,7 +7,7 @@ public enum UnitNames {Infantry, Stinger, Stryker, CarpetBomber, TacticalFighter
 	 MediumTank, Rockets, Missiles, FieldArtillery, Mortar, SupplyTank, UAV, Humvee, Sniper, MobileRadar, Corvette, Destroyer,
 	 Submarine, Carrier, Amphibious, SupplyShip, AATank, Boomer, Headquarters, City, Factory, Airport, Shipyard, ComTower, Bridge, Bunker};
 public enum UnitState {UnMoved, BuildingBridge, Selected, Moving, AwaitingOrder, TargetingUnit, Unloading, FinishedMove, Dying};
-public enum UnitOrderOptions {ProduceMissile, BuildBridge, Attack, Supply, Repair, Capture, Load, Unload, Board, AddGeneral, GeneralPower, BuildUnit, UnStealthify, Stealthify, EndTurn};
+public enum UnitOrderOptions {ProduceMissile, BuildBridge, Attack, Supply, Repair, Capture, Load, Unload, Board, AddGeneral, GeneralPower, BuildUnit, UnStealthify, Stealthify, Join, EndTurn};
 public enum MovementType {Air, Sea, Littoral, LightVehicle, HeavyVehicle, Tank, Amphibious, Sniper, Infantry};
 //Story idea: in the middle of and right after nuclear war
 public enum UnitRanks {Unranked, Private, Corporal, Sergeant, Elite};
@@ -27,7 +27,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 	public UnitState currentState{get; private set;}
 	public int baseCost;
 	public int movementRange;
-	public Health health;
+	public Health health, AICachedHealth;
 	public float startFuel;
 	private float currentFuel;
 	public int fogOfWarRange;
@@ -76,12 +76,14 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 	public float AIDefensiveness;
 	public int comTowerEffect;
 	public ReinforcementInstance reinforcement;
+	[HideInInspector]
 	public TerrainBlock AICachedCurrentBlock;
 	public int AIMovePriority;
 	// Use this for initialization
 	void Awake()
 	{
 		health = new Health();
+		AICachedHealth = new Health();
 		moveIndicatorParticles = (ParticleSystem)Instantiate(GameObject.FindObjectOfType<InGameController>().mouseParticles);
 		moveIndicatorParticles.gameObject.SetActive(false);
 		currentMoveBlocks = new List<TerrainBlock>();
@@ -99,7 +101,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 		modifier = new UnitPropertyModifier();
 		try
 		{
-			currentBlock = awaitingOrdersBlock = InGameController.currentTerrain.GetBlockAtPos(transform.position);
+			AICachedCurrentBlock = currentBlock = awaitingOrdersBlock = InGameController.currentTerrain.GetBlockAtPos(transform.position);
 		}
 		catch
 		{
@@ -109,7 +111,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 	void Start () {
 		RaycastHit hit;
 		Physics.Raycast(new Vector3(transform.position.x, transform.position.y + 3, transform.position.z), Vector3.down, out hit, 10f, 1);
-		currentBlock = awaitingOrdersBlock = hit.collider.gameObject.GetComponent<TerrainBlock>();
+		AICachedCurrentBlock = currentBlock = awaitingOrdersBlock = hit.collider.gameObject.GetComponent<TerrainBlock>();
 		if(currentBlock == null)
 		{
 			Debug.Log("No block");
@@ -219,14 +221,15 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 	public List<UnitOrderOptions> CalculateAwaitingOrderOptions(TerrainBlock block)
 	{
 		possibleOrders.Clear();
-		if(block.IsOccupied() && block.occupyingUnit.CanCarryUnit(this) && block.occupyingUnit.GetOwner().IsSameSide(owner))
-		{
-			possibleOrders.Add(UnitOrderOptions.Load);
-		}
-		else if(block.IsOccupied() && block.occupyingUnit.GetOwner().IsNeutralSide() && canCapture)
-		{
-			{
+		if(block.IsOccupied()){
+			if(block.occupyingUnit.CanCarryUnit(this) && block.occupyingUnit.GetOwner().IsSameSide(owner)){
+				possibleOrders.Add(UnitOrderOptions.Load);
+			}
+			else if(block.occupyingUnit.GetOwner().IsNeutralSide() && canCapture){
 				possibleOrders.Add(UnitOrderOptions.Board);
+			}
+			else if(block.occupyingUnit.GetOwner() == owner && block.occupyingUnit.health.PrettyHealth() < 10 && block.occupyingUnit.unitClass == unitClass){
+				possibleOrders.Add(UnitOrderOptions.Join);
 			}
 		}
 		else
@@ -290,10 +293,13 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 				{
 					if(!block.adjacentBlocks[i].IsOccupied() && !block.adjacentBlocks[i].HasProperty())
 					{
-						if(block.adjacentBlocks[i].typeOfTerrain == TERRAINTYPE.River && owner.CanProduceProperty(UnitNames.Bridge) && block.adjacentBlocks[i].adjacentBlocks[i].UnitMovementCost(moveClass) > 0)
+						if(block.adjacentBlocks[i].typeOfTerrain == TERRAINTYPE.River && owner.CanProduceProperty(UnitNames.Bridge))
 						{
-							possibleOrders.Add(UnitOrderOptions.BuildBridge);
-							break;
+							TerrainBlock acrossTheRiverBlock = InGameController.currentTerrain.GetBlockAtPos((block.adjacentBlocks[i].transform.position - block.transform.position) + block.adjacentBlocks[i].transform.position);
+							if(acrossTheRiverBlock != null && acrossTheRiverBlock.typeOfTerrain != TERRAINTYPE.River && acrossTheRiverBlock.typeOfTerrain != TERRAINTYPE.Sea){
+								possibleOrders.Add(UnitOrderOptions.BuildBridge);
+								break;
+							}
 						}
 					}
 				}
@@ -648,7 +654,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 						}
 						if(canMoveAndAttack)
 						{
-							InGameController.currentTerrain.IlluminatePossibleMovementBlocks(currentBlock, this, EffectiveMoveRange(), (primaryAmmoRemaining > 0 ? modifier.ApplyModifiers(UnitPropertyModifier.PropertyModifiers.AttackRange, maxAttackRange): 0));
+							InGameController.currentTerrain.IlluminatePossibleMovementBlocks(currentBlock, this, EffectiveMoveRange(), (primaryAmmoRemaining > 0 ? EffectiveAttackRange(): 0));
 						}
 						else
 						{
@@ -1020,6 +1026,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 		{
 			owner.selectedGeneral.ShowZone(awaitingOrdersBlock);
 		}
+		AICachedCurrentBlock = currentBlock;
 		if(!isInUnit)
 		{
 			ChangeState(UnitState.FinishedMove, UnitState.UnMoved);
@@ -1339,119 +1346,123 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 	{
 		switch(inOrder)
 		{
-			case UnitOrderOptions.GeneralPower:
+		case UnitOrderOptions.GeneralPower:
+		{
+			owner.selectedGeneral.EnterPower();
+			ChangeState(UnitState.AwaitingOrder, UnitState.FinishedMove);
+			break;
+		}
+		case UnitOrderOptions.Attack:
+		{
+			ChangeState(currentState, UnitState.TargetingUnit);
+			break;
+		}
+		case UnitOrderOptions.Capture:
+		{
+			if(awaitingOrdersBlock.HasProperty())
 			{
-				owner.selectedGeneral.EnterPower();
-				ChangeState(UnitState.AwaitingOrder, UnitState.FinishedMove);
-				break;
+				awaitingOrdersBlock.occupyingProperty.Capture(Mathf.RoundToInt((float)health.PrettyHealth()*captureRate), this);
 			}
-			case UnitOrderOptions.Attack:
+			ChangeState(currentState, UnitState.FinishedMove);
+			break;
+		}
+		case UnitOrderOptions.EndTurn:
+		{
+			ChangeState(currentState, UnitState.FinishedMove);
+			break;
+		}
+		case UnitOrderOptions.BuildBridge:
+		{
+			ChangeState(UnitState.AwaitingOrder, UnitState.BuildingBridge);
+			break;
+		}
+		case UnitOrderOptions.Board:
+		{
+			InGameController.GetPlayer(0).DeleteUnit(awaitingOrdersBlock.occupyingUnit);
+			owner.AddUnit(awaitingOrdersBlock.occupyingUnit);
+			owner.DeleteUnit(this);
+			break;
+		}
+		case UnitOrderOptions.Stealthify:
+		{
+			isStealthed = true;
+			InternalEndTurn();
+			break;
+		}
+		case UnitOrderOptions.UnStealthify:
+		{
+			isStealthed = false;
+			InternalEndTurn();
+			break;
+		}
+		case UnitOrderOptions.Load:
+		{
+			awaitingOrdersBlock.occupyingUnit.carriedUnits.Add(this);
+			isInUnit = true;
+			currentBlock.UnOccupy(this);
+			currentBlock = awaitingOrdersBlock = null;
+			EndTurn();
+			if(owner.currentGeneralUnit == this)
 			{
-				ChangeState(currentState, UnitState.TargetingUnit);
-				break;
+				owner.selectedGeneral.HideZone();
 			}
-			case UnitOrderOptions.Capture:
+			SetActive(false);
+			break;
+		}
+		case UnitOrderOptions.Repair:
+		{
+			for(int i = 0; i < awaitingOrdersBlock.adjacentBlocks.Length; i++)
 			{
-				if(awaitingOrdersBlock.HasProperty())
+				if(awaitingOrdersBlock.adjacentBlocks[i].HasProperty() && awaitingOrdersBlock.adjacentBlocks[i].occupyingProperty.GetOwner().IsSameSide(owner))
 				{
-					awaitingOrdersBlock.occupyingProperty.Capture(Mathf.RoundToInt((float)health.PrettyHealth()*captureRate), this);
-				}
-				ChangeState(currentState, UnitState.FinishedMove);
-				break;
-			}
-			case UnitOrderOptions.EndTurn:
-			{
-				ChangeState(currentState, UnitState.FinishedMove);
-				break;
-			}
-			case UnitOrderOptions.BuildBridge:
-			{
-				ChangeState(UnitState.AwaitingOrder, UnitState.BuildingBridge);
-				break;
-			}
-			case UnitOrderOptions.Board:
-			{
-				InGameController.GetPlayer(0).DeleteUnit(awaitingOrdersBlock.occupyingUnit);
-				owner.AddUnit(awaitingOrdersBlock.occupyingUnit);
-				owner.DeleteUnit(this);
-				break;
-			}
-			case UnitOrderOptions.Stealthify:
-			{
-				isStealthed = true;
-				InternalEndTurn();
-				break;
-			}
-			case UnitOrderOptions.UnStealthify:
-			{
-				isStealthed = false;
-				InternalEndTurn();
-				break;
-			}
-			case UnitOrderOptions.Load:
-			{
-				awaitingOrdersBlock.occupyingUnit.carriedUnits.Add(this);
-				isInUnit = true;
-				currentBlock.UnOccupy(this);
-				currentBlock = awaitingOrdersBlock = null;
-				EndTurn();
-				if(owner.currentGeneralUnit == this)
-				{
-					owner.selectedGeneral.HideZone();
-				}
-				SetActive(false);
-				break;
-			}
-			case UnitOrderOptions.Repair:
-			{
-				for(int i = 0; i < awaitingOrdersBlock.adjacentBlocks.Length; i++)
-				{
-					if(awaitingOrdersBlock.adjacentBlocks[i].HasProperty() && awaitingOrdersBlock.adjacentBlocks[i].occupyingProperty.GetOwner().IsSameSide(owner))
+					if(awaitingOrdersBlock.adjacentBlocks[i].occupyingProperty.justBuilt)
 					{
-						if(awaitingOrdersBlock.adjacentBlocks[i].occupyingProperty.justBuilt)
-						{
-							
-						}
-						else if(awaitingOrdersBlock.adjacentBlocks[i].occupyingProperty.isUnderConstruction)
-						{
-							awaitingOrdersBlock.adjacentBlocks[i].occupyingProperty.FinishConstruction();
-						}
-						else
-						{
-							awaitingOrdersBlock.adjacentBlocks[i].occupyingProperty.HealBase(5);
-						}
+						
+					}
+					else if(awaitingOrdersBlock.adjacentBlocks[i].occupyingProperty.isUnderConstruction)
+					{
+						awaitingOrdersBlock.adjacentBlocks[i].occupyingProperty.FinishConstruction();
+					}
+					else
+					{
+						awaitingOrdersBlock.adjacentBlocks[i].occupyingProperty.HealBase(5);
 					}
 				}
-				ChangeState(UnitState.AwaitingOrder, UnitState.FinishedMove);
-				break;
 			}
-			case UnitOrderOptions.Supply:
+			ChangeState(UnitState.AwaitingOrder, UnitState.FinishedMove);
+			break;
+		}
+		case UnitOrderOptions.Supply:
+		{
+			for(int i = 0; i < awaitingOrdersBlock.adjacentBlocks.Length; i++)
 			{
-				for(int i = 0; i < awaitingOrdersBlock.adjacentBlocks.Length; i++)
+				if(awaitingOrdersBlock.adjacentBlocks[i].IsOccupied() && awaitingOrdersBlock.adjacentBlocks[i].occupyingUnit.GetOwner().IsSameSide(owner))
 				{
-					if(awaitingOrdersBlock.adjacentBlocks[i].IsOccupied() && awaitingOrdersBlock.adjacentBlocks[i].occupyingUnit.GetOwner().IsSameSide(owner))
-					{
-						awaitingOrdersBlock.adjacentBlocks[i].occupyingUnit.Resupply();
-					}
+					awaitingOrdersBlock.adjacentBlocks[i].occupyingUnit.Resupply();
 				}
-				ChangeState(UnitState.AwaitingOrder, UnitState.FinishedMove);
-				break;
 			}
-			case UnitOrderOptions.Unload:
+			ChangeState(UnitState.AwaitingOrder, UnitState.FinishedMove);
+			break;
+		}
+		case UnitOrderOptions.Unload:
+		{
+			ChangeState(UnitState.AwaitingOrder, UnitState.Unloading);
+			break;
+		}
+		case UnitOrderOptions.AddGeneral:
+		{
+			owner.SendOutGeneral(this);
+			if(veteranStatus != UnitRanks.Elite)
 			{
-				ChangeState(UnitState.AwaitingOrder, UnitState.Unloading);
-				break;
+				veteranStatus = UnitRanks.Sergeant;
 			}
-			case UnitOrderOptions.AddGeneral:
-			{
-				owner.SendOutGeneral(this);
-				if(veteranStatus != UnitRanks.Elite)
-				{
-					veteranStatus = UnitRanks.Sergeant;
-				}
-				ChangeState(UnitState.AwaitingOrder, UnitState.Selected);
-				break;
-			}
+			ChangeState(UnitState.AwaitingOrder, UnitState.Selected);
+			break;
+		}
+		case UnitOrderOptions.Join:
+		{
+			break;
+		}
 		}
 	}
 	public void Resupply()
@@ -1600,7 +1611,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 		}
 		return bestTargetedUnitDamage;
 	}
-	public void AIDoOrder (AIPlayerMedium.PositionEvaluation order)
+	public void AIDoOrder (AIPlayerMedium.PositionEvaluation order, bool trueOrder)
 	{
 		switch (order.bestOrder)
 		{
@@ -1739,11 +1750,49 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 	}
 	void AIBuildBridge()
 	{
-		
+		List<TerrainBlock> potentialBridgeBlocks = new List<TerrainBlock>();
+		foreach(TerrainBlock t in awaitingOrdersBlock.adjacentBlocks){
+			if(!t.IsOccupied() && !t.HasProperty() && t.typeOfTerrain == TERRAINTYPE.River){
+				TerrainBlock acrossTheRiverBlock = InGameController.currentTerrain.GetBlockAtPos((t.transform.position - awaitingOrdersBlock.transform.position) + t.transform.position);
+				if(acrossTheRiverBlock != null && acrossTheRiverBlock.typeOfTerrain != TERRAINTYPE.River && acrossTheRiverBlock.typeOfTerrain != TERRAINTYPE.Sea){
+					potentialBridgeBlocks.Add(t);
+				}
+			}
+		}
+		TerrainBlock bridgeBlock = potentialBridgeBlocks[UnityEngine.Random.Range(0, potentialBridgeBlocks.Count-1)];
+		if(bridgeBlock != null){
+			Property prop = owner.ProduceProperty(UnitNames.Bridge, bridgeBlock.transform.position + Vector3.up*.5f, (Mathf.RoundToInt(bridgeBlock.transform.position.x) != Mathf.RoundToInt(awaitingOrdersBlock.transform.position.x) ? Quaternion.AngleAxis(90, Vector3.up): Quaternion.identity));
+			prop.StartConstruction();
+		}
 	}
 	void AIUnload()
 	{
-		
+		int maxIterations = carriedUnits.Count;
+		int currentIteration = 0;
+		while(carriedUnits.Count > 0 && currentIteration <= maxIterations){
+			foreach(TerrainBlock t in awaitingOrdersBlock.adjacentBlocks)
+			{
+				if(!t.IsOccupied())
+				{
+					int unit = -1;
+					for(int i = 0; i < carriedUnits.Count; i++)
+					{
+						if(awaitingOrdersBlock.UnitMovementCost(carriedUnits[i].moveClass) > 0 && t.UnitMovementCost(carriedUnits[i].moveClass) > 0)
+						{
+							carriedUnits[i].currentBlock = carriedUnits[i].awaitingOrdersBlock = t;
+							carriedUnits[i].isInUnit = false;
+							t.Occupy(carriedUnits[i]);
+							break;
+						}
+					}
+					if(unit >= 0){
+						carriedUnits.RemoveAt(unit);
+						break;
+					}
+				}
+			}
+			currentIteration++;
+		}
 	}
 	public void AISelect(){
 		ChangeState(UnitState.UnMoved, UnitState.Selected);

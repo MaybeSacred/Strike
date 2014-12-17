@@ -3,6 +3,12 @@ using System.Collections;
 
 public class Health {
 	int rawHealth = 100;
+	public Health(){
+		
+	}
+	public Health(int startingHealth){
+		rawHealth = startingHealth;
+	}
 	public int PrettyHealth()
 	{
 		return (Mathf.CeilToInt(((float)rawHealth)/10));
@@ -25,6 +31,9 @@ public class Health {
 		{
 			rawHealth = 100;
 		}
+	}
+	public Health Clone(){
+		return new Health(rawHealth);
 	}
 	public static bool operator >(Health a, Health b){
 		return a.rawHealth > b.rawHealth;

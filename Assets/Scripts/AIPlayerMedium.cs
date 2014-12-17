@@ -288,6 +288,7 @@ public class AIPlayerMedium : AIPlayer
 		List<UnitController> temp = new List<UnitController>(unitsToMove);
 		temp.Sort(UnitController.CompareByMovePriority);
 		unitsToMove = new Stack<UnitController>(temp);
+		
 	}
 	void SetTargetBlock(UnitController inUnit)
 	{
@@ -295,7 +296,7 @@ public class AIPlayerMedium : AIPlayer
 		{
 			bool canReach = false;
 			TerrainBlock reachableBlock = null;
-			Debug.Log(inUnit.AITarget.GetUnitClass());
+			//Debug.Log(inUnit.AITarget.GetUnitClass());
 			//finds a block that the inUnit can reach and attack, or attempts to obtain a taxiing unit to get to the target
 			//it sets the inUnit targetblock to either the first, or the occupying block of the target
 			if(inUnit.AITarget is UnitController)
@@ -659,7 +660,7 @@ public class AIPlayerMedium : AIPlayer
 			{
 				if(position.occupyingProperty.CanHealUnit(currentUnit) && position.occupyingProperty.GetOwner().IsSameSide(currentUnit.GetOwner()))
 				{
-					if(currentUnit.health.GetRawHealth() < 80)
+					if(currentUnit.health < 80)
 					{
 						float value = (1 - ((float)currentUnit.health.GetRawHealth())/100f);
 						if(position.occupyingProperty.CanProduceUnit(currentUnit.unitClass))
@@ -1065,7 +1066,7 @@ public class AIPlayerMedium : AIPlayer
 			else if(currentUnit.currentState == UnitState.AwaitingOrder)
 			{
 				PositionEvaluation p = EvaluatePosition(currentUnit.awaitingOrdersBlock);
-				currentUnit.AIDoOrder(p);
+				currentUnit.AIDoOrder(p, true);
 			}
 		}
 		else

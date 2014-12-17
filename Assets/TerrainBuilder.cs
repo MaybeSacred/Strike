@@ -10,7 +10,6 @@ public class TerrainBuilder : MonoBehaviour {
 	private List<TerrainBlock> illuminatedMovementRangeBackup;
 	public MapData data;
 	// Use this for initialization
-	//We can have warp tiles :0
 	void Start () {
 		illuminatedMovementRangeBlocks = new List<TerrainBlock>();
 		BuildAdjacencyLists();
@@ -603,9 +602,7 @@ public class TerrainBuilder : MonoBehaviour {
 			tb.HideTileColor();
 		}
 		illuminatedMovementRangeBlocks.Clear();
-		MinDistanceToTiles(unit, startBlock, moveRange+attackRange);
-		TerrainBlock[] tempList = illuminatedMovementRangeBlocks.ToArray();
-		illuminatedMovementRangeBlocks.Clear();
+		TerrainBlock[] tempList = MinDistanceToTiles(unit, startBlock, moveRange+attackRange).ToArray();
 		for(int i = 0; i < tempList.Length; i++)
 		{
 			if(tempList[i].gCost <= moveRange)
