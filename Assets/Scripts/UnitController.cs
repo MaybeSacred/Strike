@@ -76,7 +76,6 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 	public float AIDefensiveness;
 	public int comTowerEffect;
 	public ReinforcementInstance reinforcement;
-	private static float FogRewardModifier = .075f ;//Score multiplier for each unit found in fog of war
 	// Use this for initialization
 	void Awake()
 	{
@@ -1048,7 +1047,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 					tb.occupyingUnit.SetActive(true);
 				}
 			}
-			reinforcement.accruedReward += FogRewardModifier * InGameController.currentTerrain.ClearFog(currentBlock, modifier.ApplyModifiers(UnitPropertyModifier.PropertyModifiers.VisionRange, fogOfWarRange), unitClass == UnitNames.UAV?true:false);
+			InGameController.currentTerrain.ClearFog(currentBlock, modifier.ApplyModifiers(UnitPropertyModifier.PropertyModifiers.VisionRange, fogOfWarRange), unitClass == UnitNames.UAV?true:false);
 			if(owner.currentGeneralUnit == this)
 			{
 				owner.selectedGeneral.ShowZone(awaitingOrdersBlock);

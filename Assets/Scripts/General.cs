@@ -280,8 +280,9 @@ public class General : MonoBehaviour
 				{
 					if(uc.moveClass == MovementType.Air)
 					{
-						uc.modifier.AddModifier(UnitPropertyModifier.PropertyModifiers.MovementRange, UnitPropertyModifier.ModifierTypes.GeneralEffect, 3);
+						uc.modifier.AddModifier(UnitPropertyModifier.PropertyModifiers.MovementRange, UnitPropertyModifier.ModifierTypes.GeneralEffect, 2);
 					}
+					uc.modifier.AddModifier(UnitPropertyModifier.PropertyModifiers.VisionRange, UnitPropertyModifier.ModifierTypes.GeneralEffect, 2);
 				}
 				break;
 			}
@@ -343,6 +344,7 @@ public class General : MonoBehaviour
 					{
 						uc.modifier.RemoveModifier(UnitPropertyModifier.PropertyModifiers.MovementRange, UnitPropertyModifier.ModifierTypes.GeneralEffect);
 					}
+					uc.modifier.RemoveModifier(UnitPropertyModifier.PropertyModifiers.VisionRange, UnitPropertyModifier.ModifierTypes.GeneralEffect);
 				}
 				break;
 			}

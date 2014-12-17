@@ -6,25 +6,17 @@ public class MouseEventHandler : MonoBehaviour {
 	private List<Instance> instances;
 	private List<ReinforcementInstance> reinforcementInstances;
 	private ARFFDataHandler trainingArff, testingArff, trainingReinforcementArff, testingReinforcementArff;
+	private bool clearInstancesKeyDown;
 	void Start () {
 		instances = new List<Instance>();
 		reinforcementInstances = new List<ReinforcementInstance>();
-		trainingArff = new ARFFDataHandler("C:\\Users\\Jon\\Documents\\Stryke\\Assets\\Data\\", LearnerUtilities.dataFileName, true, true);
-		//trainingArff.CreateARFFFile();
-		testingArff = new ARFFDataHandler("C:\\Users\\Jon\\Documents\\Stryke\\Assets\\Data\\", LearnerUtilities.eventDataFileName, true, true);
+		trainingArff = new ARFFDataHandler(Application.dataPath + @"/Data/", LearnerUtilities.dataFileName, true, true);
+		testingArff = new ARFFDataHandler(Application.dataPath + @"/Data/", LearnerUtilities.eventDataFileName, true, true);
 		testingArff.CreateARFFFile(new Instance(System.Enum.GetNames(typeof(UnitNames)).Length));
-		trainingReinforcementArff = new ARFFDataHandler("C:\\Users\\Jon\\Documents\\Stryke\\Assets\\Data\\", LearnerUtilities.reinforcementDataFileName, true, true);
-		testingReinforcementArff = new ARFFDataHandler("C:\\Users\\Jon\\Documents\\Stryke\\Assets\\Data\\", LearnerUtilities.reinforcementEventDataFileName, true, true);
-		testingReinforcementArff.CreateARFFFile(new ReinforcementInstance(System.Enum.GetNames(typeof(UnitNames)).Length));
+		trainingReinforcementArff = new ARFFDataHandler(Application.dataPath + @"/Data/", LearnerUtilities.reinforcementDataFileName, true, true);
+		testingReinforcementArff = new ARFFDataHandler(Application.dataPath + @"/Data/", LearnerUtilities.reinforcementEventDataFileName, true, true);
 	}
 	void Update () {
-		if(Input.GetKeyDown("u"))
-		{
-			trainingArff.CreateARFFFile(new Instance(System.Enum.GetNames(typeof(UnitNames)).Length));
-			testingArff.CreateARFFFile(new Instance(System.Enum.GetNames(typeof(UnitNames)).Length));
-			trainingReinforcementArff.CreateARFFFile(new ReinforcementInstance(System.Enum.GetNames(typeof(UnitNames)).Length));
-			testingReinforcementArff.CreateARFFFile(new ReinforcementInstance(System.Enum.GetNames(typeof(UnitNames)).Length));
-		}
 		if(Input.GetKeyDown("t"))
 		{
 			LearnerUtilities.TrainCurrentClassifier(LearnerUtilities.dataFileName);
@@ -32,6 +24,15 @@ public class MouseEventHandler : MonoBehaviour {
 		if(Input.GetKeyDown("y"))
 		{
 			WriteInstances();
+		}
+	}
+	void OnGUI(){
+		if(Input.GetKeyDown("u"))
+		{
+			trainingArff.CreateARFFFile(new Instance(System.Enum.GetNames(typeof(UnitNames)).Length));
+			testingArff.CreateARFFFile(new Instance(System.Enum.GetNames(typeof(UnitNames)).Length));
+			trainingReinforcementArff.CreateARFFFile(new ReinforcementInstance(System.Enum.GetNames(typeof(UnitNames)).Length));
+			testingReinforcementArff.CreateARFFFile(new ReinforcementInstance(System.Enum.GetNames(typeof(UnitNames)).Length));
 		}
 	}
 	public void StartTestInstance(Instance instance)

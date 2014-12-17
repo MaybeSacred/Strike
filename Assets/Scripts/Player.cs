@@ -41,7 +41,7 @@ public class Player : MonoBehaviour{
 	public int TotalRelativeValue(){
 		int value = funds;
 		foreach(UnitController u in units){
-			value += u.baseCost * Utilities.ConvertFixedPointHealth(u.health);
+			value += (u.baseCost / 10) * Utilities.ConvertFixedPointHealth(u.health);
 		}
 		return value;
 	}

@@ -431,12 +431,13 @@ public class AIPlayerMedium : AIPlayer
 		SortedList<PositionEvaluation, TerrainBlock> rankings = new SortedList<PositionEvaluation, TerrainBlock>(blocks.Count, new PositionEvaluationComparer());
 		foreach(TerrainBlock b in blocks)
 		{
-			rankings.Add(EvaluatePosition(b), b);
+			PositionEvaluation temp = EvaluatePosition(b);
+			rankings.Add(temp, b);
 		}
 		int min = Mathf.Min(rankings.Count, 10);
 		for(int i = 0; i < min; i++)
 		{
-			PositionEvaluation temp = RecursiveEvaluatePosition(1, rankings.Values[i], ref totalPositionsEvaluated);
+			PositionEvaluation temp = RecursiveEvaluatePosition(2, rankings.Values[i], ref totalPositionsEvaluated);
 			if(temp.value > bestValueSoFar.value)
 			{
 				bestValueSoFar = temp;
@@ -670,9 +671,8 @@ public class AIPlayerMedium : AIPlayer
 				bestOptionValue.value += position.occupyingProperty.DefenseBonus() * defensiveTerrainDesireModifier;
 			}
 			bestOptionValue.value += position.defenseBoost * defensiveTerrainDesireModifier;
-			float danger = EnemyDangerAtBlock(position);
-			bestOptionValue.value -= danger;
-			Debug.Log(danger);
+			//float danger = EnemyDangerAtBlock(position);
+			//bestOptionValue.value -= danger;
 			bestOptionValue.value += MoveTowardsTarget(position);
 			bestOptionValue.value += UnityEngine.Random.Range(0, randomnessModifier);
 			return bestOptionValue;

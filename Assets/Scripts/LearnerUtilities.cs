@@ -12,7 +12,7 @@ public class LearnerUtilities
 {
 	private static String jrePath = "C:\\Program Files (x86)\\Java\\jre7\\bin\\javaw.exe";
 	private static String wekaClassPath = "C:\\Program Files (x86)\\Weka-3-6\\weka.jar";
-	private static String dataPath = "C:\\Users\\Jon\\Documents\\Stryke\\Assets\\Data\\";
+	private static String dataPath = Application.dataPath + @"\Data\";
 	public static String dataFileName = "ProductionTrainingData";
 	public static String reinforcementDataFileName = "ProductionTrainingReinforcementData";
 	public static string reinforcementEventDataFileName = "ProductionEventReinforcementData";

@@ -335,7 +335,7 @@ public class InGameController : MonoBehaviour {
 				totalEnemies++;
 			}
 		}
-		return relative.TotalRelativeValue() - (totalEnemyValue/totalEnemies);
+		return relative.TotalRelativeValue() - (totalEnemies > 0?totalEnemyValue/totalEnemies: 0);
 	}
 	public static Instance CreateInstance(UnitNames unitMade, bool reinforcement)
 	{
