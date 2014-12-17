@@ -488,7 +488,7 @@ public class TerrainBuilder : MonoBehaviour {
 	/// <param name="startTile">Start tile.</param>
 	/// <param name="endTile">End tile.</param>
 	/// <param name="maxDistance">Max distance.</param>
-	public void MinDistanceToTiles(UnitController unit, TerrainBlock startTile, float maxDistance)
+	public List<TerrainBlock> MinDistanceToTiles(UnitController unit, TerrainBlock startTile, float maxDistance)
 	{
 		List<TerrainBlock> closedSet = new List<TerrainBlock>();
 		PriorityQueues.PriorityQueue<TerrainBlock> openSet = new PriorityQueues.PriorityQueue<TerrainBlock>();
@@ -499,7 +499,8 @@ public class TerrainBuilder : MonoBehaviour {
 		}
 		startTile.gCost = 0;
 		openSet.Enqueue(startTile);
-		illuminatedMovementRangeBlocks.Add(startTile);
+		List<TerrainBlock> outList = new List<TerrainBlock>();
+		outList.Add(startTile);
 		TerrainBlock current;
 		while(openSet.Count() > 0)
 		{
@@ -523,7 +524,7 @@ public class TerrainBuilder : MonoBehaviour {
 							if(!openSet.Contains(current.adjacentBlocks[i]))
 							{
 								openSet.Enqueue(current.adjacentBlocks[i]);
-								illuminatedMovementRangeBlocks.Add(current.adjacentBlocks[i]);
+								outList.Add(current.adjacentBlocks[i]);
 							}
 							else
 							{
@@ -535,6 +536,7 @@ public class TerrainBuilder : MonoBehaviour {
 				}
 			}
 		}
+		return outList;
 	}
 	private List<TerrainBlock> ReconstructPath(TerrainBlock lastBlock)
 	{
@@ -555,9 +557,7 @@ public class TerrainBuilder : MonoBehaviour {
 			tb.HideTileColor();
 		}
 		illuminatedMovementRangeBlocks.Clear();
-		MinDistanceToTiles(unit, startBlock, moveRange+attackRange);
-		TerrainBlock[] tempList = illuminatedMovementRangeBlocks.ToArray();
-		illuminatedMovementRangeBlocks.Clear();
+		TerrainBlock[] tempList = MinDistanceToTiles(unit, startBlock, moveRange + attackRange).ToArray();
 		for(int i = 0; i < tempList.Length; i++)
 		{
 			if(tempList[i].gCost <= moveRange)
@@ -576,9 +576,7 @@ public class TerrainBuilder : MonoBehaviour {
 	}
 	public List<TerrainBlock> MoveableBlocks(TerrainBlock startBlock, UnitController unit, float moveRange)
 	{
-		illuminatedMovementRangeBlocks.Clear();
-		MinDistanceToTiles(unit, startBlock, moveRange);
-		TerrainBlock[] tempList = illuminatedMovementRangeBlocks.ToArray();
+		TerrainBlock[] tempList = MinDistanceToTiles(unit, startBlock, moveRange).ToArray();
 		List<TerrainBlock> outList = new List<TerrainBlock>();
 		for(int i = 0; i < tempList.Length; i++)
 		{
@@ -587,23 +585,6 @@ public class TerrainBuilder : MonoBehaviour {
 				outList.Add(tempList[i]);
 			}
 		}
-		illuminatedMovementRangeBlocks.Clear();
-		return outList;
-	}
-	public List<TerrainBlock> MoveableBlocks(TerrainBlock startBlock, UnitController unit, float moveRange, int turnsIntoFuture)
-	{
-		illuminatedMovementRangeBlocks.Clear();
-		MinDistanceToTiles(unit, startBlock, moveRange);
-		TerrainBlock[] tempList = illuminatedMovementRangeBlocks.ToArray();
-		List<TerrainBlock> outList = new List<TerrainBlock>();
-		for(int i = 0; i < tempList.Length; i++)
-		{
-			if(tempList[i].gCost <= moveRange)
-			{
-				outList.Add(tempList[i]);
-			}
-		}
-		illuminatedMovementRangeBlocks.Clear();
 		return outList;
 	}
 	public void IlluminatePossibleAttackBlocksRange(TerrainBlock startBlock, int minRange, int maxRange)

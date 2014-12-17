@@ -132,6 +132,7 @@ public class AIPlayerMedium : AIPlayer
 	{
 		base.StartTurn();
 		UpdateTargets();
+		ComputeAllUnitPositions();
 	}
 	Property GetNextClosestUncapturedProperty(UnitController unit)
 	{
@@ -282,9 +283,12 @@ public class AIPlayerMedium : AIPlayer
 		{
 			SetTargetBlock(units[i]);
 		}
-		//Debug.Break();
 	}
-	
+	void ComputeAllUnitPositions(){
+		List<UnitController> temp = new List<UnitController>(unitsToMove);
+		temp.Sort(UnitController.CompareByMovePriority);
+		unitsToMove = new Stack<UnitController>(temp);
+	}
 	void SetTargetBlock(UnitController inUnit)
 	{
 		if(inUnit.AITarget != null)
@@ -1042,6 +1046,10 @@ public class AIPlayerMedium : AIPlayer
 		if(currentUnit != null)
 		{
 			if(currentUnit.currentState == UnitState.UnMoved)
+			{
+				currentUnit.AISelect();
+			}
+			else if(currentUnit.currentState == UnitState.Selected)
 			{
 				TerrainBlock block = StateSearch(1, 3);
 				currentUnit.AIMoveTo(block);

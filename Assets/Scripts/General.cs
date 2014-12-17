@@ -310,8 +310,8 @@ public class General : MonoBehaviour
 						uc.modifier.RemoveModifier(UnitPropertyModifier.PropertyModifiers.MovementRange, UnitPropertyModifier.ModifierTypes.GeneralEffect);
 						if(uc.maxAttackRange > 1)
 						{
-						uc.modifier.RemoveModifier(UnitPropertyModifier.PropertyModifiers.AttackRange, UnitPropertyModifier.ModifierTypes.GeneralEffect);
-					}
+							uc.modifier.RemoveModifier(UnitPropertyModifier.PropertyModifiers.AttackRange, UnitPropertyModifier.ModifierTypes.GeneralEffect);
+						}
 					}
 				}
 				break;

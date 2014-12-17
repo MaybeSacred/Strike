@@ -76,6 +76,8 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 	public float AIDefensiveness;
 	public int comTowerEffect;
 	public ReinforcementInstance reinforcement;
+	public TerrainBlock AICachedCurrentBlock;
+	public int AIMovePriority;
 	// Use this for initialization
 	void Awake()
 	{
@@ -849,7 +851,6 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 					case(UnitState.Selected):
 					{
 						currentState = UnitState.Selected;
-						
 						currentPathDistance = 0;
 						movingCounter = 0;
 						moveIndicatorParticles.gameObject.SetActive(false);
@@ -1750,9 +1751,11 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 	{
 		
 	}
+	public void AISelect(){
+		ChangeState(UnitState.UnMoved, UnitState.Selected);
+	}
 	public void AIMoveTo (TerrainBlock block)
 	{
-		ChangeState(UnitState.UnMoved, UnitState.Selected);
 		GeneratePath(block);
 		if(currentMoveBlocks != null)
 		{
@@ -1798,6 +1801,18 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 		{
 			return 1;
 		}
+	}
+	public static int CompareByMovePriority(UnitController a, UnitController b)
+	{
+		if(a.AIMovePriority < b.AIMovePriority)
+		{
+			return -1;
+		}
+		else if(a.AIMovePriority > b.AIMovePriority)
+		{
+			return 1;
+		}
+		return 0;
 	}
 	/// <summary>
 	/// Compares on random Index
