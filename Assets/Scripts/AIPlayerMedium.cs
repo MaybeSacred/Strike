@@ -564,7 +564,7 @@ public class AIPlayerMedium : AIPlayer
 				}
 				case UnitOrderOptions.Capture:
 				{
-					float bestCapture = captureModifier * (((float)currentUnit.health)/100) + (1 - position.occupyingProperty.NormalizedCaptureCount()) * position.occupyingProperty.AICapturePriority;
+					float bestCapture = captureModifier * (((float)currentUnit.health.GetRawHealth())/100) + (1 - position.occupyingProperty.NormalizedCaptureCount()) * position.occupyingProperty.AICapturePriority;
 					if(bestCapture > bestOptionValue.value)
 					{
 						bestOptionValue.value = bestCapture;
@@ -577,9 +577,9 @@ public class AIPlayerMedium : AIPlayer
 					float value = 1 - (currentUnit.EffectiveMoveRange()/5);
 					if(position.occupyingUnit.healsCarriedUnits)
 					{
-						if(currentUnit.health < 50)
+						if(currentUnit.health.GetRawHealth() < 50)
 						{
-							value = (1 - ((float)currentUnit.health)/100f);
+							value = (1 - ((float)currentUnit.health.GetRawHealth())/100f);
 						}
 					}
 					if(value * loadModifier > bestOptionValue.value)
@@ -659,9 +659,9 @@ public class AIPlayerMedium : AIPlayer
 			{
 				if(position.occupyingProperty.CanHealUnit(currentUnit) && position.occupyingProperty.GetOwner().IsSameSide(currentUnit.GetOwner()))
 				{
-					if(currentUnit.health < 80)
+					if(currentUnit.health.GetRawHealth() < 80)
 					{
-						float value = (1 - ((float)currentUnit.health)/100f);
+						float value = (1 - ((float)currentUnit.health.GetRawHealth())/100f);
 						if(position.occupyingProperty.CanProduceUnit(currentUnit.unitClass))
 						{
 							value *= .3f;

@@ -107,21 +107,21 @@ public class InGameGUI : MonoBehaviour {
 			if(unitMousedOver != null)
 			{
 				unitMousedOver.ShowUnitControllerInfo();
-				ShowHealthDisplay(unitMousedOver.health, unitMousedOver.transform.position);
+				ShowHealthDisplay(unitMousedOver.health.PrettyHealth(), unitMousedOver.transform.position);
 			}
 			if(propertyMousedOver != null)
 			{
 				propertyMousedOver.ShowPropertyInfo();
 				if(unitMousedOver == null)
 				{
-					ShowHealthDisplay(propertyMousedOver.health, propertyMousedOver.transform.position);
+					ShowHealthDisplay(propertyMousedOver.health.PrettyHealth(), propertyMousedOver.transform.position);
 				}
 			}
 		}
 	}
 	public void ShowHealthDisplay(int health, Vector3 placeToDraw)
 	{
-		int numberOfHP = Utilities.ConvertFixedPointHealth(health);
+		int numberOfHP = health;
 		Vector3 unitPointOnScreen = Camera.main.WorldToScreenPoint(placeToDraw);
 		float imageWidth = Mathf.Round(32/Mathf.Pow(unitPointOnScreen.z, .75f));
 		GUI.BeginGroup(new Rect(unitPointOnScreen.x - imageWidth*5, Screen.height - unitPointOnScreen.y + imageWidth + 8, 10*imageWidth, imageWidth*2));

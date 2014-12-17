@@ -210,7 +210,6 @@ public class General : MonoBehaviour
 				case Generals.Taron:
 				{
 					return defensiveBoost + 2;
-					break;
 				}
 				case Generals.Kiera:
 				{

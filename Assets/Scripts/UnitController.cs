@@ -27,7 +27,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 	public UnitState currentState{get; private set;}
 	public int baseCost;
 	public int movementRange;
-	public int health = 100;
+	public Health health;
 	public float startFuel;
 	private float currentFuel;
 	public int fogOfWarRange;
@@ -81,6 +81,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 	// Use this for initialization
 	void Awake()
 	{
+		health = new Health();
 		moveIndicatorParticles = (ParticleSystem)Instantiate(GameObject.FindObjectOfType<InGameController>().mouseParticles);
 		moveIndicatorParticles.gameObject.SetActive(false);
 		currentMoveBlocks = new List<TerrainBlock>();
@@ -913,27 +914,20 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 	{
 		if(health < 100)
 		{
-			if(!useFunds)
-			{
-				health += attemptedHealAmount*10;
-				if(health > 100)
-				{
-					health = 100;
-				}
-			}
-			else
+			if(useFunds)
 			{
 				for(int i = 0; i < attemptedHealAmount; i++)
 				{
 					if(owner.RemoveFunds((int)(baseCost/10)))
 					{
-						health += 10;
-						if(health > 100)
-						{
-							health = 100;
-						}
+						health.AddRawHealth(10);
 					}
 				}
+			}
+			else
+			{
+				health.AddRawHealth(attemptedHealAmount*10);
+				
 			}
 		}
 	}
@@ -1156,7 +1150,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 	{
 		GUI.BeginGroup(new Rect(Screen.width - 3*infoBoxWidth - 40, 0, infoBoxWidth + 40, infoBoxHeight));
 		GUI.Box(new Rect(0, 0, infoBoxWidth + 40, infoBoxHeight), prettyName);
-		GUI.Label(new Rect(0, 20, infoBoxWidth, 20), new GUIContent("HP " + Utilities.ConvertFixedPointHealth(health).ToString(), "Current Health"));
+		GUI.Label(new Rect(0, 20, infoBoxWidth, 20), new GUIContent("HP " + health.PrettyHealth().ToString(), "Current Health"));
 		GUI.Label(new Rect(0, 40, infoBoxWidth, 20), new GUIContent("Fuel: " + Mathf.FloorToInt(currentFuel) + "/" + startFuel, "Current Fuel"));
 		if(primaryAmmo > 0)
 		{
@@ -1188,12 +1182,12 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 	}
 	public bool TakeDamage(int inDamage, bool leaveAlive)
 	{
-		health -= inDamage;
+		health.AddRawHealth(-inDamage);
 		if(leaveAlive)
 		{
 			if(health < 10)
 			{
-				health = 10;
+				health.SetRawHealth(10);
 			}
 		}
 		if(health <= 0)
@@ -1227,7 +1221,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 	}
 	public void ExchangeFire(UnitController other)
 	{
-		int damageOut = DamageValues.CalculateDamage(this, other) + DamageValues.CalculateLuckDamage(health);
+		int damageOut = DamageValues.CalculateDamage(this, other) + DamageValues.CalculateLuckDamage(health.GetRawHealth());
 		if(unitClass == UnitNames.Sniper && (other.moveClass == MovementType.Amphibious
 		                                     || other.moveClass == MovementType.HeavyVehicle 
 		                                     || other.moveClass == MovementType.LightVehicle
@@ -1240,7 +1234,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 			primaryAmmoRemaining--;
 			if(owner.selectedGeneral.IsInZoneRange(transform) && !other.GetOwner().IsNeutralSide())
 			{
-				owner.selectedGeneral.UpdateGeneral(damageOut > other.health?other.health:damageOut);
+				owner.selectedGeneral.UpdateGeneral(damageOut > other.health.GetRawHealth()?other.health.GetRawHealth():damageOut);
 			}
 			if(other.TakeDamage(damageOut, false))
 			{
@@ -1252,14 +1246,14 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 			   DamageValues.CanAttackUnit(other, this) && CanRetaliate(other.attackType, attackType) &&
 			   other.primaryAmmoRemaining > 0)
 			{
-				damageOut = DamageValues.CalculateDamage(other, this) + DamageValues.CalculateLuckDamage(other.health);
+				damageOut = DamageValues.CalculateDamage(other, this) + DamageValues.CalculateLuckDamage(other.health.GetRawHealth());
 				if(TakeDamage(damageOut, false))
 				{
 					other.RankUp();
 				}
 				if(other.GetOwner().selectedGeneral.IsInZoneRange(other.transform) && !owner.IsNeutralSide())
 				{
-					other.GetOwner().selectedGeneral.UpdateGeneral(damageOut > other.health?other.health:damageOut);
+					other.GetOwner().selectedGeneral.UpdateGeneral(damageOut > other.health.GetRawHealth()?other.health.GetRawHealth():damageOut);
 				}
 				other.primaryAmmoRemaining--;
 			}
@@ -1293,11 +1287,11 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 	}
 	public void ExchangeFire(Property other)
 	{
-		int damageOut = DamageValues.CalculateDamage(this, other) + DamageValues.CalculateLuckDamage(health);
+		int damageOut = DamageValues.CalculateDamage(this, other) + DamageValues.CalculateLuckDamage(health.GetRawHealth());
 		other.TakeDamage(damageOut);
 		if(owner.selectedGeneral.IsInZoneRange(transform) && !other.GetOwner().IsNeutralSide())
 		{
-			owner.selectedGeneral.UpdateGeneral(damageOut > other.health?other.health:damageOut);
+			owner.selectedGeneral.UpdateGeneral(damageOut > other.health.GetRawHealth()?other.health.GetRawHealth():damageOut);
 		}
 		primaryAmmoRemaining--;
 	}
@@ -1360,7 +1354,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 			{
 				if(awaitingOrdersBlock.HasProperty())
 				{
-					awaitingOrdersBlock.occupyingProperty.Capture(Mathf.RoundToInt((float)Utilities.ConvertFixedPointHealth(health)*captureRate), this);
+					awaitingOrdersBlock.occupyingProperty.Capture(Mathf.RoundToInt((float)health.PrettyHealth()*captureRate), this);
 				}
 				ChangeState(currentState, UnitState.FinishedMove);
 				break;
@@ -1586,7 +1580,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 		for(int i = 0; i < possibleTargets.Count; i++)
 		{
 			float damageToUnit = DamageValues.CalculateDamage(this, possibleTargets[i]);
-			damageToUnit = damageToUnit > possibleTargets[i].GetHealth() ? possibleTargets[i].GetHealth() : damageToUnit;
+			damageToUnit = damageToUnit > possibleTargets[i].GetHealth().GetRawHealth() ? possibleTargets[i].GetHealth().GetRawHealth() : damageToUnit;
 			if(possibleTargets[i].GetOwner().IsNeutralSide())
 			{
 				if(possibleTargets[i] is Property)
@@ -1639,7 +1633,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 		{
 			if(awaitingOrdersBlock.HasProperty())
 			{
-				awaitingOrdersBlock.occupyingProperty.Capture(Mathf.RoundToInt((float)Utilities.ConvertFixedPointHealth(health)*captureRate), this);
+				awaitingOrdersBlock.occupyingProperty.Capture(Mathf.RoundToInt((float)health.PrettyHealth()*captureRate), this);
 			}
 			ChangeState(currentState, UnitState.FinishedMove);
 			break;
@@ -1770,7 +1764,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 		}
 	}
 	
-	public int GetHealth ()
+	public Health GetHealth ()
 	{
 		return health;
 	}

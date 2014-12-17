@@ -161,10 +161,6 @@ public class Utilities : MonoBehaviour{
 		 }
 		 return null;
 	}
-	public static int ConvertFixedPointHealth(int fixedPoint)
-	{
-		return (Mathf.CeilToInt(((float)fixedPoint)/10));
-	}
 	public static void LoadTitleScreen()
 	{
 		Application.LoadLevel("Splash");

@@ -91,7 +91,7 @@ public class AIPlayerHard : AIPlayer
 				}
 				case UnitOrderOptions.Capture:
 				{
-					float bestCapture = captureModifier * (((float)currentUnit.health)/100) + (1 - position.occupyingProperty.NormalizedCaptureCount());
+					float bestCapture = captureModifier * (((float)currentUnit.health.GetRawHealth())/100) + (1 - position.occupyingProperty.NormalizedCaptureCount());
 					if(bestCapture > bestOptionValue)
 					{
 						bestOptionValue = bestCapture;
@@ -179,7 +179,7 @@ public class AIPlayerHard : AIPlayer
 			{
 				if(position.occupyingProperty.CanHealUnit(currentUnit) && position.occupyingProperty.GetOwner().IsSameSide(currentUnit.GetOwner()))
 				{
-					float value = (1 - (float)currentUnit.health/100f);
+					float value = (1 - (float)currentUnit.health.GetRawHealth()/100f);
 					if(position.occupyingProperty.CanProduceUnit(currentUnit.unitClass))
 					{
 						value *= .8f;

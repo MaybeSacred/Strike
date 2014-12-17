@@ -5,7 +5,7 @@ public interface AttackableObject{
 	Vector3 GetPosition ();
 	Player GetOwner();
 	void SetOwner(Player newOwner);
-	int GetHealth();
+	Health GetHealth();
 	int OffenseBonus();
 	int DefenseBonus();
 	UnitNames GetUnitClass();

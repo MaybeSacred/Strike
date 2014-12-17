@@ -7,7 +7,7 @@ public class Property : MonoBehaviour, AttackableObject
 	private bool hasUnitSelectedMutex;
 	public static int productionDisplayWidth = 220;
 	public UnitNames propertyType;
-	public int health = 100;
+	public Health health;
 	private Player currentOwner;
 	public PropertyAttributes propertyClass;
 	public UnitState currentState {get; private set;}
@@ -43,7 +43,7 @@ public class Property : MonoBehaviour, AttackableObject
 	}
 	public bool IsAlive ()
 	{
-		if(health > 0)
+		if(health.GetRawHealth() > 0)
 		{
 			return true;
 		}
@@ -76,6 +76,7 @@ public class Property : MonoBehaviour, AttackableObject
 	}
 	void Awake()
 	{
+		health = new Health();
 		if(collider != null)
 		{
 			collider.enabled = false;
@@ -119,13 +120,13 @@ public class Property : MonoBehaviour, AttackableObject
 	}
 	public void StartConstruction()
 	{
-		health = 50;
+		health.SetRawHealth(50);
 		isUnderConstruction = true;
 		justBuilt = true;
 		currentBlock.DetachProperty(this, true);
 	}
 
-	public int GetHealth ()
+	public Health GetHealth ()
 	{
 		return health;
 	}
@@ -147,7 +148,7 @@ public class Property : MonoBehaviour, AttackableObject
 
 	public void FinishConstruction()
 	{
-		health += 50;
+		health.AddRawHealth(50);
 		isUnderConstruction = false;
 		currentBlock.AttachProperty(this);
 	}
@@ -172,7 +173,7 @@ public class Property : MonoBehaviour, AttackableObject
 	{
 		if(!currentlyDead)
 		{
-			currentOwner.AddFunds((int)(propertyClass.baseFunds * Mathf.Round(Utilities.ConvertFixedPointHealth(health)/10)));
+			currentOwner.AddFunds((int)(propertyClass.baseFunds * Mathf.Round(health.PrettyHealth()/10)));
 		}
 		if(isUnderConstruction)
 		{
@@ -288,7 +289,7 @@ public class Property : MonoBehaviour, AttackableObject
 		GUI.BeginGroup(new Rect(Screen.width - 2*UnitController.infoBoxWidth, 0, UnitController.infoBoxWidth, UnitController.infoBoxHeight));
 		GUI.Box(new Rect(0, 0, UnitController.infoBoxWidth, UnitController.infoBoxHeight), "");
 		GUI.Label(new Rect(0, 0, UnitController.infoBoxWidth, 20), prettyName);
-		GUI.Label(new Rect(0, 20, UnitController.infoBoxWidth, 20), "HP: " + (health>=0?Utilities.ConvertFixedPointHealth(health).ToString():"0"));
+		GUI.Label(new Rect(0, 20, UnitController.infoBoxWidth, 20), "HP: " + (health.GetRawHealth() >= 0 ? health.PrettyHealth().ToString() : "0"));
 		GUI.Label(new Rect(0, 40, UnitController.infoBoxWidth, 20), "Defense: " + propertyClass.defenseBonus);
 		GUI.Label(new Rect(0, 60, UnitController.infoBoxWidth, 20), "Capture: " + captureCount);
 		GUI.EndGroup();
@@ -308,7 +309,7 @@ public class Property : MonoBehaviour, AttackableObject
 		{
 			currentOwner.RemoveProperty(this);
 		}
-		health = -59;
+		health.SetRawHealth(-59);
 		if(InGameController.GetPlayer(0) != null)
 		{	
 			SetOwner(InGameController.GetPlayer(0));
@@ -322,7 +323,7 @@ public class Property : MonoBehaviour, AttackableObject
 	public void DestroyHeadquarters()
 	{
 		propertyType = UnitNames.City;
-		health = -59;
+		health.SetRawHealth(-59);
 		if(InGameController.GetPlayer(0) != null)
 		{
 			SetOwner(InGameController.GetPlayer(0));
@@ -438,8 +439,8 @@ public class Property : MonoBehaviour, AttackableObject
 	}
 	public void TakeDamage(int damage)
 	{
-		health -= damage;
-		if(health <= 0)
+		health.AddRawHealth(-damage);
+		if(health.GetRawHealth() <= 0)
 		{
 			KillUnit();
 		}
@@ -447,14 +448,14 @@ public class Property : MonoBehaviour, AttackableObject
 	}
 	void UpdateSmokeParticles()
 	{
-		if(health < 20)
+		if(health.GetRawHealth() < 20)
 		{
 			if(fireParticles == null)
 			{
 				fireParticles = Instantiate(staticFireParticles, transform.position, staticFireParticles.transform.rotation) as ParticleSystem;
 			}
 		}
-		else if(health < 50)
+		else if(health.GetRawHealth() < 50)
 		{
 			if(fireParticles != null)
 			{
@@ -479,18 +480,14 @@ public class Property : MonoBehaviour, AttackableObject
 	}
 	public void HealBase(int attemptedHealAmount)
 	{
-		if(health < 100)
+		if(health.GetRawHealth() < 100)
 		{
 			for(int i = 0; i < attemptedHealAmount; i++)
 			{
 				if(currentOwner.RemoveFunds(100))
 				{
-					health += 10;
-					if(health > 100)
-					{
-						health = 100;
-					}
-					else if(health > 0)
+					health.AddRawHealth(10);
+					if(health.GetRawHealth() > 0)
 					{
 						currentlyDead = false;
 					}
