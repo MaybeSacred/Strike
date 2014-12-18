@@ -654,6 +654,16 @@ public class AIPlayerMedium : AIPlayer
 					}
 					break;
 				}
+				case UnitOrderOptions.Join:
+				{
+					float value = 20 - position.occupyingUnit.health.PrettyHealth() - currentUnit.health.PrettyHealth();
+					value *= joinModifier;
+					if(value > bestOptionValue.value){
+						bestOptionValue.value = value;
+						bestOptionValue.bestOrder = UnitOrderOptions.Join;
+					}
+					break;
+				}
 				}
 			}
 			if(position.HasProperty())

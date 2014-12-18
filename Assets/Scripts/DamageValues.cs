@@ -68,7 +68,7 @@ public class DamageValues : MonoBehaviour {
 		}
 		output *= (float)(attacker.GetHealth().PrettyHealth());
 		output *= (100f + attacker.OffenseBonus());
-		output /= (100f + defender.DefenseBonus() + (defender.GetHealth().PrettyHealth()));
+		output /= (90f + defender.DefenseBonus() + 2*(defender.GetHealth().PrettyHealth()));
 		output /= 10f;
 		return Mathf.RoundToInt(output);
 	}

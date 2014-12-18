@@ -224,7 +224,7 @@ public class Property : MonoBehaviour, AttackableObject
 		{
 			if(propertyClass.producableUnits.Length < 8)
 			{
-				GUI.BeginGroup(new Rect(Screen.width/2 - Property.productionDisplayWidth/2, -UnitController.actionDisplayYOffset, Property.productionDisplayWidth, UnitController.actionDisplayHeight*propertyClass.producableUnits.Length));
+				GUI.BeginGroup(new Rect(Screen.width/2 - Property.productionDisplayWidth/2, -UnitController.actionDisplayYOffset, Property.productionDisplayWidth, UnitController.actionDisplayHeight*propertyClass.producableUnits.Length + 1));
 				for(int i = 0; i < propertyClass.producableUnits.Length; i++)
 				{
 					if(currentOwner.CanProduceUnit(propertyClass.producableUnits[i]))
@@ -238,6 +238,12 @@ public class Property : MonoBehaviour, AttackableObject
 					{
 						GUI.Box(new Rect(0, i*UnitController.actionDisplayHeight, Property.productionDisplayWidth, UnitController.actionDisplayHeight), ((UnitController)Utilities.GetPrefabFromUnitName(propertyClass.producableUnits[i])).prettyName + "    " + ((UnitController)Utilities.GetPrefabFromUnitName(propertyClass.producableUnits[i])).baseCost);
 					}
+				}
+				if(GUI.Button(new Rect(0, propertyClass.producableUnits.Length * UnitController.actionDisplayHeight, Property.productionDisplayWidth, UnitController.actionDisplayHeight), "Back"))
+				{
+					currentState = UnitState.UnMoved;
+					hasUnitSelectedMutex = InGameController.ReleaseUnitSelectedMutex();
+					Utilities.gameCamera.otherMenuActive = false;
 				}
 				GUI.EndGroup();
 			}
@@ -272,6 +278,12 @@ public class Property : MonoBehaviour, AttackableObject
 					{
 						GUI.Box(new Rect(Property.productionDisplayWidth, (i-propertyClass.producableUnits.Length/2 - 1)*UnitController.actionDisplayHeight, Property.productionDisplayWidth, UnitController.actionDisplayHeight), ((UnitController)Utilities.GetPrefabFromUnitName(propertyClass.producableUnits[i])).prettyName + "    " + ((UnitController)Utilities.GetPrefabFromUnitName(propertyClass.producableUnits[i])).baseCost);
 					}
+				}
+				if(GUI.Button(new Rect(Property.productionDisplayWidth/2, (propertyClass.producableUnits.Length/2 + 1) * UnitController.actionDisplayHeight, Property.productionDisplayWidth, UnitController.actionDisplayHeight), "Back"))
+				{
+					currentState = UnitState.UnMoved;
+					hasUnitSelectedMutex = InGameController.ReleaseUnitSelectedMutex();
+					Utilities.gameCamera.otherMenuActive = false;
 				}
 				GUI.EndGroup();
 			}

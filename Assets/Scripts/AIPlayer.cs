@@ -9,7 +9,7 @@ public abstract class AIPlayer : Player
 		boardModifier, addGeneralModifier, unStealthifyModifier, 
 		stealthifyModifier, hQMoveTowardsModifier, buildingMoveTowardsModifier,
 		randomnessModifier, defensiveTerrainDesireModifier, healModifier,
-		waitModifier;
+		joinModifier, waitModifier;
 	protected Stack<UnitController> unitsToMove;
 	protected Queue<UnitNames> unitsToMake;
 	protected List<UnitController> sightedEnemyUnits;

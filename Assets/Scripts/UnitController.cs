@@ -221,14 +221,14 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 	public List<UnitOrderOptions> CalculateAwaitingOrderOptions(TerrainBlock block)
 	{
 		possibleOrders.Clear();
-		if(block.IsOccupied()){
+		if(block.IsOccupied() && block.occupyingUnit != this){
 			if(block.occupyingUnit.CanCarryUnit(this) && block.occupyingUnit.GetOwner().IsSameSide(owner)){
 				possibleOrders.Add(UnitOrderOptions.Load);
 			}
 			else if(block.occupyingUnit.GetOwner().IsNeutralSide() && canCapture){
 				possibleOrders.Add(UnitOrderOptions.Board);
 			}
-			else if(block.occupyingUnit.GetOwner() == owner && block.occupyingUnit.health.PrettyHealth() < 10 && block.occupyingUnit.unitClass == unitClass){
+			else if(block.occupyingUnit.GetOwner() == owner && block.occupyingUnit.health.PrettyHealth() < 10 && block.occupyingUnit.unitClass == unitClass && block.occupyingUnit.carriedUnits.Count < 1 && carriedUnits.Count < 1){
 				possibleOrders.Add(UnitOrderOptions.Join);
 			}
 		}
@@ -393,8 +393,8 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 				GeneratePath(block);
 				if(Input.GetMouseButtonDown(0))
 				{
-					if(!block.IsOccupied() || (block.IsOccupied() && (block.occupyingUnit.GetOwner().IsSameSide(owner) || block.occupyingUnit.GetOwner().IsNeutralSide()) && block.occupyingUnit.CanCarryUnit(this))
-					   || (!block.occupyingUnit.gameObject.activeSelf))
+					if(!block.IsOccupied() || (((block.occupyingUnit.GetOwner().IsSameSide(owner) || block.occupyingUnit.GetOwner().IsNeutralSide()) && block.occupyingUnit.CanCarryUnit(this))
+					   || (!block.occupyingUnit.gameObject.activeSelf) || block.occupyingUnit.GetOwner() == owner && block.occupyingUnit.health.PrettyHealth() < 10 && block.occupyingUnit.unitClass == unitClass && block.occupyingUnit.carriedUnits.Count < 1 && carriedUnits.Count < 1 && block.occupyingUnit != this))
 					{
 						ChangeState(UnitState.Selected, UnitState.Moving);
 					}
@@ -1339,6 +1339,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 			reinforcement.accruedReward = InGameController.TotalValueRelativeToPlayer(owner) - reinforcement.accruedReward;
 			owner.GetComponent<MouseEventHandler>().AddReinforcementInstance(reinforcement);
 		}
+		health.SetRawHealth(-1);
 		Destroy(moveIndicatorParticles);
 		Destroy(gameObject);
 	}
@@ -1461,9 +1462,37 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 		}
 		case UnitOrderOptions.Join:
 		{
+			JoinUnits(awaitingOrdersBlock.occupyingUnit, this);
+			if(health > 0){
+				ChangeState(UnitState.AwaitingOrder, UnitState.FinishedMove);
+			}
 			break;
 		}
 		}
+	}
+	void JoinUnits(UnitController a, UnitController b){
+		if(owner.currentGeneralUnit == b){
+			UnitController temp = b;
+			b = a;
+			a = temp;
+		}
+		a.veteranStatus = (UnitRanks)Mathf.Max((int)a.veteranStatus, (int)b.veteranStatus);
+		a.damageReceived = Mathf.Max(a.damageReceived, b.damageReceived);
+		a.currentFuel += b.currentFuel;
+		if(a.currentFuel > startFuel){
+			a.currentFuel = startFuel;
+		}
+		a.primaryAmmoRemaining += b.primaryAmmoRemaining;
+		if(a.primaryAmmoRemaining > a.primaryAmmo){
+			a.primaryAmmoRemaining = a.primaryAmmo;
+		}
+		int remainderHealth = a.health.GetRawHealth() + b.health.GetRawHealth();
+		a.health.AddRawHealth(b.health.GetRawHealth());
+		if(remainderHealth > 100){
+			owner.AddFunds(a.baseCost * Mathf.FloorToInt(((float)remainderHealth-100)/10f));
+		}
+		owner.RemoveUnit(b);
+		a.InternalEndTurn();
 	}
 	public void Resupply()
 	{
