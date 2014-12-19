@@ -107,6 +107,8 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 		{
 			
 		}
+		reinforcement = (ReinforcementInstance)InGameController.CreateInstance(unitClass, true);
+		Debug.Log(reinforcement.playerUnitCount[(int)UnitNames.Headquarters]);
 	}
 	void Start () {
 		RaycastHit hit;
@@ -133,7 +135,6 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 		moveIndicatorParticles.particleSystem.startColor = owner.mainPlayerColor;
 		moveIndicatorParticles.transform.parent = transform;
 		comTowerEffect = owner.ComTowersInRange(this, currentBlock);
-		reinforcement = (ReinforcementInstance)InGameController.CreateInstance(unitClass, true);
 	}
 	void OnMouseOver()
 	{
@@ -976,7 +977,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 		{
 			if(moveClass == MovementType.Air)
 			{
-				owner.DeleteUnit(this);
+				owner.DeleteUnitFromGame(this);
 			}
 			currentFuel = 0;
 		}
@@ -1199,7 +1200,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 		}
 		if(health <= 0)
 		{
-			owner.DeleteUnit(this);
+			owner.DeleteUnitFromGame(this);
 			return true;
 		}
 		damageReceived += inDamage;
@@ -1222,7 +1223,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 			{
 				carriedUnit.KillUnit();
 			}
-			other.owner.RemoveUnit(other);
+			other.owner.RemoveUnitFromPlayer(other);
 			InGameController.GetPlayer(0).AddUnit(other);
 		}
 	}
@@ -1379,9 +1380,9 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 		}
 		case UnitOrderOptions.Board:
 		{
-			InGameController.GetPlayer(0).DeleteUnit(awaitingOrdersBlock.occupyingUnit);
+			InGameController.GetPlayer(0).DeleteUnitFromGame(awaitingOrdersBlock.occupyingUnit);
 			owner.AddUnit(awaitingOrdersBlock.occupyingUnit);
-			owner.DeleteUnit(this);
+			owner.DeleteUnitFromGame(this);
 			break;
 		}
 		case UnitOrderOptions.Stealthify:
@@ -1491,7 +1492,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 		if(remainderHealth > 100){
 			owner.AddFunds(a.baseCost * Mathf.FloorToInt(((float)remainderHealth-100)/10f));
 		}
-		owner.RemoveUnit(b);
+		owner.DeleteUnitFromGame(b);
 		a.InternalEndTurn();
 	}
 	public void Resupply()
@@ -1692,9 +1693,9 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 		}
 		case UnitOrderOptions.Board:
 		{
-			InGameController.GetPlayer(0).DeleteUnit(awaitingOrdersBlock.occupyingUnit);
+			InGameController.GetPlayer(0).DeleteUnitFromGame(awaitingOrdersBlock.occupyingUnit);
 			owner.AddUnit(awaitingOrdersBlock.occupyingUnit);
-			owner.DeleteUnit(this);
+			owner.DeleteUnitFromGame(this);
 			break;
 		}
 		case UnitOrderOptions.Stealthify:

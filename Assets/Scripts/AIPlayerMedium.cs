@@ -103,7 +103,7 @@ public class AIPlayerMedium : AIPlayer
 			}
 		}
 	}
-	public override void DeleteUnit(UnitController inUnit)
+	public override void DeleteUnitFromGame(UnitController inUnit)
 	{
 		if(units.Contains(inUnit))
 		{
@@ -433,29 +433,63 @@ public class AIPlayerMedium : AIPlayer
 		}
 		int totalPositionsEvaluated = 0;
 		List<TerrainBlock> blocks = InGameController.currentTerrain.MoveableBlocks(currentUnit.currentBlock, currentUnit, currentUnit.EffectiveMoveRange());
-		SortedList<PositionEvaluation, TerrainBlock> rankings = new SortedList<PositionEvaluation, TerrainBlock>(blocks.Count, new PositionEvaluationComparer());
-		foreach(TerrainBlock b in blocks)
-		{
-			PositionEvaluation temp = EvaluatePosition(b);
-			rankings.Add(temp, b);
+		foreach(TerrainBlock block in blocks){
+			PositionEvaluation temp = RecursiveEvaluatePosition(block);
+			if(temp.value > bestValueSoFar.value){
+				bestValueSoFar = temp;
+				bestBlockSoFar = block;
+			}
 		}
-		int min = Mathf.Min(rankings.Count, 10);
-		for(int i = 0; i < min; i++)
+		//Debug.Log(currentUnit.unitClass + " Positions evaluated: " + totalPositionsEvaluated);// + " / positions at depth 0: " + blocks.Count);
+		return bestBlockSoFar;
+	}
+	protected PositionEvaluation RecursiveEvaluatePosition(TerrainBlock block)
+	{
+		PositionEvaluation bestValueSoFar = new PositionEvaluation(float.NegativeInfinity);
+		List<TerrainBlock> blocks = InGameController.currentTerrain.MoveableBlocks(block, currentUnit, currentUnit.EffectiveMoveRange());
+		for(int i = 0; i < blocks.Count; i++)
 		{
-			PositionEvaluation temp = RecursiveEvaluatePosition(2, rankings.Values[i], ref totalPositionsEvaluated);
+			PositionEvaluation temp = EvaluatePosition(blocks[i]);
 			if(temp.value > bestValueSoFar.value)
 			{
 				bestValueSoFar = temp;
-				bestBlockSoFar = rankings.Values[i];
 			}
 		}
-		//Debug.Log(currentUnit.unitClass + " Positions evaluated: " + totalPositionsEvaluated + " / positions at depth 0: " + blocks.Count);
-		return bestBlockSoFar;
+		bestValueSoFar.value *= .33f;
+		PositionEvaluation outEvaluation = EvaluatePosition(block);
+		outEvaluation.value += bestValueSoFar.value;
+		return outEvaluation;
 	}
-	protected PositionEvaluation RecursiveEvaluatePosition(int depth, TerrainBlock block, ref int positionsEvaluated)
+	/*protected PositionEvaluation RecursiveEvaluatePosition(int depth, TerrainBlock block, ref int positionsEvaluated, int maxDepth)
 	{
 		positionsEvaluated++;
-		if(depth > 0)
+		if(depth < maxDepth)
+		{
+			PositionEvaluation bestValueSoFar = new PositionEvaluation(float.NegativeInfinity);
+			List<TerrainBlock> blocks = InGameController.currentTerrain.MoveableBlocks(block, currentUnit, currentUnit.EffectiveMoveRange());
+			for(int i = 0; i < blocks.Count; i++)
+			{
+				PositionEvaluation temp = RecursiveEvaluatePosition(depth + 1, blocks[i], ref positionsEvaluated, maxDepth);
+				if(temp.value > bestValueSoFar.value)
+				{
+					bestValueSoFar = temp;
+					bestValueSoFar.block = blocks[i];
+				}
+			}
+			//PositionEvaluation outputEvaluation = EvaluatePosition(block);
+			bestValueSoFar.value = (bestValueSoFar.value * Mathf.Pow(.5f, depth));
+			Debug.Log(bestValueSoFar.value);
+			return bestValueSoFar;
+		}
+		else
+		{
+			return EvaluatePosition(block);
+		}
+	}*/
+	/*protected PositionEvaluation RecursiveEvaluatePosition(int depth, TerrainBlock block, ref int positionsEvaluated, int maxDepth)
+	{
+		positionsEvaluated++;
+		if(depth < maxDepth)
 		{
 			PositionEvaluation bestValueSoFar = new PositionEvaluation(float.NegativeInfinity);
 			List<TerrainBlock> blocks = InGameController.currentTerrain.MoveableBlocks(block, currentUnit, currentUnit.EffectiveMoveRange());
@@ -467,13 +501,14 @@ public class AIPlayerMedium : AIPlayer
 			int min = Mathf.Min(rankings.Count, 10);
 			for(int i = 0; i < min; i++)
 			{
-				PositionEvaluation temp = RecursiveEvaluatePosition(depth - 1, rankings.Values[i], ref positionsEvaluated);
+				PositionEvaluation temp = RecursiveEvaluatePosition(depth + 1, rankings.Values[i], ref positionsEvaluated, maxDepth);
 				if(temp.value > bestValueSoFar.value)
 				{
 					bestValueSoFar = temp;
 				}
 			}
 			PositionEvaluation outputEvaluation = EvaluatePosition(block);
+			//depth is inverted, incorrect atm
 			outputEvaluation.value += (bestValueSoFar.value * Mathf.Pow(.5f, depth));
 			return outputEvaluation;
 		}
@@ -481,7 +516,7 @@ public class AIPlayerMedium : AIPlayer
 		{
 			return EvaluatePosition(block);
 		}
-	}
+	}*/
 	public class PositionEvaluationComparer : IComparer<PositionEvaluation>{
 		public int Compare(PositionEvaluation a, PositionEvaluation b)
 		{
@@ -498,9 +533,11 @@ public class AIPlayerMedium : AIPlayer
 	public class PositionEvaluation{
 		public UnitOrderOptions bestOrder;
 		public float value;
+		public TerrainBlock block;
 		public PositionEvaluation(float v){
 			value = v;
 			bestOrder = UnitOrderOptions.EndTurn;
+			block = null;
 		}
 	}
 	
@@ -749,31 +786,34 @@ public class AIPlayerMedium : AIPlayer
 	{
 		if(producingUnits)
 		{
-			switch(productionType)
+			List<UnitNames> rankedNames = GetComponent<MouseEventHandler>().CheckTestInstanceClassificationReinforcement();
+			string unitsSelected = "";
+			if(rankedNames != null)
 			{
-			case ProductionTest.RandomProd:
-			{
-				UnitNames rand = RandomUnitName();
-				if(((UnitController)Utilities.GetPrefabFromUnitName(rand)).baseCost <= funds)
+				for(int i = 0; i < rankedNames.Count; i++)
 				{
-					for(int i = 0; i < properties.Count; i++)
-					{
-						if(properties[i].currentState == UnitState.UnMoved && !properties[i].GetOccupyingBlock().IsOccupied() && properties[i].CanProduceUnit(rand))
-						{
-							properties[i].AIProduceUnit(rand);
-							break;
-						}
-					}
+					unitsSelected += rankedNames[i].ToString() + ", ";
 				}
-				productionAttempts++;
-				producingUnits = false;
-				break;
-			}
-			case ProductionTest.HalfNHalf:
-			{
-				if(UnityEngine.Random.value < .5f)
+				//Debug.Log(unitsSelected);
+				for(int j = 0; j < 3; j++)
 				{
-					UnitNames rand = RandomUnitName();
+					UnitNames rand = rankedNames[UnityEngine.Random.Range(0, rankedNames.Count)];
+					//Debug.Log(rand);
+					if(makeSupplyLand)
+					{
+						rand = UnitNames.SupplyTank;
+						makeSupplyLand = false;
+					}
+					else if(makeSupplySea)
+					{
+						rand = UnitNames.SupplyShip;
+						makeSupplySea = false;
+					}
+					else if(makeTransport)
+					{
+						rand = transportToMake;
+						makeTransport = false;
+					}
 					if(((UnitController)Utilities.GetPrefabFromUnitName(rand)).baseCost <= funds)
 					{
 						for(int i = 0; i < properties.Count; i++)
@@ -784,81 +824,11 @@ public class AIPlayerMedium : AIPlayer
 								break;
 							}
 						}
-					}
-					productionAttempts++;
-					producingUnits = false;
-				}
-				else
-				{
-					List<UnitNames> rankedNames = GetComponent<MouseEventHandler>().CheckTestInstanceClassificationRanked();
-					if(rankedNames != null)
-					{
-						UnitNames rand = rankedNames[UnityEngine.Random.Range(0, rankedNames.Count-1)];
-						if(((UnitController)Utilities.GetPrefabFromUnitName(rand)).baseCost <= funds)
-						{
-							for(int i = 0; i < properties.Count; i++)
-							{
-								if(properties[i].currentState == UnitState.UnMoved && !properties[i].GetOccupyingBlock().IsOccupied() && properties[i].CanProduceUnit(rand))
-								{
-									properties[i].AIProduceUnit(rand);
-									break;
-								}
-							}
-						}
-						productionAttempts++;
-						producingUnits = false;
+						break;
 					}
 				}
-				break;
-			}
-			case ProductionTest.Learned:
-			{
-				List<UnitNames> rankedNames = GetComponent<MouseEventHandler>().CheckTestInstanceClassificationReinforcement();
-				string unitsSelected = "";
-				if(rankedNames != null)
-				{
-					for(int i = 0; i < rankedNames.Count; i++)
-					{
-						unitsSelected += rankedNames[i].ToString() + ", ";
-					}
-					//Debug.Log(unitsSelected);
-					for(int j = 0; j < 3; j++)
-					{
-						UnitNames rand = rankedNames[UnityEngine.Random.Range(0, rankedNames.Count)];
-						//Debug.Log(rand);
-						if(makeSupplyLand)
-						{
-							rand = UnitNames.SupplyTank;
-							makeSupplyLand = false;
-						}
-						else if(makeSupplySea)
-						{
-							rand = UnitNames.SupplyShip;
-							makeSupplySea = false;
-						}
-						else if(makeTransport)
-						{
-							rand = transportToMake;
-							makeTransport = false;
-						}
-						if(((UnitController)Utilities.GetPrefabFromUnitName(rand)).baseCost <= funds)
-						{
-							for(int i = 0; i < properties.Count; i++)
-							{
-								if(properties[i].currentState == UnitState.UnMoved && !properties[i].GetOccupyingBlock().IsOccupied() && properties[i].CanProduceUnit(rand))
-								{
-									properties[i].AIProduceUnit(rand);
-									break;
-								}
-							}
-							break;
-						}
-					}
-					productionAttempts++;
-					producingUnits = false;
-				}
-				break;
-			}
+				productionAttempts++;
+				producingUnits = false;
 			}
 		}
 		else

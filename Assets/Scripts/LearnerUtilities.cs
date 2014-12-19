@@ -141,26 +141,6 @@ public class LearnerUtilities
 	{
 		UnityEngine.Debug.Log("Neural net ended");
 	}
-	/*public static MouseEventHandler.Stroke StrokeClassification(string file)
-	{
-		Process exeProcess = new Process();
-		exeProcess.StartInfo.RedirectStandardError = true;
-		exeProcess.StartInfo.RedirectStandardOutput = true;
-		exeProcess.StartInfo.CreateNoWindow = false;
-		exeProcess.StartInfo.UseShellExecute = false;
-		exeProcess.StartInfo.FileName = jrePath;
-		exeProcess.StartInfo.Arguments = "-Dfile.encoding-Cp1252 -classpath \"" + LearnerUtilities.wekaClassPath + "\" " + LearnerUtilities.currentClassifier + " -l " + LearnerUtilities.dataPath + LearnerUtilities.dataFileName + ".model -T " + LearnerUtilities.dataPath + LearnerUtilities.eventDataFileName + ".arff -p 0";
-		exeProcess.Start();
-		exeProcess.WaitForExit();
-		return GetStrokeFromWEKAString(exeProcess.StandardOutput.ReadToEnd());
-	}*/
-	/*private static MouseEventHandler.Stroke GetStrokeFromWEKAString(string input)
-	{
-		String[] split = input.Split(":".ToCharArray(), StringSplitOptions.None);
-		split = split[2].Split("+".ToCharArray(), StringSplitOptions.None);
-		split[0] = split[0].Trim(" ".ToCharArray());
-		return MouseEventHandler.GetStrokeFromString(split[0]);
-	}*/
 	
 	public static void BeginProductionClassification(string file)
 	{

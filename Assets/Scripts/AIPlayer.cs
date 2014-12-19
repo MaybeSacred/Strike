@@ -70,7 +70,7 @@ public abstract class AIPlayer : Player
 			countsOfEachUnit[(int)inUnit.unitClass]++;
 		}
 	}
-	public override void DeleteUnit(UnitController inUnit)
+	public override void DeleteUnitFromGame(UnitController inUnit)
 	{
 		if(units.Contains(inUnit))
 		{

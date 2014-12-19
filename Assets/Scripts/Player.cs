@@ -176,7 +176,8 @@ public class Player : MonoBehaviour{
 		RemoveFunds(outUnit.baseCost);
 		return outUnit;
 	}
-	public virtual void RemoveUnit(UnitController inUnit)
+	//Does not actually remove unit from game, use DeleteUnit for that
+	public virtual void RemoveUnitFromPlayer(UnitController inUnit)
 	{
 		if(units.Contains(inUnit))
 		{
@@ -193,7 +194,7 @@ public class Player : MonoBehaviour{
 			InGameController.RemovePlayer(this);
 		}
 	}
-	public virtual void DeleteUnit(UnitController inUnit)
+	public virtual void DeleteUnitFromGame(UnitController inUnit)
 	{
 		if(units.Contains(inUnit))
 		{
