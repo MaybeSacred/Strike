@@ -3,9 +3,16 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 public class Utilities : MonoBehaviour{
+	[System.Serializable]
+	public class UnitPrefabBindingClass
+	{
+		public UnitNames name;
+		public MonoBehaviour prefab;
+	}
 	public Texture[] hpPic;
 	public Texture2D[] unitRankInsigniasEditor;
 	public static Texture2D[] unitRankInsignias;
+	public static Texture2D carryingUnitImage;
 	public static Texture[] healthPoint;
 	public static Color canFireNowRangeColor;	
 	public static Color cannotFireNowRangeColor;
@@ -32,6 +39,7 @@ public class Utilities : MonoBehaviour{
 		canFireNowRangeColor = new Color((float)113/256, 0, 0, (float)143/256);
 		cannotFireNowRangeColor = new Color((float)96/256, (float)75/256, 0, (float)143/256);
 		fogOfWarEnabled = true;
+		carryingUnitImage = Resources.Load<Texture2D>("UnitBar");
 		LearnerUtilities.TerminateNeuralTraining();
 	}
 	public static General GetGeneral(string id)
@@ -145,12 +153,10 @@ public class Utilities : MonoBehaviour{
 		}
 		throw new UnityException("Invalid Rank Image Request " + StackTraceUtility.ExtractStackTrace());
 	}
-	
-	[System.Serializable]
-	public class UnitPrefabBindingClass
+
+	public static Texture2D GetCarryingImage (UnitNames unitClass)
 	{
-		public UnitNames name;
-		public MonoBehaviour prefab;
+		return carryingUnitImage;
 	}
 	
 	public static MonoBehaviour GetPrefabFromUnitName(UnitNames inName)

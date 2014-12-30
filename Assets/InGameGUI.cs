@@ -6,6 +6,8 @@ public class InGameGUI : MonoBehaviour {
 	private Property propertyMousedOver;
 	private UnitController unitMousedOver;
 	public GUIStyle healthBarStyle;
+	//Used to toggle between two or more displays;
+	float displayOverloadTimer;
 	// Use this for initialization
 	void Start () {
 	
@@ -106,8 +108,9 @@ public class InGameGUI : MonoBehaviour {
 			}
 			if(unitMousedOver != null)
 			{
-				unitMousedOver.ShowUnitControllerInfo();
+				unitMousedOver.ShowUnitControllerInfo(displayOverloadTimer);
 				ShowHealthDisplay(unitMousedOver.health.PrettyHealth(), unitMousedOver.transform.position);
+				displayOverloadTimer += Time.deltaTime;
 			}
 			if(propertyMousedOver != null)
 			{

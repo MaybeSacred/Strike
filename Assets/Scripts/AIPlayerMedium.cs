@@ -467,32 +467,6 @@ public class AIPlayerMedium : AIPlayer
 		{
 			PositionEvaluation bestValueSoFar = new PositionEvaluation(float.NegativeInfinity);
 			List<TerrainBlock> blocks = InGameController.currentTerrain.MoveableBlocks(block, currentUnit, currentUnit.EffectiveMoveRange());
-			for(int i = 0; i < blocks.Count; i++)
-			{
-				PositionEvaluation temp = RecursiveEvaluatePosition(depth + 1, blocks[i], ref positionsEvaluated, maxDepth);
-				if(temp.value > bestValueSoFar.value)
-				{
-					bestValueSoFar = temp;
-					bestValueSoFar.block = blocks[i];
-				}
-			}
-			//PositionEvaluation outputEvaluation = EvaluatePosition(block);
-			bestValueSoFar.value = (bestValueSoFar.value * Mathf.Pow(.5f, depth));
-			Debug.Log(bestValueSoFar.value);
-			return bestValueSoFar;
-		}
-		else
-		{
-			return EvaluatePosition(block);
-		}
-	}*/
-	/*protected PositionEvaluation RecursiveEvaluatePosition(int depth, TerrainBlock block, ref int positionsEvaluated, int maxDepth)
-	{
-		positionsEvaluated++;
-		if(depth < maxDepth)
-		{
-			PositionEvaluation bestValueSoFar = new PositionEvaluation(float.NegativeInfinity);
-			List<TerrainBlock> blocks = InGameController.currentTerrain.MoveableBlocks(block, currentUnit, currentUnit.EffectiveMoveRange());
 			SortedList<PositionEvaluation, TerrainBlock> rankings = new SortedList<PositionEvaluation, TerrainBlock>(blocks.Count, new PositionEvaluationComparer());
 			foreach(TerrainBlock b in blocks)
 			{

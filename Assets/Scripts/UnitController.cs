@@ -108,7 +108,6 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 			
 		}
 		reinforcement = (ReinforcementInstance)InGameController.CreateInstance(unitClass, true);
-		Debug.Log(reinforcement.playerUnitCount[(int)UnitNames.Headquarters]);
 	}
 	void Start () {
 		RaycastHit hit;
@@ -1154,7 +1153,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 			}
 		}
 	}
-	public void ShowUnitControllerInfo()
+	public void ShowUnitControllerInfo(float displaySwitch)
 	{
 		GUI.BeginGroup(new Rect(Screen.width - 3*infoBoxWidth - 40, 0, infoBoxWidth + 40, infoBoxHeight));
 		GUI.Box(new Rect(0, 0, infoBoxWidth + 40, infoBoxHeight), prettyName);
@@ -1166,11 +1165,26 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 		}
 		else
 		{
-			GUI.Label(new Rect(0, 60, infoBoxWidth, 20), new GUIContent("Ammo: --/--", "Ammunition Remaining"));
+			GUI.Label(new Rect(0, 60, infoBoxWidth, 20), new GUIContent("Ammo: --/--", "No Ammunition"));
 		}
-		if(veteranStatus != UnitRanks.Unranked)
+		if(veteranStatus != UnitRanks.Unranked && carriedUnits.Count > 0){
+			if((Mathf.FloorToInt(displaySwitch)/2) % 2 == 0){
+				GUI.Label(new Rect(infoBoxWidth+4, 20, 32, infoBoxHeight), Utilities.GetRankImage(veteranStatus));
+			}
+			else{
+				for(int carriedUnitCount = 0; carriedUnitCount < carriedUnits.Count; carriedUnitCount++){
+					GUI.Label(new Rect(infoBoxWidth+4, 20 + 20 * carriedUnitCount, 32, infoBoxHeight), Utilities.GetCarryingImage(carriedUnits[carriedUnitCount].unitClass));
+				}
+			}
+		}
+		else if(veteranStatus != UnitRanks.Unranked)
 		{
 			GUI.Label(new Rect(infoBoxWidth+4, 20, 32, infoBoxHeight), Utilities.GetRankImage(veteranStatus));
+		}
+		else if(carriedUnits.Count > 0){
+			for(int carriedUnitCount = 0; carriedUnitCount < carriedUnits.Count; carriedUnitCount++){
+				GUI.Label(new Rect(infoBoxWidth+4, 20 + 20 * carriedUnitCount, 32, infoBoxHeight), Utilities.GetCarryingImage(carriedUnits[carriedUnitCount].unitClass));
+			}
 		}
 		GUI.EndGroup();
 	}
@@ -1811,6 +1825,8 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 						{
 							carriedUnits[i].currentBlock = carriedUnits[i].awaitingOrdersBlock = t;
 							carriedUnits[i].isInUnit = false;
+							carriedUnits[i].transform.position = t.transform.position + .5f * Vector3.up;
+							carriedUnits[i].gameObject.SetActive(true);
 							t.Occupy(carriedUnits[i]);
 							break;
 						}
