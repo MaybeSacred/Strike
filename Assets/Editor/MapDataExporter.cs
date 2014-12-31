@@ -55,8 +55,8 @@ public class MapDataExporter : Editor
 		buildingPrefabs = new List<GameObject>();
 		blockNames = ExtractPrettyMapNames(blockNames);
 		buildingNames = ExtractPrettyMapNames(buildingNames);
-		LoadItems(blockNames, terrainPrefabs);
-		LoadItems(buildingNames, buildingPrefabs);
+		LoadGameObjectsFromFiles(blockNames, terrainPrefabs);
+		LoadGameObjectsFromFiles(buildingNames, buildingPrefabs);
 		terrainImages = new List<Texture2D>();
 		
 		foreach(GameObject t in terrainPrefabs)
@@ -94,7 +94,7 @@ public class MapDataExporter : Editor
 			DestroyImmediate(terrainImages[i]);
 		}
 	}
-	void LoadItems(List<string> names, List<GameObject> inList)
+	void LoadGameObjectsFromFiles(List<string> names, List<GameObject> inList)
 	{
 		for(int i = 0; i < names.Count; i++)
 		{

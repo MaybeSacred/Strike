@@ -47,8 +47,10 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Editor Default Resources\MapDataDummy.cs" />
+     <Compile Include="Assets\Fantasy Skybox FREE\Scripts\FSPlayer.cs" />
      <Compile Include="Assets\InGameCamera.cs" />
      <Compile Include="Assets\InGameGUI.cs" />
+     <Compile Include="Assets\MapHolderGameMenu.cs" />
      <Compile Include="Assets\MenuBackgroundUnitDisplayer.cs" />
      <Compile Include="Assets\Scripts\AIPlayer.cs" />
      <Compile Include="Assets\Scripts\AIPlayerEasy.cs" />
@@ -89,6 +91,7 @@
      <None Include="Assets\Models\Submarine\readme.txt" />
      <None Include="Assets\Standard Assets\Skyboxes\_skybox info.txt" />
      <None Include="Assets\Models\Boomer\S_o_f\readme (instructions).txt" />
+     <None Include="Assets\Fantasy Skybox FREE\Readme\Readme.txt" />
      <None Include="Assets\Models\S_o_f\readme (instructions).txt" />
      <None Include="Assets\Models\Halo ODST\Readme.txt" />
  <Reference Include="Assembly-UnityScript-firstpass">
@@ -97,6 +100,10 @@
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/4.6.1/UnityEngine.UI.dll</HintPath>
  </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Assembly-CSharp-firstpass-vs.csproj">
+      <Project>{2D7D9BB8-550A-40CD-29D2-92FFC4A33CD4}</Project>      <Name>Assembly-CSharp-firstpass-vs</Name>    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

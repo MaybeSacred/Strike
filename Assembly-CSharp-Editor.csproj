@@ -53,6 +53,7 @@
      <None Include="Assets\Models\Submarine\readme.txt" />
      <None Include="Assets\Standard Assets\Skyboxes\_skybox info.txt" />
      <None Include="Assets\Models\Boomer\S_o_f\readme (instructions).txt" />
+     <None Include="Assets\Fantasy Skybox FREE\Readme\Readme.txt" />
      <None Include="Assets\Models\S_o_f\readme (instructions).txt" />
      <None Include="Assets\Models\Halo ODST\Readme.txt" />
  <Reference Include="UnityEngine.UI">
@@ -66,6 +67,8 @@
  </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="Assembly-CSharp-firstpass.csproj">
+      <Project>{2D7D9BB8-550A-40CD-29D2-92FFC4A33CD4}</Project>      <Name>Assembly-CSharp-firstpass</Name>    </ProjectReference>
     <ProjectReference Include="Assembly-UnityScript-firstpass.unityproj">
       <Project>{A44830D7-745F-44A4-E97C-4A83551EF7B4}</Project>      <Name>Assembly-UnityScript-firstpass</Name>    </ProjectReference>
     <ProjectReference Include="Assembly-CSharp.csproj">
