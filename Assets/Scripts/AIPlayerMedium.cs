@@ -66,20 +66,19 @@ public class AIPlayerMedium : AIPlayer
 			UnitController mono = (UnitController)Utilities.GetPrefabFromUnitName(name);
 			if(mono.CanCarryUnit(inUnit))
 			{
-				bool canMakeUnit = false;
 				for(int i = 0; i < properties.Count; i++)
 				{
 					if(properties[i].CanProduceUnit(mono.unitClass))
 					{
-						canMakeUnit = true;
+						if(mono.baseCost < lowestCost)
+						{
+							transportToMake = name;
+							lowestCost = mono.baseCost;
+						}
 						break;
 					}
 				}
-				if(canMakeUnit && mono.baseCost < lowestCost)
-				{
-					transportToMake = name;
-					lowestCost = mono.baseCost;
-				}
+				
 			}
 		}
 	}

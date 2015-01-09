@@ -102,23 +102,24 @@ public class InGameCamera : MonoBehaviour {
 		lookAtPoint = new Vector3(point.x, 0, point.z);
 		LookingBoundsCheck();
 	}
+	private float cameraBoundsFactor = .45f;
 	private void LookingBoundsCheck()
 	{
-		if(lookAtPoint.x < InGameController.currentTerrain.lowerXMapBound)
+		if(lookAtPoint.x < InGameController.currentTerrain.lowerXMapBound + cameraBoundsFactor * transform.position.y)
 		{
-			lookAtPoint = new Vector3(InGameController.currentTerrain.lowerXMapBound, lookAtPoint.y, lookAtPoint.z);
+			lookAtPoint = new Vector3(InGameController.currentTerrain.lowerXMapBound + cameraBoundsFactor * transform.position.y, lookAtPoint.y, lookAtPoint.z);
 		}
-		else if(lookAtPoint.x > InGameController.currentTerrain.upperXMapBound)
+		else if(lookAtPoint.x > InGameController.currentTerrain.upperXMapBound - cameraBoundsFactor * transform.position.y)
 		{
-			lookAtPoint = new Vector3(InGameController.currentTerrain.upperXMapBound, lookAtPoint.y, lookAtPoint.z);
+			lookAtPoint = new Vector3(InGameController.currentTerrain.upperXMapBound - cameraBoundsFactor * transform.position.y, lookAtPoint.y, lookAtPoint.z);
 		}
-		if(lookAtPoint.z < InGameController.currentTerrain.lowerZMapBound)
+		if(lookAtPoint.z < InGameController.currentTerrain.lowerZMapBound + cameraBoundsFactor * transform.position.y)
 		{
-			lookAtPoint = new Vector3(lookAtPoint.x, lookAtPoint.y, InGameController.currentTerrain.lowerZMapBound);
+			lookAtPoint = new Vector3(lookAtPoint.x, lookAtPoint.y, InGameController.currentTerrain.lowerZMapBound + cameraBoundsFactor * transform.position.y);
 		}
-		else if(lookAtPoint.z > InGameController.currentTerrain.upperZMapBound)
+		else if(lookAtPoint.z > InGameController.currentTerrain.upperZMapBound - cameraBoundsFactor * transform.position.y)
 		{
-			lookAtPoint = new Vector3(lookAtPoint.x, lookAtPoint.y, InGameController.currentTerrain.upperZMapBound);
+			lookAtPoint = new Vector3(lookAtPoint.x, lookAtPoint.y, InGameController.currentTerrain.upperZMapBound - cameraBoundsFactor * transform.position.y);
 		}
 	}
 }

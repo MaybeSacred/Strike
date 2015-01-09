@@ -1054,13 +1054,16 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 			{
 				owner.selectedGeneral.ShowZone(awaitingOrdersBlock);
 			}
+			moveIndicatorParticles.gameObject.SetActive(false);
 		}
 		EndTurn();
 	}
 	public void EndTurn ()
 	{
 		hasUnitSelectedMutex = InGameController.ReleaseUnitSelectedMutex();
-		comTowerEffect = owner.ComTowersInRange(this,currentBlock);
+		if(!isInUnit){
+			comTowerEffect = owner.ComTowersInRange(this,currentBlock);
+		}
 		currentState = UnitState.FinishedMove;
 		HideMoveRange();
 		currentFuel -= CalculateFuelCost();

@@ -1,4 +1,4 @@
-@relation "Exported data block from Strike : 1/9/2015 1:33:20 AM"
+@relation "Exported data block from Strike : 1/9/2015 4:39:08 AM"
 %@attributes row, column
 %Pretty names for each instance are located after the first ARFF comment. Any additional comments should be placed after a second ARFF comment (%).
 @attribute 'MaxPlayers' numeric
@@ -90,3 +90,5 @@
 @attribute 'EnemyAverage Bunker' real
 @attribute 'class' {Infantry,Stinger,Stryker,CarpetBomber,TacticalFighter,Interceptor,AttackCopter,LiftCopter,LightTank,MediumTank,Rockets,Missiles,FieldArtillery,Mortar,SupplyTank,UAV,Humvee,Sniper,MobileRadar,Corvette,Destroyer,Submarine,Carrier,Amphibious,SupplyShip,AATank,Boomer,Headquarters,City,Factory,Airport,Shipyard,ComTower,Bridge,Bunker}
 @data
+%Instance 343 33
+2,16,4,0,0,2,0,0,0.4338156,0,0,0.9010017,0,0,0,33,11800,0,2,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,7,2,0,0,1,0,0,0,3,1,0,0,0,0,0,5,1,4,0,1,1,2,0,0,2,0,0,0,0,0,0,0,0,0,1,9,2,0,0,1,0,0,Infantry
