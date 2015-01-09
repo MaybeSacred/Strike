@@ -61,6 +61,7 @@
      <Compile Include="Assets\Scripts\CameraArrowKeyController.cs" />
      <Compile Include="Assets\Scripts\Clusterer.cs" />
      <Compile Include="Assets\Scripts\DamageValues.cs" />
+     <Compile Include="Assets\Scripts\GameSettings.cs" />
      <Compile Include="Assets\Scripts\General.cs" />
      <Compile Include="Assets\Scripts\GeneralPowerBlock.cs" />
      <Compile Include="Assets\Scripts\Health.cs" />
@@ -77,6 +78,7 @@
      <Compile Include="Assets\Scripts\ReinforcementInstance.cs" />
      <Compile Include="Assets\Scripts\SkirmishEndMenu.cs" />
      <Compile Include="Assets\Scripts\SkirmishMenu.cs" />
+     <Compile Include="Assets\Scripts\SkirmishMenuViewer.cs" />
      <Compile Include="Assets\Scripts\TextureScale.cs" />
      <Compile Include="Assets\Scripts\UnitController.cs" />
      <Compile Include="Assets\Scripts\UnitPropertyModifier.cs" />
