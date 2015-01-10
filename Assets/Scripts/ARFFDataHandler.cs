@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using UnityEngine;
-using UnityEditor;
+//using UnityEditor;
 [System.Serializable]
 public class ARFFDataHandler
 {
@@ -35,10 +35,10 @@ public class ARFFDataHandler
 		{
 			if(!File.Exists(dataPath + filename + ".arff"))
 			{
-				if(!EditorUtility.DisplayDialog("Warning", "Warning: File " + filename + " already exists\nOverwrite anyways?", "Overwrite", "Cancel"))
+				/*if(!EditorUtility.DisplayDialog("Warning", "Warning: File " + filename + " already exists\nOverwrite anyways?", "Overwrite", "Cancel"))
 				{
 					return false;
-				}
+				}*/
 			}
 		}
 		try

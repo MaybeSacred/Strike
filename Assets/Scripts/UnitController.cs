@@ -752,7 +752,6 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 							owner.selectedGeneral.ShowZone(awaitingOrdersBlock);
 						}
 						currentState = UnitState.AwaitingOrder;
-						TerrainBlock.HideMovementPath(currentMoveBlocks);
 						CalculateAwaitingOrderOptions(awaitingOrdersBlock);
 						comTowerEffect = owner.ComTowersInRange(this,awaitingOrdersBlock);
 						movingCounter = 0;
@@ -806,6 +805,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 					case UnitState.Moving:
 					{
 						didNotMoveThisTurn = false;
+						TerrainBlock.HideMovementPath(currentMoveBlocks);
 						awaitingOrdersBlock = currentMoveBlocks[currentMoveBlocks.Count-1];
 						HideMoveRange();
 						currentState = UnitState.Moving;
@@ -1096,6 +1096,10 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 				{
 					InGameController.currentTerrain.IlluminatePossibleAttackBlocksRange(currentBlock, minAttackRange, (primaryAmmoRemaining > 0 ? modifier.ApplyModifiers(UnitPropertyModifier.PropertyModifiers.AttackRange, maxAttackRange): 0));
 				}
+			}
+			else
+			{
+				InGameController.currentTerrain.IlluminatePossibleSupportBlocks(currentBlock, this, EffectiveMoveRange());
 			}
 		}
 	}

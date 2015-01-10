@@ -126,7 +126,7 @@ public class InGameGUI : MonoBehaviour {
 	{
 		int numberOfHP = health;
 		Vector3 unitPointOnScreen = Camera.main.WorldToScreenPoint(placeToDraw);
-		float imageWidth = Mathf.Round(32/Mathf.Pow(unitPointOnScreen.z, .75f));
+		float imageWidth = Mathf.Round(48/Mathf.Pow(unitPointOnScreen.z, .75f));
 		GUI.BeginGroup(new Rect(unitPointOnScreen.x - imageWidth*5, Screen.height - unitPointOnScreen.y + imageWidth + 8, 10*imageWidth, imageWidth*2));
 		for(int i = 0; i < numberOfHP; i++)
 		{

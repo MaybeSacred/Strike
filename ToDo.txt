@@ -1,11 +1,10 @@
 playability
 iterate gui code (clean)
-add shoal corner -> land tile
 turn graphic
 collect statistics about unit effectiveness
 hide move paths once selected
-move range still needs to be visible when ammo is 0 - green
 com towrs need boost range visible
 transparent health bars - make bigger
 save feature
 better general power - should flash when ready
+add functionality for menu backgrounds

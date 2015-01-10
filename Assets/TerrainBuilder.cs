@@ -573,6 +573,25 @@ public class TerrainBuilder : MonoBehaviour {
 			}
 		}
 	}
+
+	public void IlluminatePossibleSupportBlocks (TerrainBlock startBlock, UnitController unit, float moveRange)
+	{
+		foreach(TerrainBlock tb in illuminatedMovementRangeBlocks)
+		{
+			tb.HideTileColor();
+		}
+		illuminatedMovementRangeBlocks.Clear();
+		TerrainBlock[] tempList = MinDistanceToTiles(unit, startBlock, moveRange).ToArray();
+		for(int i = 0; i < tempList.Length; i++)
+		{
+			if(tempList[i].gCost <= moveRange)
+			{
+				tempList[i].DisplaySupportTile();
+				illuminatedMovementRangeBlocks.Add(tempList[i]);
+			}
+		}
+	}
+
 	public List<TerrainBlock> MoveableBlocks(TerrainBlock startBlock, UnitController unit, float moveRange)
 	{
 		TerrainBlock[] tempList = MinDistanceToTiles(unit, startBlock, moveRange).ToArray();
