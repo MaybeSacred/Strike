@@ -18,7 +18,7 @@ public class DamageValues : MonoBehaviour {
 					unitDamageArray[i][j] = -1;
 				}
 			}
-			StreamReader reader = new StreamReader(File.OpenRead(@"C:\Users\Jon\Documents\Stryke\Assets\Scripts\unitDamageValues.csv"));
+			StreamReader reader = new StreamReader(File.OpenRead(Application.dataPath + @"\Maps\unitDamageValues.csv"));
 			var line = reader.ReadLine();
 			var columnValues = line.Split(new char[]{',', ';'});
 			while (!reader.EndOfStream)

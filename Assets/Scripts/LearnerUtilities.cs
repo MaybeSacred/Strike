@@ -11,7 +11,7 @@ using System.Text;
 public class LearnerUtilities
 {
 	private static String jrePath = "C:\\Program Files (x86)\\Java\\jre7\\bin\\javaw.exe";
-	private static String wekaClassPath = "C:\\Program Files (x86)\\Weka-3-6\\weka.jar";
+	private static String wekaClassPath = Application.dataPath + @"\Data\weka.jar";
 	private static String dataPath = Application.dataPath + @"\Data\";
 	public static String dataFileName = "ProductionTrainingData";
 	public static String reinforcementDataFileName = "ProductionTrainingReinforcementData";
@@ -150,7 +150,8 @@ public class LearnerUtilities
 		exeProcess.StartInfo.CreateNoWindow = false;
 		exeProcess.StartInfo.UseShellExecute = false;
 		exeProcess.StartInfo.FileName = jrePath;
-		exeProcess.StartInfo.Arguments = "-Dfile.encoding-Cp1252 -classpath \"" + LearnerUtilities.wekaClassPath + "\" " + LearnerUtilities.currentClassifier + " -l " + LearnerUtilities.dataPath + LearnerUtilities.dataFileName + ".model -T " + LearnerUtilities.dataPath + LearnerUtilities.eventDataFileName + ".arff -p 0 -distribution";
+		exeProcess.StartInfo.Arguments = "-Dfile.encoding-Cp1252 -classpath \"" + LearnerUtilities.wekaClassPath + "\" " + LearnerUtilities.currentClassifier + " -l \"" + LearnerUtilities.dataPath + LearnerUtilities.dataFileName + ".model\" -T \"" + LearnerUtilities.dataPath + LearnerUtilities.eventDataFileName + ".arff\" -p 0 -distribution";
+		UnityEngine.Debug.Log(exeProcess.StartInfo.Arguments);
 		exeProcess.Start();
 	}
 	public static void BeginProductionReinforcementClassification(string file)
@@ -161,13 +162,16 @@ public class LearnerUtilities
 		exeProcess.StartInfo.CreateNoWindow = false;
 		exeProcess.StartInfo.UseShellExecute = false;
 		exeProcess.StartInfo.FileName = jrePath;
-		exeProcess.StartInfo.Arguments = "-Dfile.encoding-Cp1252 -classpath \"" + LearnerUtilities.wekaClassPath + "\" " + LearnerUtilities.currentClassifier + " -l " + LearnerUtilities.dataPath + LearnerUtilities.reinforcementDataFileName + ".model -T " + LearnerUtilities.dataPath + LearnerUtilities.reinforcementEventDataFileName + ".arff -p 0 -distribution";
+		exeProcess.StartInfo.Arguments = "-Dfile.encoding-Cp1252 -classpath \"" + LearnerUtilities.wekaClassPath + "\" " + LearnerUtilities.currentClassifier + " -l \"" + LearnerUtilities.dataPath + LearnerUtilities.reinforcementDataFileName + ".model\" -T \"" + LearnerUtilities.dataPath + LearnerUtilities.reinforcementEventDataFileName + ".arff\" -p 0 -distribution";
+		
+		UnityEngine.Debug.Log(exeProcess.StartInfo.Arguments);
 		exeProcess.Start();
 	}
 	public static UnitNames CheckProductionClassification()
 	{
 		if(exeProcess.HasExited)
 		{
+			UnityEngine.Debug.Log(exeProcess.StandardError.ReadToEnd());
 			return GetUnitNameFromWekaString(exeProcess.StandardOutput.ReadToEnd());
 		}
 		return UnitNames.Headquarters;
@@ -176,6 +180,7 @@ public class LearnerUtilities
 	{
 		if(exeProcess.HasExited)
 		{
+			UnityEngine.Debug.Log(exeProcess.StandardError.ReadToEnd());
 			return GetUnitNamesFromWekaString(exeProcess.StandardOutput.ReadToEnd());
 		}
 		return null;

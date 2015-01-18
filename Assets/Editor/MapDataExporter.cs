@@ -315,11 +315,11 @@ public class MapDataExporter : Editor
 		}
 		if(GUILayout.Button("Fill Sea"))
 		{
-			FillMap(TERRAINTYPE.Sea);
+			FillMap("Sea");
 		}
 		if(GUILayout.Button("Fill Land"))
 		{
-			FillMap(TERRAINTYPE.Plain);
+			FillMap("Land");
 		}
 		if(GUILayout.Button("Clear Terrain"))
 		{
@@ -335,11 +335,11 @@ public class MapDataExporter : Editor
 		}
 		EditorGUILayout.EndVertical();
 	}
-	void FillMap(TERRAINTYPE type)
+	void FillMap(string type)
 	{
 		switch(type)
 		{
-			case TERRAINTYPE.Plain:
+			case "Plain":
 			{
 				foreach(GameObject go in terrainPrefabs)
 				{
@@ -351,7 +351,7 @@ public class MapDataExporter : Editor
 				}
 				break;
 			}
-			case TERRAINTYPE.Sea:
+			case "Sea":
 			{
 				foreach(GameObject go in terrainPrefabs)
 				{

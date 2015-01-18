@@ -10,11 +10,11 @@ public class MouseEventHandler : MonoBehaviour {
 	void Start () {
 		instances = new List<Instance>();
 		reinforcementInstances = new List<ReinforcementInstance>();
-		trainingArff = new ARFFDataHandler(Application.dataPath + @"/Data/", LearnerUtilities.dataFileName, true, true);
-		testingArff = new ARFFDataHandler(Application.dataPath + @"/Data/", LearnerUtilities.eventDataFileName, true, true);
+		trainingArff = new ARFFDataHandler(LearnerUtilities.GetDataPath(), LearnerUtilities.dataFileName, true, true);
+		testingArff = new ARFFDataHandler(LearnerUtilities.GetDataPath(), LearnerUtilities.eventDataFileName, true, true);
 		testingArff.CreateARFFFile(new Instance(System.Enum.GetNames(typeof(UnitNames)).Length));
-		trainingReinforcementArff = new ARFFDataHandler(Application.dataPath + @"/Data/", LearnerUtilities.reinforcementDataFileName, true, true);
-		testingReinforcementArff = new ARFFDataHandler(Application.dataPath + @"/Data/", LearnerUtilities.reinforcementEventDataFileName, true, true);
+		trainingReinforcementArff = new ARFFDataHandler(LearnerUtilities.GetDataPath(), LearnerUtilities.reinforcementDataFileName, true, true);
+		testingReinforcementArff = new ARFFDataHandler(LearnerUtilities.GetDataPath(), LearnerUtilities.reinforcementEventDataFileName, true, true);
 	}
 	void Update () {
 		if(Input.GetKeyDown("t"))
