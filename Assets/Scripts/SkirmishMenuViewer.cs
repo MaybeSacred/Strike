@@ -93,73 +93,7 @@ public class SkirmishMenuViewer : MonoBehaviour {
 	}
 	private float playerItemWidthPct = .1f;
 	int scrollPosition;
-	/*void OnGUI()
-	{
-		GUI.BeginGroup(new Rect(Screen.width * (.5f * (1-menuXPct)), Screen.height * (.5f * (1-menuYPct)), Screen.width * menuXPct, Screen.height * menuYPct));
-		//Player Selection Section
-		GUILayout.BeginArea(new Rect(0, 0, .5f*Screen.width*menuXPct, Screen.height*menuYPct));
-		GUILayout.Box("Players");
-		GUILayout.BeginVertical();
-		for(int i = 0; i < maps[mapSelectionDropdown.listEntry].maxPlayers; i++)
-		{
-			players[i].playerName = GUI.TextField(new Rect(0, ((i+1)/10f) * Screen.height*menuYPct, playerItemWidthPct * Screen.width * menuXPct, (1/10f) * Screen.height*menuYPct - 1), players[i].playerName);
-			Popup.List(new Rect(playerItemWidthPct * Screen.width*menuXPct, ((i+1)/10f) * Screen.height*menuYPct, playerItemWidthPct * Screen.width * menuXPct, (1/10f) * Screen.height*menuYPct - 1), ref generalDropdownStates[i], new GUIContent(generalNames[generalDropdownStates[i].listEntry]), generalNames, "button", "box", GUIStyle.none, ListCallBackFunc, 5);
-			players[i].menuGeneralNumberSelected = generalDropdownStates[i].listEntry;
-			Popup.List(new Rect(2 * playerItemWidthPct * Screen.width*menuXPct, ((i+1)/10f) * Screen.height*menuYPct, playerItemWidthPct * Screen.width * menuXPct, (1/10f) * Screen.height*menuYPct - 1), ref aiDropdownStates[i], new GUIContent(System.Enum.GetNames(typeof(AILevel))[aiDropdownStates[i].listEntry]), System.Enum.GetNames(typeof(AILevel)),"button", "box", GUIStyle.none, ListCallBackFunc, 4);
-			players[i].currentHue = (int)GUI.HorizontalSlider(new Rect(3 * playerItemWidthPct * Screen.width*menuXPct, ((i+1)/10f) * Screen.height * menuYPct, playerItemWidthPct * Screen.width*menuXPct, (1/10f) * Screen.height*menuYPct - 1), players[i].currentHue, 0, 359);
-			players[i].mainPlayerColor = HSVtoRGB(players[i].currentHue, 1, 1);
-			SetColor(players[i].menuColorTexture, players[i].mainPlayerColor);
-			GUI.Label(new Rect(4 * playerItemWidthPct * Screen.width*menuXPct, ((i+1)/10f) * Screen.height*menuYPct, .05f * Screen.width*menuXPct, (1/10f) * Screen.height*menuYPct - 1), players[i].menuColorTexture);
-			if(Popup.List(new Rect(4.5f * playerItemWidthPct * Screen.width*menuXPct, ((i+1)/10f) * Screen.height*menuYPct, .05f * Screen.width * menuXPct, (1/10f) * Screen.height*menuYPct - 1), ref players[i].isSideSelectedInMenu, ref players[i].side, new GUIContent(players[i].side.ToString()), new string[]{"1", "2", "3", "4"}, GUIStyle.none, ListCallBackFunc))
-			{
-				players[i].side++;
-			}
-		}
-		if(GUI.Button(new Rect(0, (9/10f) * Screen.height*menuYPct, .25f*Screen.width*menuXPct, (1/10f) * Screen.height*menuYPct - 1), "Start Game"))
-		{
-			StartGame();
-		}
-		if(GUI.Button(new Rect(.25f*Screen.width*menuXPct, (9/10f) * Screen.height*menuYPct, .25f*Screen.width*menuXPct, (1/10f) * Screen.height*menuYPct - 1), "Back"))
-		{
-			Utilities.LoadTitleScreen();
-		}
-		GUILayout.EndVertical();
-		GUILayout.EndArea();
-		//Map selection
-		GUI.BeginGroup(new Rect(.5f*Screen.width*menuXPct, 0, .5f*Screen.width*menuXPct, .5f*Screen.height*menuYPct));
-		GUI.Box(new Rect(0, 0, .5f*Screen.width*menuXPct, .08f*Screen.height*menuYPct), "Map Select");
-		Popup.List(new Rect(0, .081f*Screen.height*menuYPct, .5f*Screen.width*menuXPct, .08f*Screen.height*menuYPct), ref mapSelectionDropdown, new GUIContent(mapNames[mapSelectionDropdown.listEntry]), mapNames,"button", "box", GUIStyle.none, ListCallBackFunc, 6);
-		GUI.EndGroup();
-		//Options
-		GUILayout.BeginArea(new Rect(.5f*Screen.width*menuXPct, .5f*Screen.height*menuYPct, .5f*Screen.width*menuXPct, .5f*Screen.height*menuYPct));
-		GUILayout.BeginVertical();
-		GUILayout.Box("Options");
-		settings.fogOfWarEnabled = GUILayout.Toggle(settings.fogOfWarEnabled, "Fog Enabled");
-		GUILayout.BeginHorizontal();
-		int possibleValue = 0;
-		GUILayout.Label("Starting Funds");
-		if(int.TryParse(GUILayout.TextField(settings.startingFunds.ToString(), 5), out possibleValue))
-		{
-			settings.startingFunds = possibleValue;
-		}
-		GUILayout.EndHorizontal();
-		GUILayout.BeginHorizontal();
-		possibleValue = 0;
-		GUILayout.Label("Funds Per Base");
-		if(int.TryParse(GUILayout.TextField(settings.propertyBaseFunds.ToString(), 5), out possibleValue))
-		{
-			settings.propertyBaseFunds = possibleValue;
-		}
-		GUILayout.EndHorizontal();
-		GUILayout.BeginHorizontal();
-		Popup.List(ref weatherSelectionDropDownActive, ref weatherSelectionDropDownIndex, new GUIContent(System.Enum.GetNames(typeof(WeatherType))[weatherSelectionDropDownIndex]), System.Enum.GetNames(typeof(WeatherType)), GUIStyle.none, ListCallBackFunc);
-		settings.selectedWeather = (WeatherType)System.Enum.GetValues(typeof(WeatherType)).GetValue(weatherSelectionDropDownIndex);
-		settings.randomWeather = GUILayout.Toggle(settings.randomWeather, "Random Weather");
-		GUILayout.EndHorizontal();
-		GUILayout.EndVertical();
-		GUILayout.EndArea();
-		GUI.EndGroup();
-	}*/
+	
 	public void SwitchToPlayerSelect(){
 		mapSelect.gameObject.SetActive(false);
 		SetPlayersActive();
