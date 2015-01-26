@@ -57,6 +57,16 @@ public class MapData{
 		}
 		return instanceString.ToString();
 	}
+	/// <summary>
+	/// Provides checks on the playibility of a map
+	/// </summary>
+	/// <returns><c>true</c> if this instance is valid; otherwise, <c>false</c>.</returns>
+	public bool IsPlayable(){
+		if(maxPlayers < 1 || maxPlayers > 8){
+			return false;
+		}
+		return true;
+	}
 }
 [System.Serializable]
 public struct Vector3Serializer

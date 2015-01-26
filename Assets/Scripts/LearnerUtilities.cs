@@ -24,9 +24,9 @@ public class LearnerUtilities
 	private static float classificationThreshold = .075f;
 	private static Process neuralNetTrainer;
 	private static string logFile = "log.txt";
-	public static void SetJREPath(String path)
+	public static void SetJREPath()
 	{
-		LearnerUtilities.jrePath = path;
+		LearnerUtilities.jrePath = LearnerUtilities.GetJavaInstallationPath();
 	}
 	public static void SetWekaPath(String path)
 	{
@@ -185,7 +185,10 @@ public class LearnerUtilities
 		}
 		return null;
 	}
-
+	/// <summary>
+	/// Checks whether the jvm has returned a classification yet
+	/// </summary>
+	/// <returns>The production classification reinforcement.</returns>
 	public static List<UnitNames> CheckProductionClassificationReinforcement ()
 	{
 		if(exeProcess.HasExited)
@@ -194,7 +197,12 @@ public class LearnerUtilities
 		}
 		return null;
 	}
-
+	/// <summary>
+	/// Gets a single name from weka string.
+	/// For use with weka classification that returns one best class
+	/// </summary>
+	/// <returns>The unit name from weka string.</returns>
+	/// <param name="input">Input.</param>
 	private static UnitNames GetUnitNameFromWekaString(string input)
 	{
 		String[] split = input.Split(":".ToCharArray(), StringSplitOptions.None);
@@ -202,6 +210,11 @@ public class LearnerUtilities
 		split[0] = split[0].Trim(" ".ToCharArray());
 		return GetUnitNameFromString(split[0]);
 	}
+	/// <summary>
+	/// Gets the unit names from weka classification string.
+	/// </summary>
+	/// <returns>List of unitNames</returns>
+	/// <param name="input">Input.</param>
 	private static List<UnitNames> GetUnitNamesFromWekaString(string input)
 	{
 		UnityEngine.Debug.Log(input);
@@ -209,6 +222,11 @@ public class LearnerUtilities
 		split = split[split.Length - 2].Split(new string[]{",", "*"}, StringSplitOptions.RemoveEmptyEntries);
 		return ParseUnitNames(split);
 	}
+	/// <summary>
+	/// Parses a weka classification distribution to find unitnames larger than classification threshold
+	/// </summary>
+	/// <returns>The unit names.</returns>
+	/// <param name="inArray">In array.</param>
 	private static List<UnitNames> ParseUnitNames(string[] inArray)
 	{
 		Array values = System.Enum.GetValues(typeof(UnitNames));
@@ -222,6 +240,11 @@ public class LearnerUtilities
 		}
 		return likeliestValues;
 	}
+	/// <summary>
+	/// Gets the unit name from a string returned from weka classification process
+	/// </summary>
+	/// <returns>The unit name from string.</returns>
+	/// <param name="input">Input.</param>
 	private static UnitNames GetUnitNameFromString(string input)
 	{
 		foreach(string name in System.Enum.GetNames(typeof(UnitNames)))
@@ -232,6 +255,27 @@ public class LearnerUtilities
 			}
 		}
 		throw new Exception();
+	}
+	/// <summary>
+	/// Gets the java installation path of local computer
+	/// </summary>
+	/// <returns>The java installation path.</returns>
+	private static string GetJavaInstallationPath()
+	{
+		string environmentPath = Environment.GetEnvironmentVariable("JAVA_HOME");
+		if (!string.IsNullOrEmpty(environmentPath))
+		{
+			return environmentPath;
+		}
+		string javaKey = "SOFTWARE\\JavaSoft\\Java Runtime Environment\\";
+		using (Microsoft.Win32.RegistryKey rk = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(javaKey))
+		{
+			string currentVersion = rk.GetValue("CurrentVersion").ToString();
+			using (Microsoft.Win32.RegistryKey key = rk.OpenSubKey(currentVersion))
+			{
+				return System.IO.Path.Combine(key.GetValue("JavaHome").ToString(), "bin\\java.exe");
+			}
+		}
 	}
 }
 

@@ -602,7 +602,9 @@ public class MapDataExporter : Editor
 	private GameObject BlockInstantiate(GameObject clone, GameObject current, int angle)
 	{
 		Vector3 position = current.transform.position;
-		DestroyImmediate(current);
+		if(current != null){
+			DestroyImmediate(current);
+		}
 		current = PrefabUtility.InstantiatePrefab(clone) as GameObject;
 		current.transform.position = position;
 		Transform[] children = current.GetComponentsInChildren<Transform>();
@@ -622,10 +624,18 @@ public class MapDataExporter : Editor
 		GameObject terrain = GameObject.Find("Terrain");
 		TerrainBlock[] blocks = terrain.GetComponentsInChildren<TerrainBlock>();
 		MapData outgoingData = TerrainBuilder.CreateMapData(blocks);
-		Debug.Log(outgoingData.maxPlayers);
+		Debug.Log(outgoingData.IsPlayable());
 		Stream sw = File.Create(EditorApplication.currentScene.Split('.')[0] + ".bin");
 		BinaryFormatter serializer = new BinaryFormatter();
 		serializer.Serialize(sw, outgoingData);
+		sw.Close();
+		ExportMapNames();
+	}
+	public void ExportMapNames(){
+		string[] temp = Directory.GetFiles(Application.dataPath + @"\Maps\", "*.unity");
+		Stream sw = File.Create(Application.dataPath + @"\Maps\MapNames.bin");
+		BinaryFormatter serializer = new BinaryFormatter();
+		serializer.Serialize(sw, temp);
 		sw.Close();
 	}
 }

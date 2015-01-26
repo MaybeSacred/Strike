@@ -29,6 +29,9 @@ public class Utilities : MonoBehaviour{
 	public static InGameCamera gameCamera;
 	public AIPlayer easyAIPrototype, mediumAIPrototype, hardAIPrototype;
 	private static List<PlayerInGameStatistics> statistics;
+	void Awake() {
+		LearnerUtilities.SetJREPath();
+	}
 	// Use this for initialization
 	void Start () {
 		DontDestroyOnLoad(this);

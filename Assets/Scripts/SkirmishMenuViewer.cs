@@ -27,8 +27,13 @@ public class SkirmishMenuViewer : MonoBehaviour {
 	public Texture2D colorTexture;
 	private GameSettings settings;
 	public Player playerPrototype;
-	public RectTransform playerGUIProto;
-	public Canvas mapSelect, playerSelect;
+	//new GUI stuff							//parent panel to load buttons to
+	public RectTransform mapNameLoadButton, mapNamePanel;
+	//spacing for between button centers
+	public int mapNameButtonOffset;
+	public RectTransform mapSelect, playerSelect;
+	//current root folder where map data are located
+	public static string ApplicationServerURL = "https://dl.dropboxusercontent.com/u/65011402/strike";
 	// Use this for initialization
 	void Start () {
 		players = new Player[8];
@@ -53,18 +58,104 @@ public class SkirmishMenuViewer : MonoBehaviour {
 			players[i].currentHue = Random.Range(0, 256);
 			players[i].side = i+1;
 		}
-		mapNames = Directory.GetFiles(Application.dataPath + @"\Maps\", "*.unity");
+		mapNames = GetMapNames();
 		mapNames = ExtractPrettyMapNames(mapNames);
-		LoadMapMetaData();
+		LoadMapMetaData(mapNames);
+		int smallestFontSize = int.MaxValue;
+		List<RectTransform> mapButtons = new List<RectTransform>();
+		int count = 0;
+		foreach(string name in mapNames){
+			RectTransform t = InstantiateUIPrefab(mapNameLoadButton, mapNamePanel);
+			t.GetComponentInChildren<UnityEngine.UI.Text>().text = name;
+			mapButtons.Add(t);
+			int captured = count;
+			//add our delegate to the onClick handler, with appropriate indexing
+			t.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => {SetCurrentMap(captured);});
+			count++;
+			smallestFontSize = Mathf.Min(smallestFontSize, t.GetComponentInChildren<UnityEngine.UI.Text>().fontSize);
+		}
+		var offset = -mapNameButtonOffset/2;
+		foreach(RectTransform rt in mapButtons){
+			rt.anchoredPosition3D = new Vector3(0, offset, 0);
+			offset -= mapNameButtonOffset;
+		}
+		if(Mathf.Abs(offset) > mapNamePanel.rect.height){
+			mapNamePanel.offsetMax = new Vector2(mapNamePanel.offsetMax.x, offset);
+		}
 	}
-	void LoadMapMetaData()
+	void SetCurrentMap(int mapNumber){
+		Debug.Log(mapNumber);
+	}
+	/// <summary>
+	/// Instantiates a correctly set up UI component from a prefab
+	/// </summary>
+	/// <returns>The user interface prefab.</returns>
+	/// <param name="objectToCopy">Object to copy.</param>
+	RectTransform InstantiateUIPrefab(RectTransform objectToCopy, RectTransform parent){
+		RectTransform temp = Instantiate(objectToCopy, objectToCopy.position, Quaternion.identity) as RectTransform;
+		temp.SetParent(parent.transform);
+		temp.localPosition = objectToCopy.localPosition;
+		temp.localScale = new Vector3(1, 1, 1);
+		temp.localRotation = Quaternion.identity;
+		return temp;
+	}
+	/// <summary>
+	/// Gets the map names from file
+	/// </summary>
+	/// <returns>The map names.</returns>
+	public string[] GetMapNames(){
+#if UNITY_WEBPLAYER
+		var names = new WWW(ApplicationServerURL + "/Maps/MapNames.bin");
+		while(!names.isDone){
+			
+		}
+		MemoryStream ms = new MemoryStream(names.bytes);
+		BinaryFormatter deserializer = new BinaryFormatter();
+		string[] obj = (string[])deserializer.Deserialize(ms);
+		return obj;
+#endif
+#if UNITY_STANDALONE
+		if(File.Exists(Application.dataPath + @"\Maps\MapNames.bin"))
+		{
+			Stream TestFileStream = File.OpenRead(Application.dataPath + @"\Maps\MapNames.bin");
+			BinaryFormatter deserializer = new BinaryFormatter();
+			string[] obj = (string[])deserializer.Deserialize(TestFileStream);
+			TestFileStream.Close();
+			return obj;
+		}
+		else
+		{
+			Debug.Log("Could not open MapNames data");
+		}
+#endif
+		return null;
+	}
+	/// <summary>
+	/// Loads the map meta data for provided names
+	/// </summary>
+	/// <param name="namesToLoad">Names to load.</param>
+	void LoadMapMetaData(string[] namesToLoad)
 	{
 		maps = new List<MapData>();
-		for(int i = 0; i < mapNames.Length; i++)
+#if UNITY_WEBPLAYER
+		for(int i = 0; i < namesToLoad.Length; i++)
 		{
-			if(File.Exists(Application.dataPath + @"\Maps\" + mapNames[i] + ".bin"))
+			var names = new WWW(ApplicationServerURL + "/Maps/MapNames.bin");
+			while(!names.isDone){
+				
+			}
+			MemoryStream ms = new MemoryStream(names.bytes);
+			BinaryFormatter deserializer = new BinaryFormatter();
+			MapData obj = (MapData)deserializer.Deserialize(ms);
+			maps.Add(obj);
+		}
+#endif
+#if UNITY_STANDALONE
+		for(int i = 0; i < namesToLoad.Length; i++)
+		{
+			if(File.Exists(Application.dataPath + @"\Maps\" + namesToLoad[i] + ".bin"))
 			{
-				Stream TestFileStream = File.OpenRead(Application.dataPath + @"\Maps\" + mapNames[i] + ".bin");
+				Stream TestFileStream = File.OpenRead(Application.dataPath + @"\Maps\" + namesToLoad[i] + ".bin");
 				BinaryFormatter deserializer = new BinaryFormatter();
 				MapData obj = (MapData)deserializer.Deserialize(TestFileStream);
 				maps.Add(obj);
@@ -72,10 +163,16 @@ public class SkirmishMenuViewer : MonoBehaviour {
 			}
 			else
 			{
-				Debug.Log("No data found for map: " + mapNames[i]);
+				Debug.Log("No data found for map: " + namesToLoad[i]);
 			}
 		}
+#endif
 	}
+	/// <summary>
+	/// Processes an array of strings to remove extra file junk
+	/// </summary>
+	/// <returns>The pretty map names.</returns>
+	/// <param name="inNames">In names.</param>
 	string[] ExtractPrettyMapNames(string[] inNames)
 	{
 		for(int i = 0; i < inNames.Length; i++)

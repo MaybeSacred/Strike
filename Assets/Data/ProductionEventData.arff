@@ -1,4 +1,4 @@
-@relation "Exported data block from Strike : 1/23/2015 1:02:24 PM"
+@relation "Exported data block from Strike : 1/26/2015 4:02:40 AM"
 %@attributes row, column
 %Pretty names for each instance are located after the first ARFF comment. Any additional comments should be placed after a second ARFF comment (%).
 @attribute 'MaxPlayers' numeric
