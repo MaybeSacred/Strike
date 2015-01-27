@@ -6,7 +6,6 @@ public enum AILevel {Human, Easy, Medium, Hard};
 public class Player : MonoBehaviour{
 	public static int TotalUnitsAllowedPPlayer = 50;
 	public int currentHue;
-	public string generalInStartMenu;
 	public General selectedGeneral;
 	public string playerName;
 	protected int playerNumber = 0;
@@ -25,13 +24,12 @@ public class Player : MonoBehaviour{
 	public List<Property> properties{get; protected set;}
 	public int funds {get; protected set;}
 	public int menuGeneralNumberSelected;
-	public bool selectedInMenu;
 	protected static int playerCount;
 	public UnitController currentGeneralUnit {get; protected set;}
 	public Color mainPlayerColor;
-	public Texture2D menuColorTexture;
 	protected PlayerInGameStatistics pigs;
 	protected Vector3 lastCameraPosition;
+	public Generals generalSelectedInGUI;
 	public AILevel aiLevel;
 	private List<Property> comTowers;
 	/// <summary>
@@ -84,7 +82,7 @@ public class Player : MonoBehaviour{
 	}
 	public void SetupGeneral()
 	{
-		selectedGeneral = Utilities.GetGeneral(generalInStartMenu);
+		selectedGeneral = Utilities.GetGeneral(generalSelectedInGUI);
 		selectedGeneral.SetOwner(this);
 	}
 	public void SendOutGeneral(UnitController unitToAddGeneral)

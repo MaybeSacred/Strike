@@ -18,7 +18,7 @@ public class SkirmishMenu : MonoBehaviour {
 	private GameSettings settings;
 	public Player playerPrototype;
 	// Use this for initialization
-	void Start () {
+	/*void Start () {
 		players = new Player[8];
 		mapSelectionDropdown = new Popup.ListState();
 		generalDropdownStates = new Popup.ListState[8];
@@ -173,7 +173,7 @@ public class SkirmishMenu : MonoBehaviour {
 		}
 		GameObject.FindObjectOfType<Utilities>().LoadSkirmishMap(temp, mapNames[mapSelectionDropdown.listEntry], settings);
 		Destroy(this.gameObject);
-	}
+	}*/
 	void SetColor(Texture2D tex, Color col)
 	{
 		Color[] colors = new Color[Mathf.RoundToInt(tex.width * tex.height)];

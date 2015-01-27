@@ -45,11 +45,11 @@ public class Utilities : MonoBehaviour{
 		carryingUnitImage = Resources.Load<Texture2D>("UnitBar");
 		LearnerUtilities.TerminateNeuralTraining();
 	}
-	public static General GetGeneral(string id)
+	public static General GetGeneral(Generals id)
 	{
 		for(int i = 0; i < generalPrototypes.Length; i++)
 		{
-			if(generalPrototypes[i].name.Equals(id))
+			if(generalPrototypes[i].name.Equals(id.ToString()))
 			{
 				return Instantiate(generalPrototypes[i]) as General;
 			}

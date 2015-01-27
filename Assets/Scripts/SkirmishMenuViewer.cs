@@ -78,7 +78,7 @@ public class SkirmishMenuViewer : MonoBehaviour {
 	/// </summary>
 	/// <returns>The user interface prefab.</returns>
 	/// <param name="objectToCopy">Object to copy.</param>
-	RectTransform InstantiateUIPrefab(RectTransform objectToCopy, RectTransform parent){
+	public static RectTransform InstantiateUIPrefab(RectTransform objectToCopy, RectTransform parent){
 		RectTransform temp = Instantiate(objectToCopy, objectToCopy.position, Quaternion.identity) as RectTransform;
 		temp.SetParent(parent.transform);
 		temp.localPosition = objectToCopy.localPosition;

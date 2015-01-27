@@ -1,42 +1,116 @@
 ﻿using UnityEngine;
-using System.Collections;
+using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class PlayerGUIView : MonoBehaviour {
 	public Player thisPlayer;
-	//Displays and selects player colour
-	public UnityEngine.UI.Slider colorSelectSlider;
-	//Used to select player side
-	public UnityEngine.UI.Slider playerSideSlider;
-	//Player name text
-	public UnityEngine.UI.Text nameText;
-	//Player side text
-	public UnityEngine.UI.Text sideText;
-	
+	// Displays and selects player colour
+	public Slider colorSelectSlider;
+	// Used to select player side
+	public Slider playerSideSlider;
+	// Player name text
+	public Text nameText;
+	// Player side text
+	public Text sideText;
+	// ButtonPrototype is used for all dropdowns
+	public RectTransform buttonPrototype;
+	// Buttons that display general and AI
+	public RectTransform generalTopButton, AITopButton;
+	// Containers for static dropdowns
+	public RectTransform generalSelectDropdown, AISelectDropdown;
+	// Buttons within each dropdown
+	List<RectTransform> generalDropdownButtons, AIDropdownButtons;
+	// Offset for the spacing of dropdown buttons
+	public float mapNameButtonOffset;
+	static PlayerGUIView playerSelected;
 	// Use this for initialization
 	void Awake() {
 		thisPlayer = Instantiate(thisPlayer) as Player;
 		ChangeSliderHue(Random.Range(0, 359));
+		// Set up dropdowns
+		generalSelectDropdown = SkirmishMenuViewer.InstantiateUIPrefab(generalSelectDropdown, generalTopButton);
+		generalDropdownButtons = new List<RectTransform>();
+		foreach(Generals name in System.Enum.GetValues(typeof(Generals))){
+			RectTransform t = SkirmishMenuViewer.InstantiateUIPrefab(buttonPrototype, generalSelectDropdown.GetComponent<RectTransform>());
+			t.GetComponentsInChildren<UnityEngine.UI.Text>(true)[0].text = name.ToString();
+			generalDropdownButtons.Add(t);
+			Generals captured = name;
+			// add our delegate to the onClick handler, with appropriate indexing
+			t.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => {SetGeneral(captured);});
+		}
+		var offset = -mapNameButtonOffset/2;
+		foreach(RectTransform rt in generalDropdownButtons){
+			rt.anchoredPosition3D = new Vector3(0, offset, 0);
+			offset -= mapNameButtonOffset;
+		}
+		generalSelectDropdown.anchoredPosition3D = generalTopButton.anchoredPosition3D;
+		generalSelectDropdown.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Top, 0, 0);
+		generalSelectDropdown.gameObject.SetActive(false);
+		
+		AISelectDropdown = SkirmishMenuViewer.InstantiateUIPrefab(AISelectDropdown, AITopButton);
+		AIDropdownButtons = new List<RectTransform>();
+		foreach(AILevel name in System.Enum.GetValues(typeof(AILevel))){
+			RectTransform t = SkirmishMenuViewer.InstantiateUIPrefab(buttonPrototype, AISelectDropdown.GetComponent<RectTransform>());
+			t.GetComponentsInChildren<UnityEngine.UI.Text>(true)[0].text = name.ToString();
+			AIDropdownButtons.Add(t);
+			AILevel captured = name;
+			t.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => {SetAILevel(captured);});
+		}
+		offset = -mapNameButtonOffset/2;
+		foreach(RectTransform rt in AIDropdownButtons){
+			rt.anchoredPosition3D = new Vector3(0, offset, 0);
+			offset -= mapNameButtonOffset;
+		}
+		//AISelectDropdown.offsetMax = new Vector2(AISelectDropdown.offsetMax.x, offset);
+		AISelectDropdown.anchoredPosition3D = AITopButton.anchoredPosition3D;
+		AISelectDropdown.gameObject.SetActive(false);
 	}
 	void Start(){
-		/*List<RectTransform> mapButtons = new List<RectTransform>();
-		int count = 0;
-		foreach(string name in mapNames){
-			RectTransform t = InstantiateUIPrefab(mapNameLoadButton, mapNamePanel);
-			t.GetComponentsInChildren<UnityEngine.UI.Text>(true)[0].text = name;
-			mapButtons.Add(t);
-			int captured = count;
-			//add our delegate to the onClick handler, with appropriate indexing
-			t.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => {SetCurrentMap(captured);});
-			count++;
-			smallestFontSize = Mathf.Min(smallestFontSize, t.GetComponentsInChildren<UnityEngine.UI.Text>(true)[0].fontSize);
-		}*/
+		
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		
+		if(Input.GetMouseButtonUp(1)){
+			generalSelectDropdown.gameObject.SetActive(false);
+			AISelectDropdown.gameObject.SetActive(false);
+			playerSelected = null;
+		}
 	}
-	
+	/// <summary>
+	/// Opens the general select dropdown.
+	/// </summary>
+	public void OpenGeneralSelectDropdown(){
+		if(playerSelected == null || playerSelected == this){
+			generalSelectDropdown.gameObject.SetActive(true);
+			playerSelected = this;
+		}
+	}
+	/// <summary>
+	/// Sets the general from dropdown menu
+	/// <param name="input">Input.</param>
+	public void SetGeneral(Generals input){
+		thisPlayer.generalSelectedInGUI = input;
+		generalSelectDropdown.gameObject.SetActive(false);
+		playerSelected = null;
+	}
+	/// <summary>
+	/// Opens the AI select dropdown.
+	/// </summary>
+	public void OpenAISelectDropdown(){
+		if(playerSelected == null || playerSelected == this){
+			AISelectDropdown.gameObject.SetActive(true);
+		}
+	}
+	/// <summary>
+	/// Sets the AI level.
+	/// </summary>
+	/// <param name="input">Input.</param>
+	public void SetAILevel(AILevel input){
+		thisPlayer.aiLevel = input;
+		AISelectDropdown.gameObject.SetActive(false);
+		playerSelected = null;
+	}
 	/// <summary>
 	/// Returns the player associated with this gui block
 	/// </summary>

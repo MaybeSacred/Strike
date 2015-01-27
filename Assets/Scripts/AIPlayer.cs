@@ -44,7 +44,7 @@ public abstract class AIPlayer : Player
 		units = new List<UnitController>();
 		properties = new List<Property>();
 		aiLevel = oldPlayer.aiLevel;
-		generalInStartMenu = oldPlayer.generalInStartMenu;
+		generalSelectedInGUI = oldPlayer.generalSelectedInGUI;
 		loggingProductionData = oldPlayer.loggingProductionData;
 		if(loggingProductionData)
 		{
