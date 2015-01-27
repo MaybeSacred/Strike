@@ -18,10 +18,8 @@ public class SkirmishMenuViewer : MonoBehaviour {
 	private List<MapData> maps;
 	private string[] mapNames;
 	private MapData selectedMap;
-	private Popup.ListState mapSelectionDropdown;
-	private bool weatherSelectionDropDownActive;
-	private int weatherSelectionDropDownIndex;
-	private Player[] players;
+	
+	public PlayerGUIView[] players;
 	private Popup.ListState[] generalDropdownStates, aiDropdownStates, playerSideDropdownStates;
 	private string[] generalNames;
 	public Texture2D colorTexture;
@@ -36,20 +34,9 @@ public class SkirmishMenuViewer : MonoBehaviour {
 	public static string ApplicationServerURL = "https://dl.dropboxusercontent.com/u/65011402/strike";
 	// Use this for initialization
 	void Start () {
-		players = new Player[8];
-		mapSelectionDropdown = new Popup.ListState();
-		generalDropdownStates = new Popup.ListState[8];
-		aiDropdownStates = new Popup.ListState[8];
-		playerSideDropdownStates = new Popup.ListState[8];
-		for(int i = 0; i < generalDropdownStates.Length; i++)
-		{
-			generalDropdownStates[i] = new Popup.ListState();
-			aiDropdownStates[i] = new Popup.ListState();
-			playerSideDropdownStates[i] = new Popup.ListState();
-		}
 		settings = new GameSettings();
 		generalNames = System.Enum.GetNames(typeof(Generals));
-		for(int i = 0; i < players.Length;i++)
+		/*for(int i = 0; i < players.Length;i++)
 		{
 			players[i] = Instantiate(playerPrototype) as Player;
 			players[i].loggingProductionData = true;
@@ -57,7 +44,7 @@ public class SkirmishMenuViewer : MonoBehaviour {
 			players[i].menuColorTexture = Instantiate(colorTexture) as Texture2D;
 			players[i].currentHue = Random.Range(0, 256);
 			players[i].side = i+1;
-		}
+		}*/
 		mapNames = GetMapNames();
 		mapNames = ExtractPrettyMapNames(mapNames);
 		LoadMapMetaData(mapNames);
@@ -66,13 +53,13 @@ public class SkirmishMenuViewer : MonoBehaviour {
 		int count = 0;
 		foreach(string name in mapNames){
 			RectTransform t = InstantiateUIPrefab(mapNameLoadButton, mapNamePanel);
-			t.GetComponentInChildren<UnityEngine.UI.Text>().text = name;
+			t.GetComponentsInChildren<UnityEngine.UI.Text>(true)[0].text = name;
 			mapButtons.Add(t);
 			int captured = count;
 			//add our delegate to the onClick handler, with appropriate indexing
 			t.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => {SetCurrentMap(captured);});
 			count++;
-			smallestFontSize = Mathf.Min(smallestFontSize, t.GetComponentInChildren<UnityEngine.UI.Text>().fontSize);
+			smallestFontSize = Mathf.Min(smallestFontSize, t.GetComponentsInChildren<UnityEngine.UI.Text>(true)[0].fontSize);
 		}
 		var offset = -mapNameButtonOffset/2;
 		foreach(RectTransform rt in mapButtons){
@@ -193,25 +180,29 @@ public class SkirmishMenuViewer : MonoBehaviour {
 	
 	public void SwitchToPlayerSelect(){
 		mapSelect.gameObject.SetActive(false);
-		SetPlayersActive();
+		SetPlayersActive(selectedMap.maxPlayers);
 		playerSelect.gameObject.SetActive(true);
 	}
+	
 	public void SwitchToMapSelect(){
 		mapSelect.gameObject.SetActive(true);
 		playerSelect.gameObject.SetActive(false);
 	}
-	void SetPlayersActive(){
+	/// <summary>
+	/// Sets active player configuration panels
+	/// </summary>
+	/// <param name="activePlayers">Number of panels to set active</param>
+	void SetPlayersActive(int activePlayers){
 		for(int i = 0; i < 8; i++){
-			if(i < selectedMap.maxPlayers){
-				
+			if(i < activePlayers){
+				players[i].gameObject.SetActive(true);
+			}
+			else{
+				players[i].gameObject.SetActive(false);
 			}
 		}
 	}
-	void ListCallBackFunc()
-	{
-		
-	}
-	public void StartGame()
+	/*public void StartGame()
 	{
 		Player[] temp = new Player[maps[mapSelectionDropdown.listEntry].maxPlayers + 1];
 		temp[0] = Instantiate(playerPrototype) as Player;
@@ -232,67 +223,5 @@ public class SkirmishMenuViewer : MonoBehaviour {
 		}
 		GameObject.FindObjectOfType<Utilities>().LoadSkirmishMap(temp, mapNames[mapSelectionDropdown.listEntry], settings);
 		Destroy(this.gameObject);
-	}
-	void SetColor(Texture2D tex, Color col)
-	{
-		Color[] colors = new Color[Mathf.RoundToInt(tex.width * tex.height)];
-		for(int i = 0; i < colors.Length; i++)
-		{
-			colors[i] = col;
-		}
-		tex.SetPixels(colors);
-		tex.Apply();
-	}
-	Color HSVtoRGB(float h, float s, float v )
-	{
-		int i;
-		float f, p, q, t;
-		Color outColor = new Color();
-		outColor.a = 1;
-		if( s == 0 ) {
-			// achromatic (grey)
-			outColor.r = outColor.g = outColor.b = v;
-			return outColor;
-		}
-		h /= 60;			// sector 0 to 5
-		i = Mathf.FloorToInt(h);
-		f = h - i;			// factorial part of h
-		p = v * ( 1 - s );
-		q = v * ( 1 - s * f );
-		t = v * ( 1 - s * ( 1 - f ) );
-		
-		switch( i ) {
-		case 0:
-			outColor.r = v;
-			outColor.g = t;
-			outColor.b = p;
-			break;
-		case 1:
-			outColor.r = q;
-			outColor.g = v;
-			outColor.b = p;
-			break;
-		case 2:
-			outColor.r = p;
-			outColor.g = v;
-			outColor.b = t;
-			break;
-		case 3:
-			outColor.r = p;
-			outColor.g = q;
-			outColor.b = v;
-			break;
-		case 4:
-			outColor.r = t;
-			outColor.g = p;
-			outColor.b = v;
-			break;
-		default:		// case 5:
-			outColor.r = v;
-			outColor.g = p;
-			outColor.b = q;
-			break;
-		}
-		return outColor;
-	}
+	}*/
 }

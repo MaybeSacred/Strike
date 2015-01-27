@@ -53,6 +53,7 @@
      <Compile Include="Assets\MapHolderGameMenu.cs" />
      <Compile Include="Assets\MenuBackgroundUnitDisplayer.cs" />
      <Compile Include="Assets\OptionsMenu.cs" />
+     <Compile Include="Assets\PlayerGUIView.cs" />
      <Compile Include="Assets\Scripts\AIPlayer.cs" />
      <Compile Include="Assets\Scripts\AIPlayerEasy.cs" />
      <Compile Include="Assets\Scripts\AIPlayerHard.cs" />
