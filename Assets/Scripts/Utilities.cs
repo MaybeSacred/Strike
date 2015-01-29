@@ -131,7 +131,7 @@ public class Utilities : MonoBehaviour{
 					allProperties[i].propertyClass.baseFunds = gameSettings.propertyBaseFunds;
 				}
 			}
-			GameObject.FindObjectOfType<WeatherController>().SetWeatherType(gameSettings.selectedWeather, gameSettings.randomWeather, new List<Player>(playersToAdd));
+			GameObject.FindObjectOfType<WeatherController>().SetWeatherType(gameSettings.selectedWeather, new List<Player>(playersToAdd));
 			gameCamera = GameObject.FindObjectOfType<InGameCamera>();
 		}
 		if(Application.loadedLevelName.Equals("SkirmishEnd"))

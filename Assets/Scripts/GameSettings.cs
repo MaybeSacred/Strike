@@ -8,15 +8,19 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
+using System.Collections.Generic;
+/// <summary>
+/// A simple class to store game settings
+/// </summary>
 public class GameSettings
 {
 	public int propertyBaseFunds;
 	public int startingFunds;
-	public bool fogOfWarEnabled, randomWeather;
-	public WeatherType selectedWeather;
+	public bool fogOfWarEnabled;
+	public List<WeatherType> selectedWeather;
 	public GameSettings()
 	{
 		propertyBaseFunds = 1000;
-		selectedWeather = WeatherType.Clear;
+		selectedWeather = new List<WeatherType>();
 	}
 }

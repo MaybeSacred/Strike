@@ -185,7 +185,7 @@ public class SkirmishMenuViewer : MonoBehaviour {
 		return inNames;
 	}
 	void Update () {
-		transform.eulerAngles += new Vector3(0, Time.deltaTime, 0);
+		transform.eulerAngles += new Vector3(0, .5f * Time.deltaTime, 0);
 	}
 	
 	/// <summary>
@@ -227,6 +227,7 @@ public class SkirmishMenuViewer : MonoBehaviour {
 	{
 		settings.startingFunds = GameObject.Find("Input StartingFunds").GetComponent<IncrementButton>().GetValue();
 		settings.propertyBaseFunds = GameObject.Find("Input PropertyIncome").GetComponent<IncrementButton>().GetValue();
+		settings.selectedWeather = WeatherToggle.instance.GetSelectedWeatherTypes();
 		Player[] temp = new Player[selectedMap.maxPlayers + 1];
 		temp[0] = Instantiate(playerPrototype) as Player;
 		temp[0].Setup(0, Generals.Taron, new Color(.8f, .8f, .8f), "--Neutral--");
@@ -238,7 +239,8 @@ public class SkirmishMenuViewer : MonoBehaviour {
 			}
 			else
 			{
-				Destroy(players[i-1]);
+				Destroy(players[i-1].thisPlayer.gameObject);
+				Destroy(players[i-1].gameObject);
 			}
 		}
 		GameObject.FindObjectOfType<Utilities>().LoadSkirmishMap(temp, selectedMapName, settings);

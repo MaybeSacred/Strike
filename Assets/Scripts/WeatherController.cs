@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-public enum WeatherType {Clear, Snowing, ThunderStorm, Cloudy, NuclearFallout/*Has decent probability of causing 1 damage to all units on map each day*/};
+public enum WeatherType {Clear, Snowing, ThunderStorm, Dusty, NuclearFallout/*Has decent probability of causing 1 damage to all units on map each day*/};
 public class WeatherController : MonoBehaviour {
 	private WeatherType currentWeather = WeatherType.Clear;
-	public bool randomize;
+	List<WeatherType> possibleWeathers;
 	public float chanceOfSwitchingWeather;
 	public ParticleSystem[] weatherParticles;
 	public Material[] weatherSkies;
@@ -30,64 +30,30 @@ public class WeatherController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		
 	}
-	public void SetWeatherType(WeatherType newWeather, bool random, List<Player> players)
+	/// <summary>
+	/// Sets up additional properties and initializes weather state
+	/// </summary>
+	/// <param name="newWeather">New weather.</param>
+	/// <param name="players">Players.</param>
+	public void SetWeatherType(List<WeatherType> inWeathers, List<Player> players)
 	{
-		currentWeather = newWeather;
+		possibleWeathers = inWeathers;
+		currentWeather = possibleWeathers[0];
 		AddWeatherEffect(players, currentWeather);
-		randomize = random;
 	}
+	/// <summary>
+	/// Advances the weather, switching if multiple weather types are defined and applies any turn modifiers
+	/// </summary>
+	/// <param name="players">Players.</param>
 	public void AdvanceWeather(List<Player> players)
 	{
-		if(randomize)
+		if(Random.value > 1 - chanceOfSwitchingWeather)
 		{
-			if(Random.value > 1 - chanceOfSwitchingWeather)
-			{
-				switch (Random.Range(0, System.Enum.GetValues(typeof(WeatherType)).Length + 2))
-				{
-					case 0:
-					case 1:
-					case 2:
-					{
-						if(currentWeather != WeatherType.Clear)
-						{
-							ChangeState(WeatherType.Clear, players);
-						}
-						break;
-					}
-					case 3:
-					{
-						if(currentWeather != WeatherType.Cloudy)
-						{
-							ChangeState(WeatherType.Cloudy, players);
-						}
-						break;
-					}
-					case 4:
-					{
-						if(currentWeather != WeatherType.Snowing)
-						{
-							ChangeState(WeatherType.Snowing, players);
-						}
-						break;
-					}
-					case 6:
-					{
-						if(currentWeather != WeatherType.NuclearFallout)
-						{
-							ChangeState(WeatherType.NuclearFallout, players);
-						}
-						break;
-					}
-					case 5:
-					{
-						if(currentWeather != WeatherType.ThunderStorm)
-						{
-							ChangeState(WeatherType.ThunderStorm, players);
-						}
-						break;
-					}
-				}
+			int random = Random.Range(0, possibleWeathers.Count);
+			if(currentWeather != possibleWeathers[random]){
+				ChangeState(possibleWeathers[random], players);
 			}
 		}
 		if(currentWeather == WeatherType.NuclearFallout)
@@ -101,9 +67,13 @@ public class WeatherController : MonoBehaviour {
 			}
 		}
 	}
+	/// <summary>
+	/// Returns fallout damage, 5 +- 2
+	/// </summary>
+	/// <returns>The damage.</returns>
 	int FalloutDamage()
 	{
-		return 3 + Random.Range(0, 4);
+		return 3 + Random.Range(0, 5);
 	}
 	void RemoveWeatherEffect(List<Player> players, WeatherType type)
 	{
@@ -111,16 +81,13 @@ public class WeatherController : MonoBehaviour {
 		{
 			foreach(UnitController uc in p.units)
 			{
-				if(uc.moveClass == MovementType.Air)
-				{
-					uc.modifier.RemoveAllOfModifierType(UnitPropertyModifier.ModifierTypes.Weather);
-				}
+				uc.modifier.RemoveAllOfModifierType(UnitPropertyModifier.ModifierTypes.Weather);
 			}
 		}
 	}
 	void AddWeatherEffect(List<Player> players, WeatherType type)
 	{
-		if(type == WeatherType.Cloudy)
+		if(type == WeatherType.Dusty)
 		{
 			foreach(Player p in players)
 			{
@@ -156,7 +123,7 @@ public class WeatherController : MonoBehaviour {
 	}
 	public void ApplyCurrentWeatherEffect(UnitController inUnit)
 	{
-		if(currentWeather == WeatherType.Cloudy)
+		if(currentWeather == WeatherType.Dusty)
 		{
 			if(inUnit.moveClass == MovementType.Air)
 			{
@@ -176,7 +143,6 @@ public class WeatherController : MonoBehaviour {
 	{
 		weatherParticles[(int)currentWeather].particleSystem.Stop();
 		weatherParticles[(int)currentWeather].gameObject.SetActive(false);
-		
 		RemoveWeatherEffect(players, currentWeather);
 		currentWeather = next;
 		weatherParticles[(int)currentWeather].gameObject.SetActive(true);
