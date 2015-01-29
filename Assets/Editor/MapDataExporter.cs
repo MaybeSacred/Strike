@@ -623,7 +623,8 @@ public class MapDataExporter : Editor
 	{
 		GameObject terrain = GameObject.Find("Terrain");
 		TerrainBlock[] blocks = terrain.GetComponentsInChildren<TerrainBlock>();
-		MapData outgoingData = TerrainBuilder.CreateMapData(blocks);
+		string[] slicedMapName = EditorApplication.currentScene.Split(new char[]{'.', '/', '\\'});
+		MapData outgoingData = TerrainBuilder.CreateMapData(blocks, slicedMapName[slicedMapName.Length - 2]);
 		Debug.Log(outgoingData.IsPlayable());
 		Stream sw = File.Create(EditorApplication.currentScene.Split('.')[0] + ".bin");
 		BinaryFormatter serializer = new BinaryFormatter();

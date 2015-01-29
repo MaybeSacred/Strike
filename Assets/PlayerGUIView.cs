@@ -29,6 +29,7 @@ public class PlayerGUIView : MonoBehaviour {
 	}
 	void Start(){
 		thisPlayer = Instantiate(thisPlayer) as Player;
+		thisPlayer.Setup(1, Generals.Taron, new Color(.8f, .8f, .8f), "Player");
 		ChangeSliderHue(Random.Range(0, 359));
 		// Set up dropdowns
 		generalSelectDropdown = SkirmishMenuViewer.InstantiateUIPrefab(generalSelectDropdown, generalTopButton);

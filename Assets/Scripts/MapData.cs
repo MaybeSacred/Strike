@@ -15,9 +15,11 @@ public class MapData{
 	public int comTowers;
 	public bool isPreDeploy;
 	public string[][] mapData;
+	public string mapName;
 	public float[] blockStatistics;
-	public MapData(int mapX, int mapY)
+	public MapData(string name, int mapX, int mapY)
 	{
+		mapName = name;
 		blockStatistics = new float[System.Enum.GetValues(typeof(TERRAINTYPE)).Length];
 		mapData = new string[mapX][];
 		for(int i = 0; i < mapData.Length; i++)

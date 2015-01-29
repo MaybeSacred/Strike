@@ -13,17 +13,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 public class SkirmishMenuViewer : MonoBehaviour {
-	public float menuXPct, menuYPct;
-	public GUIStyle style;
-	private List<MapData> maps;
-	private string[] mapNames;
-	private MapData selectedMap;
+	public static SkirmishMenuViewer instance;
+	List<MapData> maps;
+	string[] mapNames;
+	string selectedMapName;
+	MapData selectedMap;
 	
 	public PlayerGUIView[] players;
-	private Popup.ListState[] generalDropdownStates, aiDropdownStates, playerSideDropdownStates;
-	private string[] generalNames;
-	public Texture2D colorTexture;
-	private GameSettings settings;
+	string[] generalNames;
+	GameSettings settings;
 	public Player playerPrototype;
 	//new GUI stuff							//parent panel to load buttons to
 	public RectTransform mapNameLoadButton, mapNamePanel;
@@ -32,33 +30,25 @@ public class SkirmishMenuViewer : MonoBehaviour {
 	public RectTransform mapSelect, playerSelect;
 	//current root folder where map data are located
 	public static string ApplicationServerURL = "https://dl.dropboxusercontent.com/u/65011402/strike";
+	void Awake(){
+		instance = this;
+	}
 	// Use this for initialization
 	void Start () {
 		settings = new GameSettings();
 		generalNames = System.Enum.GetNames(typeof(Generals));
-		/*for(int i = 0; i < players.Length;i++)
-		{
-			players[i] = Instantiate(playerPrototype) as Player;
-			players[i].loggingProductionData = true;
-			players[i].Setup(i+1, "", Color.white, "-Enter Name-");
-			players[i].menuColorTexture = Instantiate(colorTexture) as Texture2D;
-			players[i].currentHue = Random.Range(0, 256);
-			players[i].side = i+1;
-		}*/
 		mapNames = GetMapNames();
 		mapNames = ExtractPrettyMapNames(mapNames);
 		LoadMapMetaData(mapNames);
 		int smallestFontSize = int.MaxValue;
 		List<RectTransform> mapButtons = new List<RectTransform>();
-		int count = 0;
 		foreach(string name in mapNames){
 			RectTransform t = InstantiateUIPrefab(mapNameLoadButton, mapNamePanel);
 			t.GetComponentsInChildren<UnityEngine.UI.Text>(true)[0].text = name;
 			mapButtons.Add(t);
-			int captured = count;
+			string captured = name;
 			//add our delegate to the onClick handler, with appropriate indexing
 			t.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => {SetCurrentMap(captured);});
-			count++;
 			smallestFontSize = Mathf.Min(smallestFontSize, t.GetComponentsInChildren<UnityEngine.UI.Text>(true)[0].fontSize);
 		}
 		var offset = -mapNameButtonOffset/2;
@@ -69,9 +59,23 @@ public class SkirmishMenuViewer : MonoBehaviour {
 		if(Mathf.Abs(offset) > mapNamePanel.rect.height){
 			mapNamePanel.offsetMax = new Vector2(mapNamePanel.offsetMax.x, offset);
 		}
+		SetCurrentMap(mapNames[0]);
 	}
-	void SetCurrentMap(int mapNumber){
-		Debug.Log(mapNumber);
+	/// <summary>
+	/// Sets the current mapData from the provided map name
+	/// </summary>
+	/// <param name="map">Map.</param>
+	void SetCurrentMap(string map){
+		selectedMapName = map;
+		Debug.Log(map);
+		foreach(MapData mp in maps){
+			if(mp.mapName.Equals(selectedMapName)){
+				selectedMap = mp;
+				return;
+			}
+		}
+		throw new UnityException("Could not find map");
+		// Do map loading and viewing here
 	}
 	/// <summary>
 	/// Instantiates a correctly set up UI component from a prefab
@@ -116,6 +120,14 @@ public class SkirmishMenuViewer : MonoBehaviour {
 		}
 #endif
 		return null;
+	}
+	
+	public void SetGameSettingsPropertyIncome(int input){
+		settings.propertyBaseFunds = input;
+	}
+	
+	public void SetGameSettingsStartingIncome(int input){
+		settings.startingFunds = input;
 	}
 	/// <summary>
 	/// Loads the map meta data for provided names
@@ -173,23 +185,29 @@ public class SkirmishMenuViewer : MonoBehaviour {
 		return inNames;
 	}
 	void Update () {
-		transform.rotation *= Quaternion.AngleAxis(1f*Time.deltaTime, new Vector3(0, 1, 0));
+		transform.eulerAngles += new Vector3(0, Time.deltaTime, 0);
 	}
-	private float playerItemWidthPct = .1f;
-	int scrollPosition;
 	
+	/// <summary>
+	/// Switches panels to player setup
+	/// </summary>
 	public void SwitchToPlayerSelect(){
 		mapSelect.gameObject.SetActive(false);
 		SetPlayersActive(selectedMap.maxPlayers);
 		playerSelect.gameObject.SetActive(true);
 	}
-	
+	/// <summary>
+	/// Switches panels to map setup
+	/// </summary>
 	public void SwitchToMapSelect(){
 		mapSelect.gameObject.SetActive(true);
 		playerSelect.gameObject.SetActive(false);
 	}
+	public void ToggleFogOfWar(bool inBool){
+		settings.fogOfWarEnabled = inBool;
+	}
 	/// <summary>
-	/// Sets active player configuration panels
+	/// Sets active player configuration panels and hides inactive ones
 	/// </summary>
 	/// <param name="activePlayers">Number of panels to set active</param>
 	void SetPlayersActive(int activePlayers){
@@ -202,26 +220,28 @@ public class SkirmishMenuViewer : MonoBehaviour {
 			}
 		}
 	}
-	/*public void StartGame()
+	/// <summary>
+	/// Starts the game.
+	/// </summary>
+	public void StartGame()
 	{
-		Player[] temp = new Player[maps[mapSelectionDropdown.listEntry].maxPlayers + 1];
+		settings.startingFunds = GameObject.Find("Input StartingFunds").GetComponent<IncrementButton>().GetValue();
+		settings.propertyBaseFunds = GameObject.Find("Input PropertyIncome").GetComponent<IncrementButton>().GetValue();
+		Player[] temp = new Player[selectedMap.maxPlayers + 1];
 		temp[0] = Instantiate(playerPrototype) as Player;
-		temp[0].Setup(0, "Taron", new Color(.8f, .8f, .8f), "--Neutral--");
-		temp[0].generalInStartMenu = "Taron";
+		temp[0].Setup(0, Generals.Taron, new Color(.8f, .8f, .8f), "--Neutral--");
 		for(int i = 1; i < players.Length + 1; i++)
 		{
 			if(i < temp.Length)
 			{
-				temp[i] = players[i-1];
-				temp[i].generalInStartMenu = generalNames[temp[i].menuGeneralNumberSelected];
-				temp[i].aiLevel = (AILevel)System.Enum.GetValues(typeof(AILevel)).GetValue(aiDropdownStates[i-1].listEntry);
+				temp[i] = players[i-1].thisPlayer;
 			}
 			else
 			{
 				Destroy(players[i-1]);
 			}
 		}
-		GameObject.FindObjectOfType<Utilities>().LoadSkirmishMap(temp, mapNames[mapSelectionDropdown.listEntry], settings);
+		GameObject.FindObjectOfType<Utilities>().LoadSkirmishMap(temp, selectedMapName, settings);
 		Destroy(this.gameObject);
-	}*/
+	}
 }

@@ -14,7 +14,7 @@ public class TerrainBuilder : MonoBehaviour {
 		illuminatedMovementRangeBlocks = new List<TerrainBlock>();
 		BuildAdjacencyLists();
 		BuildAIHQDistances();
-		data = CreateMapData(GetComponentsInChildren<TerrainBlock>());
+		data = CreateMapData(GetComponentsInChildren<TerrainBlock>(), Application.loadedLevelName);
 	}
 	public void SaveIlluminatedBlocks()
 	{
@@ -851,7 +851,7 @@ public class TerrainBuilder : MonoBehaviour {
 			block.HideFog();
 		}
 	}
-	public static MapData CreateMapData(TerrainBlock[] blocks)
+	public static MapData CreateMapData(TerrainBlock[] blocks, string mapName)
 	{
 		float largestX = 0;
 		float largestZ = 0;
@@ -866,7 +866,7 @@ public class TerrainBuilder : MonoBehaviour {
 				largestZ = blocks[i].transform.position.z;
 			}
 		}
-		MapData outgoingData = new MapData(Mathf.RoundToInt(largestX) + 1, Mathf.RoundToInt(largestZ) + 1);
+		MapData outgoingData = new MapData(mapName, Mathf.RoundToInt(largestX) + 1, Mathf.RoundToInt(largestZ) + 1);
 		List<Vector3Serializer> HQLocations = new List<Vector3Serializer>();
 		RaycastHit hit;
 		for(int i = 0; i < blocks.Length; i++)

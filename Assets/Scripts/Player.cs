@@ -48,10 +48,11 @@ public class Player : MonoBehaviour{
 	{
 		comTowers = new List<Property>();
 	}
-	public void Setup(int side, string inGeneral, Color playerColor, string name)
+	public void Setup(int side, Generals inGeneral, Color playerColor, string name)
 	{
 		DontDestroyOnLoad(this);
 		playerName = name;
+		generalSelectedInGUI = inGeneral;
 		playerNumber = ++playerCount;
 		this.side = side;
 		mainPlayerColor = playerColor;

@@ -8,8 +8,9 @@ public class IncrementButton : MonoBehaviour {
 	/// <summary>
 	/// Value to increase/decrease by
 	/// </summary>
-	public int incrementValue;
+	public int minValue, maxValue, incrementValue;
 	public Button incrementer, decrementer;
+	public UnityEngine.Events.UnityAction settings;
 	InputField inputField;
 	// Use this for initialization
 	void Start () {
@@ -46,16 +47,22 @@ public class IncrementButton : MonoBehaviour {
 		curValue = Clamp(curValue);
 		inputField.text = curValue.ToString();
 	}
+	public int GetValue(){
+		return int.Parse(inputField.text);
+	}
+	public string GetRawValue(){
+		return inputField.text;
+	}
 	/// <summary>
 	/// Clamps a numerical value to between 0 and 10^x - 1
 	/// </summary>
 	/// <param name="value">Value.</param>
 	int Clamp(int value){
-		if(value < 0){
-			value = 0;
+		if(value < minValue){
+			value = minValue;
 		}
-		else if(value > Mathf.Pow(10, GetComponent<InputField>().characterLimit - 1)){
-			value = Mathf.RoundToInt(Mathf.Pow(10, GetComponent<InputField>().characterLimit - 1));
+		else if(value > maxValue){
+			value = maxValue;
 		}
 		return value;
 	}
