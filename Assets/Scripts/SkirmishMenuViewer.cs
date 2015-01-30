@@ -231,11 +231,13 @@ public class SkirmishMenuViewer : MonoBehaviour {
 		Player[] temp = new Player[selectedMap.maxPlayers + 1];
 		temp[0] = Instantiate(playerPrototype) as Player;
 		temp[0].Setup(0, Generals.Taron, new Color(.8f, .8f, .8f), "--Neutral--");
+		temp[0].SetPlayerNumber(0);
 		for(int i = 1; i < players.Length + 1; i++)
 		{
 			if(i < temp.Length)
 			{
 				temp[i] = players[i-1].thisPlayer;
+				temp[i].SetPlayerNumber(i);
 			}
 			else
 			{
