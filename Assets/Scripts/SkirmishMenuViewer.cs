@@ -12,6 +12,9 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Collections;
+
+
 public class SkirmishMenuViewer : MonoBehaviour {
 	public static SkirmishMenuViewer instance;
 	List<MapData> maps;
@@ -60,6 +63,19 @@ public class SkirmishMenuViewer : MonoBehaviour {
 			mapNamePanel.offsetMax = new Vector2(mapNamePanel.offsetMax.x, offset);
 		}
 		SetCurrentMap(mapNames[0]);
+		StartCoroutine(FinishedLoadingPlayer());
+	}
+	IEnumerator FinishedLoadingPlayer(){
+		bool done = false;
+		while(!done){
+			foreach(PlayerGUIView pg in players){
+				if(!pg.started){
+					yield return new WaitForSeconds(.01f);
+				}
+			}
+			done = true;
+		}
+		SwitchToMapSelect();
 	}
 	/// <summary>
 	/// Sets the current mapData from the provided map name
@@ -67,15 +83,14 @@ public class SkirmishMenuViewer : MonoBehaviour {
 	/// <param name="map">Map.</param>
 	void SetCurrentMap(string map){
 		selectedMapName = map;
-		Debug.Log(map);
 		foreach(MapData mp in maps){
 			if(mp.mapName.Equals(selectedMapName)){
 				selectedMap = mp;
+				// Do map loading and viewing here
 				return;
 			}
 		}
 		throw new UnityException("Could not find map");
-		// Do map loading and viewing here
 	}
 	/// <summary>
 	/// Instantiates a correctly set up UI component from a prefab
@@ -184,6 +199,7 @@ public class SkirmishMenuViewer : MonoBehaviour {
 		}
 		return inNames;
 	}
+	
 	void Update () {
 		transform.eulerAngles += new Vector3(0, .5f * Time.deltaTime, 0);
 	}
@@ -241,7 +257,9 @@ public class SkirmishMenuViewer : MonoBehaviour {
 			}
 			else
 			{
-				Destroy(players[i-1].thisPlayer.gameObject);
+				if(players[i-1].started){
+					Destroy(players[i-1].thisPlayer.gameObject);
+				}
 				Destroy(players[i-1].gameObject);
 			}
 		}

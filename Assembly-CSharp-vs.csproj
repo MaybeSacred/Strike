@@ -64,7 +64,6 @@
      <Compile Include="Assets\Scripts\CameraArrowKeyController.cs" />
      <Compile Include="Assets\Scripts\Clusterer.cs" />
      <Compile Include="Assets\Scripts\DamageValues.cs" />
-     <Compile Include="Assets\Scripts\Dropdown.cs" />
      <Compile Include="Assets\Scripts\GameSettings.cs" />
      <Compile Include="Assets\Scripts\General.cs" />
      <Compile Include="Assets\Scripts\GeneralPowerBlock.cs" />
@@ -77,6 +76,7 @@
      <Compile Include="Assets\Scripts\Player.cs" />
      <Compile Include="Assets\Scripts\Popup.cs" />
      <Compile Include="Assets\Scripts\PriorityQueuesProgram.cs" />
+     <Compile Include="Assets\Scripts\ProductionEngine.cs" />
      <Compile Include="Assets\Scripts\Property.cs" />
      <Compile Include="Assets\Scripts\PropertyAttributes.cs" />
      <Compile Include="Assets\Scripts\ReinforcementInstance.cs" />

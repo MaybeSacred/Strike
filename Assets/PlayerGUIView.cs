@@ -23,6 +23,7 @@ public class PlayerGUIView : MonoBehaviour {
 	// Offset for the spacing of dropdown buttons
 	public float mapNameButtonOffset;
 	static PlayerGUIView playerSelected;
+	public bool started = false;
 	// Use this for initialization
 	void Awake() {
 		
@@ -87,6 +88,7 @@ public class PlayerGUIView : MonoBehaviour {
 		}
 		AISelectDropdown.SetParent(GetComponent<RectTransform>().parent);
 		AISelectDropdown.gameObject.SetActive(false);
+		started = true;
 	}
 	
 	// Update is called once per frame
