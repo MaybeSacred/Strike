@@ -197,6 +197,7 @@ public class AIPlayerMedium : AIPlayer
 		List<UnitController> assignedUnits = new List<UnitController>();
 		//list of clusters of clustered enemy units
 		List<List<AttackableObject>> lists = clusterer.Estimate(InGameController.GetAllEnemyUnits(this));
+		Debug.Log(lists.Count);
 		//assign infantry to buildings if possible - easy first step
 		for(int i = 0; i < units.Count; i++)
 		{
@@ -366,6 +367,7 @@ public class AIPlayerMedium : AIPlayer
 			Debug.Log(inUnit.AITargetBlock.transform.position);
 		}*/
 	}
+	
 	/// <summary>
 	/// Aptitude of a cluster, determined by the sum of the damage inUnit can do to each unit in the cluster minus what each unit can do to inUnit
 	/// </summary>
@@ -385,6 +387,7 @@ public class AIPlayerMedium : AIPlayer
 		float distance = (inUnit.transform.position - median).magnitude;
 		return sum/(distance > 1?distance:1);
 	}
+	
 	AttackableObject BestUnitInCluster(List<AttackableObject> enemyUnits, UnitController inUnit)
 	{
 		float best = 0;
@@ -407,6 +410,7 @@ public class AIPlayerMedium : AIPlayer
 			MediumAIUpdate();
 		}
 	}
+	
 	protected override TerrainBlock StateSearch(int numSearchTurns, int statesKept)
 	{
 		TerrainBlock bestBlockSoFar = null;
@@ -444,6 +448,7 @@ public class AIPlayerMedium : AIPlayer
 		//Debug.Log(currentUnit.unitClass + " Positions evaluated: " + totalPositionsEvaluated);// + " / positions at depth 0: " + blocks.Count);
 		return bestBlockSoFar;
 	}
+	
 	protected PositionEvaluation RecursiveEvaluatePosition(TerrainBlock block)
 	{
 		PositionEvaluation bestValueSoFar = new PositionEvaluation(float.NegativeInfinity);
@@ -461,6 +466,7 @@ public class AIPlayerMedium : AIPlayer
 		outEvaluation.value += bestValueSoFar.value;
 		return outEvaluation;
 	}
+	
 	/*protected PositionEvaluation RecursiveEvaluatePosition(int depth, TerrainBlock block, ref int positionsEvaluated, int maxDepth)
 	{
 		positionsEvaluated++;
@@ -492,6 +498,7 @@ public class AIPlayerMedium : AIPlayer
 			return EvaluatePosition(block);
 		}
 	}*/
+	
 	public class PositionEvaluationComparer : IComparer<PositionEvaluation>{
 		public int Compare(PositionEvaluation a, PositionEvaluation b)
 		{
@@ -505,6 +512,7 @@ public class AIPlayerMedium : AIPlayer
 			}
 		}
 	}
+	
 	public class PositionEvaluation{
 		public UnitOrderOptions bestOrder;
 		public float value;
@@ -752,11 +760,13 @@ public class AIPlayerMedium : AIPlayer
 		InGameController.currentTerrain.LoadIlluminatedBlocks();
 		return (totalEnemyDamage * currentUnit.AIDefensiveness) / (alliedUnits * 15000f);
 	}
+	
 	protected override void ProduceUnits()
 	{
 		unitsToMake.Clear();
 		MediumUnitProductionRandom();
 	}
+	
 	/*void MediumUnitProductionReinforcement()
 	{
 		if(producingUnits)
@@ -887,37 +897,33 @@ public class AIPlayerMedium : AIPlayer
 				string unitsSelected = "";
 				if(rankedName != null)
 				{
-					//Debug.Log(unitsSelected);
-					for(int j = 0; j < 3; j++)
+					if(makeSupplyLand)
 					{
-						if(makeSupplyLand)
+						rankedName = UnitNames.SupplyTank;
+						makeSupplyLand = false;
+					}
+					else if(makeSupplySea)
+					{
+						rankedName = UnitNames.SupplyShip;
+						makeSupplySea = false;
+					}
+					else if(makeTransport)
+					{
+						rankedName = transportToMake;
+						makeTransport = false;
+					}
+					if(((UnitController)Utilities.GetPrefabFromUnitName(rankedName)).baseCost <= funds)
+					{
+						SortPropertiesByHQDistance(((UnitController)Utilities.GetPrefabFromUnitName(rankedName)).moveClass);
+						for(int i = 0; i < properties.Count; i++)
 						{
-							rankedName = UnitNames.SupplyTank;
-							makeSupplyLand = false;
-						}
-						else if(makeSupplySea)
-						{
-							rankedName = UnitNames.SupplyShip;
-							makeSupplySea = false;
-						}
-						else if(makeTransport)
-						{
-							rankedName = transportToMake;
-							makeTransport = false;
-						}
-						if(((UnitController)Utilities.GetPrefabFromUnitName(rankedName)).baseCost <= funds)
-						{
-							SortPropertiesByHQDistance(((UnitController)Utilities.GetPrefabFromUnitName(rankedName)).moveClass);
-							for(int i = 0; i < properties.Count; i++)
+							if(properties[i].currentState == UnitState.UnMoved && !properties[i].GetOccupyingBlock().IsOccupied() && properties[i].CanProduceUnit(rankedName))
 							{
-								if(properties[i].currentState == UnitState.UnMoved && !properties[i].GetOccupyingBlock().IsOccupied() && properties[i].CanProduceUnit(rankedName))
-								{
-									properties[i].AIProduceUnit(rankedName);
-									break;
-								}
+								properties[i].AIProduceUnit(rankedName);
+								break;
 							}
-							break;
 						}
+						break;
 					}
 					productionAttempts++;
 					producingUnits = false;
