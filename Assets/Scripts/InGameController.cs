@@ -83,7 +83,10 @@ public class InGameController : MonoBehaviour {
 	}
 	public static int NumberOfActivePlayers()
 	{
-		return players.Count;
+		if(players != null){
+			return players.Count;
+		}
+		return 0;
 	}
 	public static void DisplayPossibleTargetParticles (List<AttackableObject> possibleTargets)
 	{

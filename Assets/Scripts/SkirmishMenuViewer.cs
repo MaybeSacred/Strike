@@ -27,7 +27,11 @@ public class SkirmishMenuViewer : MonoBehaviour {
 	GameSettings settings;
 	public Player playerPrototype;
 	//new GUI stuff							//parent panel to load buttons to
-	public RectTransform mapNameLoadButton, mapNamePanel;
+	public RectTransform mapNameLoadButton, mapNamePanel, 
+		// Outer panel of button panel
+		mapNameOuterPanel,
+		scrollBar;
+	public UnityEngine.UI.Text mapNameText;
 	//spacing for between button centers
 	public int mapNameButtonOffset;
 	public RectTransform mapSelect, playerSelect;
@@ -51,7 +55,7 @@ public class SkirmishMenuViewer : MonoBehaviour {
 			mapButtons.Add(t);
 			string captured = name;
 			//add our delegate to the onClick handler, with appropriate indexing
-			t.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => {SetCurrentMap(captured);});
+			t.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => {SetCurrentMap(captured); OnMapSelected();});
 			smallestFontSize = Mathf.Min(smallestFontSize, t.GetComponentsInChildren<UnityEngine.UI.Text>(true)[0].fontSize);
 		}
 		var offset = -mapNameButtonOffset/2;
@@ -63,8 +67,14 @@ public class SkirmishMenuViewer : MonoBehaviour {
 			mapNamePanel.offsetMax = new Vector2(mapNamePanel.offsetMax.x, offset);
 		}
 		SetCurrentMap(mapNames[0]);
+		mapNameOuterPanel.gameObject.SetActive(false);
+		scrollBar.gameObject.SetActive(false);
 		StartCoroutine(FinishedLoadingPlayer());
 	}
+	/// <summary>
+	/// Callback when all player gui's have loaded
+	/// </summary>
+	/// <returns>The loading player.</returns>
 	IEnumerator FinishedLoadingPlayer(){
 		bool done = false;
 		while(!done){
@@ -87,10 +97,26 @@ public class SkirmishMenuViewer : MonoBehaviour {
 			if(mp.mapName.Equals(selectedMapName)){
 				selectedMap = mp;
 				// Do map loading and viewing here
+				GetComponentInChildren<MenuBackgroundMapDisplayer>().DisplayMap(selectedMap);
 				return;
 			}
 		}
 		throw new UnityException("Could not find map");
+	}
+	/// <summary>
+	/// Opens the map dropdown
+	/// </summary>
+	public void OnMapDropdownOpened(){
+		mapNameOuterPanel.gameObject.SetActive(true);
+		scrollBar.gameObject.SetActive(true);
+	}
+	/// <summary>
+	/// Called when a map is selected, sets the name of the map to the map name display
+	/// </summary>
+	public void OnMapSelected(){
+		mapNameOuterPanel.gameObject.SetActive(false);
+		scrollBar.gameObject.SetActive(false);
+		mapNameText.text = selectedMapName;
 	}
 	/// <summary>
 	/// Instantiates a correctly set up UI component from a prefab
