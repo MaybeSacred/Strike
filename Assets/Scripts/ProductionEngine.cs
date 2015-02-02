@@ -29,6 +29,9 @@ public partial class ProductionEngine
 		// Initialize rules with some common to all maps
 		rules.Add(EarlyGroundRule);
 		rules.Add(MidGroundRule);
+		rules.Add(LateGroundRule);
+		rules.Add(TankGroundRule);
+		rules.Add(ResupplyTankRule);
 		//rules.Add()
 	}
 	/// <summary>
@@ -103,15 +106,6 @@ public partial class ProductionEngine
 		return dic;
 	}
 	/// <summary>
-	/// Always produces an infantry
-	/// </summary>
-	/// <returns>The infantry rule.</returns>
-	/// <param name="data">Data.</param>
-	/// <param name="thisPlayer">This player.</param>
-	public List<UnitNames> AlwaysInfantryRule(Instance data, Player thisPlayer){
-		return new List<UnitNames>(new UnitNames[]{UnitNames.Infantry});
-	}
-	/// <summary>
 	/// A rule for the early ground game
 	/// </summary>
 	/// <returns>The ground rule.</returns>
@@ -122,7 +116,8 @@ public partial class ProductionEngine
 		// only activates if turn is less than 4
 		if(InGameController.currentTurn <= 4){
 			// If we have decent amount of money, build some light vehicles
-			if(thisPlayer.funds >= (Utilities.GetPrefabFromUnitName(UnitNames.Stryker) as UnitController).baseCost){
+			if(thisPlayer.funds >= (Utilities.GetPrefabFromUnitName(UnitNames.Stryker) as UnitController).baseCost + 
+			   (Utilities.GetPrefabFromUnitName(UnitNames.Infantry) as UnitController).baseCost){
 				outList.Add(UnitNames.Stryker);
 				if(data.playerUnitCount[(int)UnitNames.Infantry] > 1){
 					outList.Add(UnitNames.Mortar);
@@ -130,16 +125,16 @@ public partial class ProductionEngine
 					outList.Add(UnitNames.Humvee);
 				}
 				// Produce some early power units if we have the funds
-				if(thisPlayer.funds >= (Utilities.GetPrefabFromUnitName(UnitNames.FieldArtillery) as UnitController).baseCost){
+				if(thisPlayer.funds >= (Utilities.GetPrefabFromUnitName(UnitNames.FieldArtillery) as UnitController).baseCost +
+				   (Utilities.GetPrefabFromUnitName(UnitNames.Infantry) as UnitController).baseCost){
 					outList.Add(UnitNames.LightTank);
 					outList.Add(UnitNames.FieldArtillery);
 				}
 			}
-			else{
-				outList.Add(UnitNames.Infantry);
-				outList.Add(UnitNames.Infantry);
+			else if(thisPlayer.funds >= 3000){
 				outList.Add(UnitNames.Mortar);
 			}
+			outList.Add(UnitNames.Infantry);
 		}
 		return outList;
 	}
@@ -154,8 +149,8 @@ public partial class ProductionEngine
 		if(InGameController.currentTurn >= 5){
 			// If we're close to building a tank
 			if(thisPlayer.funds >= (Utilities.GetPrefabFromUnitName(UnitNames.LightTank) as UnitController).baseCost * .75f){
-				if(data.playerUnitCount[(int)UnitNames.Infantry] >= 3 || data.playerUnitCount[(int)UnitNames.Mortar] >= 3 ||
-				   data.playerUnitCount[(int)UnitNames.Stinger] >= 3){
+				if(data.playerUnitCount[(int)UnitNames.Infantry] >= 2 || data.playerUnitCount[(int)UnitNames.Mortar] >= 2 ||
+				   data.playerUnitCount[(int)UnitNames.Stinger] >= 2){
 				   // Build a light tank if we have fewer of them than medium tanks
 					if(data.playerUnitCount[(int)UnitNames.LightTank] <= data.playerUnitCount[(int)UnitNames.MediumTank] - 1){
 						outList.Add(UnitNames.LightTank);
@@ -181,7 +176,7 @@ public partial class ProductionEngine
 		List<UnitNames> outList = new List<UnitNames>();
 		if(data.enemyAverageUnitCounts[(int)UnitNames.Rockets] > 0 || data.enemyAverageUnitCounts[(int)UnitNames.Missiles] > 0 
 			|| data.enemyAverageUnitCounts[(int)UnitNames.MediumTank] > 0){
-			if(data.playerUnitCount[(int)UnitNames.Sniper] < 1){
+			if(data.playerUnitCount[(int)UnitNames.Sniper] < 2){
 				outList.Add(UnitNames.Sniper);
 			}
 		}
@@ -197,6 +192,16 @@ public partial class ProductionEngine
 		List<UnitNames> outList = new List<UnitNames>();
 		if(data.playerUnitCount[(int)UnitNames.SupplyTank] < thisPlayer.units.Count / 10){
 			outList.Add(UnitNames.SupplyTank);
+		}
+		return outList;
+	}
+	public List<UnitNames> FOWRadarRule(Instance data, Player thisPlayer){
+		List<UnitNames> outList = new List<UnitNames>();
+		if(Utilities.fogOfWarEnabled){
+			if(InGameController.currentTurn > 2 && thisPlayer.units.Count / 8 >= 
+				data.playerUnitCount[(int)UnitNames.MobileRadar]){
+				outList.Add(UnitNames.MobileRadar);
+			}
 		}
 		return outList;
 	}
@@ -218,12 +223,10 @@ public partial class ProductionEngine
 			}
 			
 			// Build stronger infantry if there are several strong artillery units
-			if(data.enemyAverageUnitCounts[(int)UnitNames.Rockets] + data.enemyAverageUnitCounts[(int)UnitNames.FieldArtillery] > 1.5f 
-				&& data.playerUnitCount[(int)UnitNames.Mortar] < 3){
+			if(data.enemyAverageUnitCounts[(int)UnitNames.Rockets] + data.enemyAverageUnitCounts[(int)UnitNames.FieldArtillery] > 1.5f){
 				outList.Add(UnitNames.Mortar);
 			}
-			if(data.enemyAverageUnitCounts[(int)UnitNames.Rockets] + data.enemyAverageUnitCounts[(int)UnitNames.FieldArtillery] > 1.5f 
-				&& data.playerUnitCount[(int)UnitNames.Stinger] < 2){
+			if(data.enemyAverageUnitCounts[(int)UnitNames.Rockets] + data.enemyAverageUnitCounts[(int)UnitNames.FieldArtillery] > 1.5f){
 				outList.Add(UnitNames.Stinger);
 			}
 
@@ -233,15 +236,47 @@ public partial class ProductionEngine
 			   data.enemyAverageUnitCounts[(int)UnitNames.Factory] + data.enemyAverageUnitCounts[(int)UnitNames.Shipyard] + 
 			   data.playerUnitCount[(int)UnitNames.City] + data.playerUnitCount[(int)UnitNames.Airport] + 
 			   data.playerUnitCount[(int)UnitNames.Factory] + data.playerUnitCount[(int)UnitNames.Shipyard])) {
-				if(data.playerUnitCount[(int)UnitNames.Infantry] <= 3){
+				if(data.playerUnitCount[(int)UnitNames.Infantry] <= 4){
 					outList.Add(UnitNames.Infantry);
 				}
-				if(data.playerUnitCount[(int)UnitNames.Stinger] <= 1){
+				if(data.playerUnitCount[(int)UnitNames.Stinger] <= 3){
 					outList.Add(UnitNames.Stinger);
 				}
-				if(data.playerUnitCount[(int)UnitNames.Mortar] <= 1){
+				if(data.playerUnitCount[(int)UnitNames.Mortar] <= 3){
 					outList.Add(UnitNames.Mortar);
 				}
+			}
+		}
+		return outList;
+	}
+	/// <summary>
+	/// A rule for early-mid ground game
+	/// </summary>
+	/// <returns>The ground rule.</returns>
+	/// <param name="data">Data.</param>
+	/// <param name="thisPlayer">This player.</param>
+	public List<UnitNames> LateGroundRule(Instance data, Player thisPlayer){
+		List<UnitNames> outList = new List<UnitNames>();
+		// only activates between 2 and 10 turns in
+		if(InGameController.currentTurn > 6){
+			if(thisPlayer.funds >= 10000){
+				outList.Add(UnitNames.Rockets);
+				outList.Add(UnitNames.MediumTank);
+			}
+			// Build units to counter triangle
+			if(data.enemyAverageUnitCounts[(int)UnitNames.Rockets] + data.enemyAverageUnitCounts[(int)UnitNames.FieldArtillery] >= 
+			   data.enemyAverageUnitCounts[(int)UnitNames.MediumTank] + data.enemyAverageUnitCounts[(int)UnitNames.LightTank] - 1) {
+			   outList.Add(UnitNames.Stinger);
+				if(data.enemyAverageUnitCounts[(int)UnitNames.FieldArtillery] > data.enemyAverageUnitCounts[(int)UnitNames.Rockets]){
+					outList.Add(UnitNames.Mortar);
+				}
+			}
+			else if(data.enemyAverageUnitCounts[(int)UnitNames.MediumTank] + data.enemyAverageUnitCounts[(int)UnitNames.LightTank] >= 
+			        data.enemyAverageUnitCounts[(int)UnitNames.Mortar] + data.enemyAverageUnitCounts[(int)UnitNames.Stinger] - 2) {
+				outList.Add(UnitNames.FieldArtillery);
+			}
+			else {
+				outList.Add(UnitNames.LightTank);
 			}
 		}
 		return outList;

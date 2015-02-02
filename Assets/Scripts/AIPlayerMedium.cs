@@ -1049,4 +1049,3 @@ public class AIPlayerMedium : AIPlayer
 		}
 	}
 }
-

@@ -30,7 +30,7 @@ public class PlayerGUIView : MonoBehaviour {
 	}
 	void Start(){
 		thisPlayer = Instantiate(thisPlayer) as Player;
-		thisPlayer.Setup(1, Generals.Taron, new Color(.8f, .8f, .8f), "Player");
+		thisPlayer.Setup(Random.Range(0, 4), Generals.Taron, new Color(.8f, .8f, .8f), "Player");
 		ChangeSliderHue(Random.Range(0, 359));
 		// Set up dropdowns
 		generalSelectDropdown = SkirmishMenuViewer.InstantiateUIPrefab(generalSelectDropdown, generalTopButton);
@@ -123,6 +123,7 @@ public class PlayerGUIView : MonoBehaviour {
 	public void OpenAISelectDropdown(){
 		if(playerSelected == null || playerSelected == this){
 			AISelectDropdown.gameObject.SetActive(true);
+			playerSelected = this;
 		}
 	}
 	/// <summary>

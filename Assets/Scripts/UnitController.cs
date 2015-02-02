@@ -1356,11 +1356,11 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 		}
 		InGameController.HidePossibleTargetParticles();
 		EndTurn();
-		if(owner.aiLevel != AILevel.Human)
+		/*if(owner.aiLevel != AILevel.Human)
 		{
 			reinforcement.accruedReward = InGameController.TotalValueRelativeToPlayer(owner) - reinforcement.accruedReward;
 			owner.GetComponent<MouseEventHandler>().AddReinforcementInstance(reinforcement);
-		}
+		}*/
 		health.SetRawHealth(-1);
 		Destroy(moveIndicatorParticles);
 		Destroy(gameObject);
