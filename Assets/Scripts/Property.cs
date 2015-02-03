@@ -582,6 +582,10 @@ public class Property : MonoBehaviour, AttackableObject
 		}
 		return false;
 	}
+	/// <summary>
+	/// Returns a list of units within range, if property is a com tower
+	/// </summary>
+	/// <returns>The in range.</returns>
 	public List<UnitController> UnitsInRange()
 	{
 		List<UnitController> outObjects = new List<UnitController>();
@@ -594,5 +598,15 @@ public class Property : MonoBehaviour, AttackableObject
 		}
 		return outObjects;
 	}
+	/// <summary>
+	/// Sets the property GUI view variables.
+	/// </summary>
+	/// <param name="propertyView">Property view.</param>
+	public void SetPropertyGUIView (PropertyGameView propertyView)
+	{
+		propertyView.SetValues(prettyName, UnitGameViewer.FormatSlashedString(health.ToString(), "10"), 
+							   DefenseBonus().ToString(), UnitGameViewer.FormatSlashedString(captureCount.ToString(), "20"));
+	}
+
 }
 

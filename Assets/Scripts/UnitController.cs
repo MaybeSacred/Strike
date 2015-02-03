@@ -10,7 +10,7 @@ public enum UnitState {UnMoved, BuildingBridge, Selected, Moving, AwaitingOrder,
 public enum UnitOrderOptions {ProduceMissile, BuildBridge, Attack, Supply, Repair, Capture, Load, Unload, Board, AddGeneral, GeneralPower, BuildUnit, UnStealthify, Stealthify, Join, EndTurn};
 public enum MovementType {Air, Sea, Littoral, LightVehicle, HeavyVehicle, Tank, Amphibious, Sniper, Infantry};
 //Story idea: in the middle of and right after nuclear war
-public enum UnitRanks {Unranked, Private, Corporal, Sergeant, Elite};
+public enum UnitRanks {UnRanked, Private, Corporal, Sergeant, Elite};
 public enum UnitAttackType {Direct, Indirect, Both};//Used for determining counterattack ability
 
 public class UnitController : MonoBehaviour, AttackableObject, IComparable{
@@ -63,7 +63,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 	public bool healsCarriedUnits;
 	private int movingCounter;
 	private static int inverseMovingSpeed = 10;
-	private UnitRanks veteranStatus = UnitRanks.Unranked;
+	private UnitRanks veteranStatus = UnitRanks.UnRanked;
 	private int damageReceived;
 	public string prettyName;
 	public string description;
@@ -1160,41 +1160,6 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 			}
 		}
 	}
-	public void ShowUnitControllerInfo(float displaySwitch)
-	{
-		GUI.BeginGroup(new Rect(Screen.width - 3*infoBoxWidth - 40, 0, infoBoxWidth + 40, infoBoxHeight));
-		GUI.Box(new Rect(0, 0, infoBoxWidth + 40, infoBoxHeight), prettyName);
-		GUI.Label(new Rect(0, 20, infoBoxWidth, 20), new GUIContent("HP " + health.PrettyHealth().ToString(), "Current Health"));
-		GUI.Label(new Rect(0, 40, infoBoxWidth, 20), new GUIContent("Fuel: " + Mathf.FloorToInt(currentFuel) + "/" + startFuel, "Current Fuel"));
-		if(primaryAmmo > 0)
-		{
-			GUI.Label(new Rect(0, 60, infoBoxWidth, 20), new GUIContent("Ammo: " + primaryAmmoRemaining + "/" + primaryAmmo, "Ammunition Remaining"));
-		}
-		else
-		{
-			GUI.Label(new Rect(0, 60, infoBoxWidth, 20), new GUIContent("Ammo: --/--", "No Ammunition"));
-		}
-		if(veteranStatus != UnitRanks.Unranked && carriedUnits.Count > 0){
-			if((Mathf.FloorToInt(displaySwitch)/2) % 2 == 0){
-				GUI.Label(new Rect(infoBoxWidth+4, 20, 32, infoBoxHeight), Utilities.GetRankImage(veteranStatus));
-			}
-			else{
-				for(int carriedUnitCount = 0; carriedUnitCount < carriedUnits.Count; carriedUnitCount++){
-					GUI.Label(new Rect(infoBoxWidth+4, 20 + 20 * carriedUnitCount, 32, infoBoxHeight), Utilities.GetCarryingImage(carriedUnits[carriedUnitCount].unitClass));
-				}
-			}
-		}
-		else if(veteranStatus != UnitRanks.Unranked)
-		{
-			GUI.Label(new Rect(infoBoxWidth+4, 20, 32, infoBoxHeight), Utilities.GetRankImage(veteranStatus));
-		}
-		else if(carriedUnits.Count > 0){
-			for(int carriedUnitCount = 0; carriedUnitCount < carriedUnits.Count; carriedUnitCount++){
-				GUI.Label(new Rect(infoBoxWidth+4, 20 + 20 * carriedUnitCount, 32, infoBoxHeight), Utilities.GetCarryingImage(carriedUnits[carriedUnitCount].unitClass));
-			}
-		}
-		GUI.EndGroup();
-	}
 	public void ShowDetailedInfo()
 	{
 		GUI.BeginGroup(new Rect(Screen.width/2 - infoBoxWidth, Screen.height/2 - infoBoxHeight, 2 * infoBoxWidth, 2 * infoBoxHeight));
@@ -1929,5 +1894,16 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable{
 		{
 			return 0;
 		}
+	}
+	/// <summary>
+	/// Sets the unit's GUI view variables.
+	/// </summary>
+	/// <param name="unitView">Unit view.</param>
+	public void SetUnitGUIView (UnitGameViewer unitView)
+	{
+		unitView.SetValues(prettyName, UnitGameViewer.FormatSlashedString(health.ToString(), "10"), 
+		                   UnitGameViewer.FormatSlashedString(primaryAmmoRemaining.ToString(), primaryAmmo.ToString()),
+		                   UnitGameViewer.FormatSlashedString(currentFuel.ToString(), startFuel.ToString()),
+		                   veteranStatus, carriedUnits.Count);
 	}
 }

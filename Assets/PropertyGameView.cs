@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class TerrainGameViewer : MonoBehaviour {
-	public UnityEngine.UI.Text nameText, defenseText;
+public class PropertyGameView : MonoBehaviour {
+	public UnityEngine.UI.Text[] parameterText;
 	// Use this for initialization
 	void Start () {
 		
@@ -19,8 +19,12 @@ public class TerrainGameViewer : MonoBehaviour {
 	/// <param name="funds">Funds.</param>
 	/// <param name="propertiesCount">Properties count.</param>
 	/// <param name="unitsCount">Units count.</param>
-	public void SetValues(string name, string defense){
-		nameText.text = name;
-		defenseText.text = defense;
+	public void SetValues(params string[] input){
+		if(input.Length != parameterText.Length){
+			throw new System.ArgumentException();
+		}
+		for(int i = 0; i < input.Length; i++){
+			parameterText[i].text = input[i];
+		}
 	}
 }

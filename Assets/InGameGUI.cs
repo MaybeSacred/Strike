@@ -8,10 +8,10 @@ public class InGameGUI : MonoBehaviour {
 	private Property propertyMousedOver;
 	private UnitController unitMousedOver;
 	public GUIStyle healthBarStyle;
-	//Used to toggle between two or more displays;
-	float displayOverloadTimer;
 	public InGamePlayerStatsView currentPlayerView, hoveredPlayerView;
 	public TerrainGameViewer terrainView;
+	public PropertyGameView propertyView;
+	public UnitGameViewer unitView;
 	void Awake(){
 		instance = this;
 	}
@@ -40,22 +40,26 @@ public class InGameGUI : MonoBehaviour {
 				if(unitMousedOver != blockMousedOver.occupyingUnit){
 					unitMousedOver = blockMousedOver.occupyingUnit;
 					SetHoveredPlayerDisplay(unitMousedOver.GetOwner());
+					SetCurrentUnitDisplay(unitMousedOver);
 				}
 			}
 			else
 			{
 				unitMousedOver = null;
+				unitView.gameObject.SetActive(false);
 			}
 			if(blockMousedOver.HasProperty())
 			{
 				if(propertyMousedOver != blockMousedOver.occupyingProperty){
 					propertyMousedOver = blockMousedOver.occupyingProperty;
 					SetHoveredPlayerDisplay(propertyMousedOver.GetOwner());
+					SetCurrentPropertyDisplay(propertyMousedOver);
 				}
 			}
 			else
 			{
 				propertyMousedOver = null;
+				propertyView.gameObject.SetActive(false);
 			}
 			// Hides hovered view if nothing to display
 			if(propertyMousedOver == null && unitMousedOver == null){
@@ -67,6 +71,8 @@ public class InGameGUI : MonoBehaviour {
 			blockMousedOver = null;
 			unitMousedOver = null;
 			propertyMousedOver = null;
+			unitView.gameObject.SetActive(false);
+			propertyView.gameObject.SetActive(false);
 			terrainView.gameObject.SetActive(false);
 			hoveredPlayerView.gameObject.SetActive(false);
 		}
@@ -96,9 +102,7 @@ public class InGameGUI : MonoBehaviour {
 			}
 			if(unitMousedOver != null)
 			{
-				unitMousedOver.ShowUnitControllerInfo(displayOverloadTimer);
 				ShowHealthDisplay(unitMousedOver.health.PrettyHealth(), unitMousedOver.transform.position);
-				displayOverloadTimer += Time.deltaTime;
 			}
 			if(propertyMousedOver != null)
 			{
@@ -126,24 +130,41 @@ public class InGameGUI : MonoBehaviour {
 		hoveredPlayer.SetPlayerGUIView(hoveredPlayerView);
 	}
 	/// <summary>
-	/// Sets one or neither of the player displays
+	/// Sets one of the player displays, if applicable. For when relevant properties have changed
 	/// </summary>
 	/// <param name="player">Player.</param>
 	public void SetPlayerDisplay (Player player)
 	{
+		// Set current player display
 		if(player == InGameController.GetCurrentPlayer()){
 			SetCurrentPlayerDisplay(player);
-		}
+		}// Else check if player is equal to unitMousedOver player
 		else if(unitMousedOver != null){
 			if(player == unitMousedOver.GetOwner()){
 				SetHoveredPlayerDisplay(player);
 			}
-		}
+		}// Else check for propertyMousedOver player
 		else if(propertyMousedOver != null){
 			if(player == propertyMousedOver.GetOwner()){
 				SetHoveredPlayerDisplay(player);
 			}
 		}
+	}
+	/// <summary>
+	/// Sets the current property display.
+	/// </summary>
+	/// <param name="property">Property.</param>
+	public void SetCurrentPropertyDisplay(Property property){
+		propertyView.gameObject.SetActive(true);
+		property.SetPropertyGUIView(propertyView);
+	}
+	/// <summary>
+	/// Sets the current unit display.
+	/// </summary>
+	/// <param name="unit">Unit.</param>
+	public void SetCurrentUnitDisplay(UnitController unit){
+		unitView.gameObject.SetActive(true);
+		unit.SetUnitGUIView(unitView);
 	}
 	/// <summary>
 	/// Shows the health display for a unit or property
@@ -167,8 +188,6 @@ public class InGameGUI : MonoBehaviour {
 	/// </summary>
 	void PauseMenu()
 	{
-		if(GUI.Button(new Rect(Screen.width/2 - 60,Screen.height/2 - 30,120,60), "End Turn")) {
-			InGameController.AdvanceTurn();
-		}
+		
 	}
 }

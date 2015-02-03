@@ -6,6 +6,9 @@ public class Health {
 	public Health(){
 		
 	}
+	public string ToString(){
+		return PrettyHealth().ToString();
+	}
 	public Health(int startingHealth){
 		rawHealth = startingHealth;
 	}

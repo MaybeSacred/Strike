@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
@@ -150,7 +150,7 @@ public class Utilities : MonoBehaviour{
 
 	public static Texture2D GetRankImage (UnitRanks rank)
 	{
-		if(rank != UnitRanks.Unranked)
+		if(rank != UnitRanks.UnRanked)
 		{
 			return unitRankInsignias[(int)rank - 1];
 		}

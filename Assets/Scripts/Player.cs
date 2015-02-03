@@ -48,6 +48,13 @@ public class Player : MonoBehaviour{
 	{
 		comTowers = new List<Property>();
 	}
+	/// <summary>
+	/// Setup the specified side, general, playerColor and name.
+	/// </summary>
+	/// <param name="side">Side.</param>
+	/// <param name="inGeneral">In general.</param>
+	/// <param name="playerColor">Player color.</param>
+	/// <param name="name">Name.</param>
 	public void Setup(int side, Generals inGeneral, Color playerColor, string name)
 	{
 		DontDestroyOnLoad(this);
@@ -65,6 +72,12 @@ public class Player : MonoBehaviour{
 			gameObject.AddComponent<MouseEventHandler>();
 		}
 	}
+	/// <summary>
+	/// Returns the number of player's com towers within range of the checking unit
+	/// </summary>
+	/// <returns>The towers in range.</returns>
+	/// <param name="checkingUnit">Checking unit.</param>
+	/// <param name="block">Block.</param>
 	public int ComTowersInRange(UnitController checkingUnit, TerrainBlock block)
 	{
 		int boost = 0;
@@ -81,23 +94,39 @@ public class Player : MonoBehaviour{
 	{
 		return properties.Count;
 	}
+	/// <summary>
+	/// Sets the general from a prefab
+	/// </summary>
 	public void SetupGeneral()
 	{
 		selectedGeneral = Utilities.GetGeneral(generalSelectedInGUI);
 		selectedGeneral.SetOwner(this);
 	}
+	/// <summary>
+	/// Sends out the general.
+	/// </summary>
+	/// <param name="unitToAddGeneral">Unit to add general.</param>
 	public void SendOutGeneral(UnitController unitToAddGeneral)
 	{
 		currentGeneralUnit = unitToAddGeneral;
 		selectedGeneral.ShowGeneral(unitToAddGeneral);
 		RemoveFunds(currentGeneralUnit.baseCost/2);
 	}
+	/// <summary>
+	/// Adds funds.
+	/// </summary>
+	/// <param name="inMoney">In money.</param>
 	public void AddFunds(int inMoney)
 	{
 		funds += inMoney;
 		pigs.totalFundsGathered += inMoney;
 		InGameGUI.instance.SetPlayerDisplay(this);
 	}
+	/// <summary>
+	/// Removes funds.
+	/// </summary>
+	/// <returns><c>true</c>, if funds was removed, <c>false</c> otherwise.</returns>
+	/// <param name="inMoney">In money.</param>
 	public bool RemoveFunds(int inMoney)
 	{
 		if(funds - inMoney < 0)
@@ -109,6 +138,10 @@ public class Player : MonoBehaviour{
 		InGameGUI.instance.SetPlayerDisplay(this);
 		return true;
 	}
+	/// <summary>
+	/// Binds a property to the player
+	/// </summary>
+	/// <param name="inUnit">In unit.</param>
 	public virtual void AddProperty(Property inUnit)
 	{
 		if(!properties.Contains(inUnit))
@@ -127,9 +160,13 @@ public class Player : MonoBehaviour{
 					u.comTowerEffect++;
 				}
 			}
+			InGameGUI.instance.SetPlayerDisplay(this);
 		}
 	}
-
+	/// <summary>
+	/// Removes the property from the player
+	/// </summary>
+	/// <param name="inUnit">In unit.</param>
 	public virtual void RemoveProperty(Property inUnit)
 	{
 		if(properties.Contains(inUnit))
@@ -147,16 +184,27 @@ public class Player : MonoBehaviour{
 				}
 			}
 			properties.Remove(inUnit);
+			InGameGUI.instance.SetPlayerDisplay(this);
 		}
 	}
+	/// <summary>
+	/// Binds a unit to the player
+	/// </summary>
+	/// <param name="inUnit">In unit.</param>
 	public virtual void AddUnit(UnitController inUnit)
 	{
 		if(!units.Contains(inUnit))
 		{
 			units.Add(inUnit);
 			inUnit.SetOwner(this);
+			InGameGUI.instance.SetPlayerDisplay(this);
 		}
 	}
+	/// <summary>
+	/// Produces the unit and binds it to the player
+	/// </summary>
+	/// <returns>The unit.</returns>
+	/// <param name="unit">Unit.</param>
 	public UnitController ProduceUnit(UnitNames unit)
 	{
 		UnitController outUnit = (UnitController)MonoBehaviour.Instantiate(Utilities.GetPrefabFromUnitName(unit));
@@ -169,6 +217,13 @@ public class Player : MonoBehaviour{
 		pigs.unitsCreated++;
 		return outUnit;
 	}
+	/// <summary>
+	/// Actually produces a property in the specified location and binds it to the player
+	/// </summary>
+	/// <returns>The property.</returns>
+	/// <param name="prop">Property.</param>
+	/// <param name="position">Position.</param>
+	/// <param name="rotation">Rotation.</param>
 	public Property ProduceProperty(UnitNames prop, Vector3 position, Quaternion rotation)
 	{
 		Property outUnit = (Property)MonoBehaviour.Instantiate(Utilities.GetPrefabFromUnitName(prop), position, rotation);
@@ -177,7 +232,10 @@ public class Player : MonoBehaviour{
 		RemoveFunds(outUnit.baseCost);
 		return outUnit;
 	}
-	//Does not actually remove unit from game, use DeleteUnit for that
+	/// <summary>
+	/// Removes the unit from player, setting its side to neutral
+	/// </summary>
+	/// <param name="inUnit">In unit.</param>
 	public virtual void RemoveUnitFromPlayer(UnitController inUnit)
 	{
 		if(units.Contains(inUnit))
@@ -188,6 +246,7 @@ public class Player : MonoBehaviour{
 				selectedGeneral.Hide();
 			}
 			units.Remove(inUnit);
+			InGameGUI.instance.SetPlayerDisplay(this);
 			pigs.unitsLost++;
 		}
 		if(units.Count == 0)
@@ -195,6 +254,10 @@ public class Player : MonoBehaviour{
 			InGameController.RemovePlayer(this);
 		}
 	}
+	/// <summary>
+	/// Removes a unit from this player and from the game
+	/// </summary>
+	/// <param name="inUnit">In unit.</param>
 	public virtual void DeleteUnitFromGame(UnitController inUnit)
 	{
 		if(units.Contains(inUnit))
@@ -205,6 +268,7 @@ public class Player : MonoBehaviour{
 				selectedGeneral.Hide();
 			}
 			units.Remove(inUnit);
+			InGameGUI.instance.SetPlayerDisplay(this);
 			inUnit.KillUnit();
 			pigs.unitsLost++;
 		}
@@ -213,6 +277,11 @@ public class Player : MonoBehaviour{
 			InGameController.RemovePlayer(this);
 		}
 	}
+	/// <summary>
+	/// Determines whether this player can produce the input Unit
+	/// </summary>
+	/// <returns><c>true</c> if this instance can produce unit the specified possibleUnit; otherwise, <c>false</c>.</returns>
+	/// <param name="possibleUnit">Possible unit.</param>
 	public bool CanProduceUnit(UnitNames possibleUnit)
 	{
 		if(Utilities.GetPrefabFromUnitName(possibleUnit) != null)
@@ -224,6 +293,11 @@ public class Player : MonoBehaviour{
 		}
 		return false;
 	}
+	/// <summary>
+	/// Determines whether this player can produce the input Property.
+	/// </summary>
+	/// <returns><c>true</c> if this instance can produce property the specified possibleUnit; otherwise, <c>false</c>.</returns>
+	/// <param name="possibleUnit">Possible unit.</param>
 	public bool CanProduceProperty(UnitNames possibleUnit)
 	{
 		if(Utilities.GetPrefabFromUnitName(possibleUnit) != null)
@@ -235,6 +309,9 @@ public class Player : MonoBehaviour{
 		}
 		return false;
 	}
+	/// <summary>
+	/// Ends the player's turn.
+	/// </summary>
 	public virtual void EndTurn()
 	{
 		foreach(UnitController unit in units)
@@ -256,7 +333,9 @@ public class Player : MonoBehaviour{
 		lastCameraPosition = Utilities.gameCamera.lookAtPoint;
 		canIssueOrders = false;
 	}
-
+	/// <summary>
+	/// Starts the turn.
+	/// </summary>
 	public virtual void StartTurn()
 	{
 		if(selectedGeneral.powerInEffect)
@@ -274,30 +353,61 @@ public class Player : MonoBehaviour{
 		Utilities.gameCamera.CenterCameraOnPoint(lastCameraPosition);
 		canIssueOrders = true;
 	}
+	/// <summary>
+	/// Sets the player number.
+	/// </summary>
+	/// <param name="newNumber">New number.</param>
 	public void SetPlayerNumber(int newNumber)
 	{
 		playerNumber = newNumber;
 	}
+	/// <summary>
+	/// Gets the player number.
+	/// </summary>
+	/// <returns>The player number.</returns>
 	public int GetPlayerNumber()
 	{
 		return playerNumber;
 	}
+	/// <summary>
+	/// Sets the side.
+	/// </summary>
+	/// <param name="newSide">New side.</param>
 	public void SetSide(int newSide)
 	{
 		side = newSide;
 	}
+	/// <summary>
+	/// Determines whether this instance is same side as otherPlayer.
+	/// </summary>
+	/// <returns><c>true</c> if this instance is same side the specified otherPlayer; otherwise, <c>false</c>.</returns>
+	/// <param name="otherPlayer">Other player.</param>
 	public bool IsSameSide(Player otherPlayer)
 	{
 		return otherPlayer.side == side;
 	}
+	/// <summary>
+	/// Determines whether this instance is neutral towards the specified otherPlayer. Feature not implemented yet
+	/// </summary>
+	/// <returns><c>true</c> if this instance is neutral towards the specified otherPlayer; otherwise, <c>false</c>.</returns>
+	/// <param name="otherPlayer">Other player.</param>
 	public bool IsNeutralTowards(Player otherPlayer)
 	{
 		return false;
 	}
+	/// <summary>
+	/// Determines whether this player is neutral side.
+	/// </summary>
+	/// <returns><c>true</c> if this instance is neutral side; otherwise, <c>false</c>.</returns>
 	public bool IsNeutralSide()
 	{
 		return side == 0;
 	}
+	/// <summary>
+	/// Removes the player, compiles and returns inGamestatistics
+	/// </summary>
+	/// <returns>The player.</returns>
+	/// <param name="won">If set to <c>true</c> won.</param>
 	public PlayerInGameStatistics RemovePlayer(bool won)
 	{
 		if(won)
@@ -328,11 +438,15 @@ public class Player : MonoBehaviour{
 		pigs.name = playerName;
 		return pigs;
 	}
+	/// <summary>
+	/// Compiles the in game statistics.
+	/// </summary>
+	/// <param name="won">If set to <c>true</c> won.</param>
 	void CompileInGameStatistics (bool won)
 	{
 		pigs.won = won;
 	}
-
+	
 	public void Initialize ()
 	{
 		EndTurn();
@@ -345,6 +459,10 @@ public class Player : MonoBehaviour{
 			}
 		}
 	}
+	/// <summary>
+	/// Gets the side.
+	/// </summary>
+	/// <returns>The side.</returns>
 	public int GetSide()
 	{
 		return side;

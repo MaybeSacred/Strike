@@ -56,6 +56,7 @@
      <Compile Include="Assets\MenuBackgroundMapDisplayer.cs" />
      <Compile Include="Assets\OptionsMenu.cs" />
      <Compile Include="Assets\PlayerGUIView.cs" />
+     <Compile Include="Assets\PropertyGameView.cs" />
      <Compile Include="Assets\Scripts\AIPlayer.cs" />
      <Compile Include="Assets\Scripts\AIPlayerEasy.cs" />
      <Compile Include="Assets\Scripts\AIPlayerHard.cs" />
@@ -93,6 +94,7 @@
      <Compile Include="Assets\TerrainBlock.cs" />
      <Compile Include="Assets\TerrainBuilder.cs" />
      <Compile Include="Assets\TerrainGameViewer.cs" />
+     <Compile Include="Assets\UnitGameViewer.cs" />
      <Compile Include="Assets\WeatherToggle.cs" />
      <None Include="Assets\Standard Assets\Particles\Sources\Shaders\Particle Alpha Blend (Queue +100).shader" />
      <None Include="Assets\Data\log.txt" />
