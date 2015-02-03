@@ -2,26 +2,45 @@
 using System.Collections;
 
 public class InGameGUI : MonoBehaviour {
+	// static instance available to other classes
+	public static InGameGUI instance;
 	private TerrainBlock blockMousedOver;
 	private Property propertyMousedOver;
 	private UnitController unitMousedOver;
 	public GUIStyle healthBarStyle;
 	//Used to toggle between two or more displays;
 	float displayOverloadTimer;
+	public InGamePlayerStatsView currentPlayerView, hoveredPlayerView;
+	public TerrainGameViewer terrainView;
+	void Awake(){
+		instance = this;
+	}
 	// Use this for initialization
 	void Start () {
-	
+		
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		RaycastHit hit;
-		if(Physics.Raycast(Utilities.gameCamera.camera.ScreenPointToRay(Input.mousePosition), out hit, float.PositiveInfinity, 1<<LayerMask.NameToLayer("Default")))
+		if(Physics.Raycast(Utilities.gameCamera.camera.ScreenPointToRay(Input.mousePosition), out hit, float.PositiveInfinity, 1 << LayerMask.NameToLayer("Default")))
 		{
-			blockMousedOver = hit.collider.GetComponent<TerrainBlock>();
+			TerrainBlock newMouseOver = hit.collider.GetComponent<TerrainBlock>();
+			if(newMouseOver == null){
+				Debug.Log("Null terrainBlock" + Input.mousePosition.ToString());
+				Debug.Break();
+			}
+			if(blockMousedOver != newMouseOver){
+				blockMousedOver = newMouseOver;
+				terrainView.gameObject.SetActive(true);
+				blockMousedOver.SetTerrainView(terrainView);
+			}
 			if(blockMousedOver.IsOccupied() && blockMousedOver.occupyingUnit.gameObject.activeSelf)
 			{
-				unitMousedOver = blockMousedOver.occupyingUnit;
+				if(unitMousedOver != blockMousedOver.occupyingUnit){
+					unitMousedOver = blockMousedOver.occupyingUnit;
+					SetHoveredPlayerDisplay(unitMousedOver.GetOwner());
+				}
 			}
 			else
 			{
@@ -29,11 +48,18 @@ public class InGameGUI : MonoBehaviour {
 			}
 			if(blockMousedOver.HasProperty())
 			{
-				propertyMousedOver = blockMousedOver.occupyingProperty;
+				if(propertyMousedOver != blockMousedOver.occupyingProperty){
+					propertyMousedOver = blockMousedOver.occupyingProperty;
+					SetHoveredPlayerDisplay(propertyMousedOver.GetOwner());
+				}
 			}
 			else
 			{
 				propertyMousedOver = null;
+			}
+			// Hides hovered view if nothing to display
+			if(propertyMousedOver == null && unitMousedOver == null){
+				hoveredPlayerView.gameObject.SetActive(false);
 			}
 		}
 		else
@@ -41,6 +67,8 @@ public class InGameGUI : MonoBehaviour {
 			blockMousedOver = null;
 			unitMousedOver = null;
 			propertyMousedOver = null;
+			terrainView.gameObject.SetActive(false);
+			hoveredPlayerView.gameObject.SetActive(false);
 		}
 	}
 	void OnGUI()
@@ -51,42 +79,6 @@ public class InGameGUI : MonoBehaviour {
 		}
 		else
 		{
-			GUILayout.BeginArea(new Rect(0, 0, 100, 120));
-			GUILayout.BeginVertical();
-			GUILayout.Box(InGameController.GetCurrentPlayer().playerName);
-			GUILayout.Box("Funds: " + InGameController.GetCurrentPlayer().funds.ToString());
-			GUILayout.Box("Properties: " + InGameController.GetCurrentPlayer().GetNumberOfProperties());
-			GUILayout.Box("Units: " + InGameController.GetCurrentPlayer().units.Count);
-			GUILayout.EndVertical();
-			GUILayout.EndArea();
-			if(unitMousedOver != null && !unitMousedOver.GetOwner().IsSameSide(InGameController.GetCurrentPlayer()))
-			{
-				GUILayout.BeginArea(new Rect(100, 0, 100, 120));
-				GUILayout.BeginVertical();
-				GUILayout.Box(unitMousedOver.GetOwner().playerName);
-				if(!unitMousedOver.GetOwner().IsNeutralSide())
-				{
-					GUILayout.Box("Funds: " + unitMousedOver.GetOwner().funds.ToString());
-					GUILayout.Box("Properties: " + unitMousedOver.GetOwner().GetNumberOfProperties());
-					GUILayout.Box("Units: " + (Utilities.fogOfWarEnabled?"--":unitMousedOver.GetOwner().units.Count.ToString()));
-				}
-				GUILayout.EndVertical();
-				GUILayout.EndArea();
-			}
-			else if(propertyMousedOver != null && !propertyMousedOver.GetOwner().IsSameSide(InGameController.GetCurrentPlayer()))
-			{
-				GUILayout.BeginArea(new Rect(100, 0, 100, 120));
-				GUILayout.BeginVertical();
-				GUILayout.Box(propertyMousedOver.GetOwner().playerName);
-				if(!propertyMousedOver.GetOwner().IsNeutralSide())
-				{
-					GUILayout.Box("Funds: " + propertyMousedOver.GetOwner().funds.ToString());
-					GUILayout.Box("Properties: " + propertyMousedOver.GetOwner().GetNumberOfProperties());
-					GUILayout.Box("Units: " + (Utilities.fogOfWarEnabled?"--":propertyMousedOver.GetOwner().units.Count.ToString()));
-				}
-				GUILayout.EndVertical();
-				GUILayout.EndArea();
-			}
 			if(Input.GetKey("i"))
 			{
 				if(unitMousedOver != null)
@@ -102,10 +94,6 @@ public class InGameGUI : MonoBehaviour {
 					blockMousedOver.ShowDetailedInfo();
 				}
 			}
-			if(blockMousedOver != null)
-			{
-				blockMousedOver.ShowTerrainBlockInfo();
-			}
 			if(unitMousedOver != null)
 			{
 				unitMousedOver.ShowUnitControllerInfo(displayOverloadTimer);
@@ -114,7 +102,6 @@ public class InGameGUI : MonoBehaviour {
 			}
 			if(propertyMousedOver != null)
 			{
-				propertyMousedOver.ShowPropertyInfo();
 				if(unitMousedOver == null)
 				{
 					ShowHealthDisplay(propertyMousedOver.health.PrettyHealth(), propertyMousedOver.transform.position);
@@ -122,6 +109,47 @@ public class InGameGUI : MonoBehaviour {
 			}
 		}
 	}
+	/// <summary>
+	/// Sets the current player display.
+	/// </summary>
+	/// <param name="currentPlayer">Current player.</param>
+	public void SetCurrentPlayerDisplay(Player currentPlayer){
+		currentPlayerView.gameObject.SetActive(true);
+		currentPlayer.SetPlayerGUIView(currentPlayerView);
+	}
+	/// <summary>
+	/// Sets the hovered-over player display.
+	/// </summary>
+	/// <param name="hoveredPlayer">Hovered player.</param>
+	public void SetHoveredPlayerDisplay(Player hoveredPlayer){
+		hoveredPlayerView.gameObject.SetActive(true);
+		hoveredPlayer.SetPlayerGUIView(hoveredPlayerView);
+	}
+	/// <summary>
+	/// Sets one or neither of the player displays
+	/// </summary>
+	/// <param name="player">Player.</param>
+	public void SetPlayerDisplay (Player player)
+	{
+		if(player == InGameController.GetCurrentPlayer()){
+			SetCurrentPlayerDisplay(player);
+		}
+		else if(unitMousedOver != null){
+			if(player == unitMousedOver.GetOwner()){
+				SetHoveredPlayerDisplay(player);
+			}
+		}
+		else if(propertyMousedOver != null){
+			if(player == propertyMousedOver.GetOwner()){
+				SetHoveredPlayerDisplay(player);
+			}
+		}
+	}
+	/// <summary>
+	/// Shows the health display for a unit or property
+	/// </summary>
+	/// <param name="health">Health.</param>
+	/// <param name="placeToDraw">Place to draw.</param>
 	public void ShowHealthDisplay(int health, Vector3 placeToDraw)
 	{
 		int numberOfHP = health;
@@ -134,6 +162,9 @@ public class InGameGUI : MonoBehaviour {
 		}
 		GUI.EndGroup();
 	}
+	/// <summary>
+	/// Displays the pause menu
+	/// </summary>
 	void PauseMenu()
 	{
 		if(GUI.Button(new Rect(Screen.width/2 - 60,Screen.height/2 - 30,120,60), "End Turn")) {

@@ -644,4 +644,10 @@ public class TerrainBlock : MonoBehaviour, System.IComparable<TerrainBlock> {
 		else if (this.fCost > other.fCost) return 1;
 		else return 0;
 	}
+
+	public void SetTerrainView (TerrainGameViewer terrainView)
+	{
+		terrainView.SetValues(prettyName, defenseBoost.ToString());
+	}
+
 }

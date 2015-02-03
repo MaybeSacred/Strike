@@ -96,6 +96,7 @@ public class Player : MonoBehaviour{
 	{
 		funds += inMoney;
 		pigs.totalFundsGathered += inMoney;
+		InGameGUI.instance.SetPlayerDisplay(this);
 	}
 	public bool RemoveFunds(int inMoney)
 	{
@@ -105,6 +106,7 @@ public class Player : MonoBehaviour{
 		}
 		funds -= inMoney;
 		pigs.totalFundsSpent += inMoney;
+		InGameGUI.instance.SetPlayerDisplay(this);
 		return true;
 	}
 	public virtual void AddProperty(Property inUnit)
@@ -347,7 +349,13 @@ public class Player : MonoBehaviour{
 	{
 		return side;
 	}
-	
+	/// <summary>
+	/// Sets the information displayed in the game gui
+	/// </summary>
+	/// <param name="view">View.</param>
+	public void SetPlayerGUIView(InGamePlayerStatsView view){
+		view.SetValues(playerName, funds.ToString(), properties.Count.ToString(), units.Count.ToString());
+	}
 }
 
 /// <summary>

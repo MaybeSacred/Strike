@@ -195,6 +195,7 @@ public class InGameController : MonoBehaviour {
 			weather.AdvanceWeather(players);
 		}
 		turnState = 0;
+		InGameGUI.instance.SetCurrentPlayerDisplay(players[currentPlayer]);
 	}
 	public static void RemovePlayer(Player toRemove)
 	{
