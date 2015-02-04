@@ -117,7 +117,9 @@ public class AIPlayerMedium : AIPlayer
 			{
 				List<UnitController> temp = null;
 				supportUnits.TryGetValue(inUnit.unitClass, out temp);
-				temp.Remove(inUnit);
+				if(temp != null){
+					temp.Remove(inUnit);
+				}
 			}
 			countsOfEachUnit[(int)inUnit.unitClass]--;
 			inUnit.KillUnit();
@@ -197,7 +199,6 @@ public class AIPlayerMedium : AIPlayer
 		List<UnitController> assignedUnits = new List<UnitController>();
 		//list of clusters of clustered enemy units
 		List<List<AttackableObject>> lists = clusterer.Estimate(InGameController.GetAllEnemyUnits(this));
-		Debug.Log(lists.Count);
 		//assign infantry to buildings if possible - easy first step
 		for(int i = 0; i < units.Count; i++)
 		{
@@ -212,7 +213,7 @@ public class AIPlayerMedium : AIPlayer
 				}
 			}
 		}
-		//assign all other units to clusters of enemy units, or our own units if theyre support units
+		//assign all other units to clusters of enemy units, or our own units if they're support units
 		int[] unitsAssignedToCluster = new int[lists.Count];
 		for(int i = 0; i < units.Count; i++)
 		{
@@ -380,12 +381,12 @@ public class AIPlayerMedium : AIPlayer
 		Vector3 median = Vector3.zero;
 		for(int i = 0; i < enemyUnits.Count; i++)
 		{
-			sum += DamageValues.CalculateDamage(inUnit,enemyUnits[i]) * enemyUnits[i].UnitCost() - .33f * DamageValues.CalculateDamage(enemyUnits[i], inUnit) * inUnit.baseCost;
+			sum += DamageValues.CalculateDamage(inUnit,enemyUnits[i]) * enemyUnits[i].UnitCost() - .33f * DamageValues.CalculateDamage(enemyUnits[i], inUnit) * inUnit.UnitCost();
 			median += enemyUnits[i].GetPosition();
 		}
-		median /= (enemyUnits.Count > 0)? enemyUnits.Count:1;
+		median /= (enemyUnits.Count > 0) ? enemyUnits.Count : 1;
 		float distance = (inUnit.transform.position - median).magnitude;
-		return sum/(distance > 1?distance:1);
+		return sum/(distance > 1 ? distance : 1);
 	}
 	
 	AttackableObject BestUnitInCluster(List<AttackableObject> enemyUnits, UnitController inUnit)

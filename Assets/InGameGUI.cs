@@ -20,8 +20,8 @@ public class InGameGUI : MonoBehaviour {
 	public PropertyGameView propertyView;
 	// A displayer for high-level unit details
 	public UnitGameViewer unitView;
-	// The root canvas, for attaching other panels to
-	public Canvas parentCanvas;
+	// Advance turn button
+	public UnityEngine.UI.Button advanceTurnButton;
 	void Awake(){
 		instance = this;
 		SetupDisplayPanels();
@@ -30,16 +30,7 @@ public class InGameGUI : MonoBehaviour {
 	/// Setup the display panels.
 	/// </summary>
 	void SetupDisplayPanels(){
-		currentPlayerView = Instantiate(currentPlayerView) as InGamePlayerStatsView;
-		
-		hoveredPlayerView = Instantiate(hoveredPlayerView) as InGamePlayerStatsView;
-		
-		terrainView = Instantiate(terrainView) as TerrainGameViewer;
-		
-		propertyView = Instantiate(propertyView) as PropertyGameView;
-		
-		unitView = Instantiate(unitView) as UnitGameViewer;
-		
+		advanceTurnButton.onClick.AddListener(() => FindObjectOfType<InGameController>().AdvanceTurn());
 	}
 	// Use this for initialization
 	void Start () {

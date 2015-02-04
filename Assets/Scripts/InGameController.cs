@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 
 public class InGameController : MonoBehaviour {
+	// Exposed instance
 	public static InGameController instance;
+	
 	private static List<Player> players;
 	private static List<PlayerInGameStatistics> collectedStatistics;
 	public static ParticleSystem mouseOverParticles;

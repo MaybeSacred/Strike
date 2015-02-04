@@ -17,6 +17,13 @@ public class InGameCamera : MonoBehaviour {
 	public float rightClickMovementSpeed;
 	public float lookAtTrackingSpeed;
 	public bool otherMenuActive;
+	// How much we should take the y-axis height into account for bounds checking
+	public float cameraBoundsFactor;
+	// The root canvas
+	public RectTransform parentCanvas;
+	void Awake(){
+		parentCanvas = Instantiate(parentCanvas) as RectTransform;
+	}
 	void Start () {
 		lookAtPoint = Vector3.zero;
 		lookAtPointFollower = Vector3.zero;
@@ -90,7 +97,7 @@ public class InGameCamera : MonoBehaviour {
 			}
 			LookingBoundsCheck();
 			lastMousePosition = Input.mousePosition;
-			attemptedZoomPosition = Mathf.Clamp(attemptedZoomPosition - Input.GetAxis("Mouse ScrollWheel")*7, closeYPoint, farYPoint);
+			attemptedZoomPosition = Mathf.Clamp(attemptedZoomPosition - Input.GetAxis("Mouse ScrollWheel")*6, closeYPoint, farYPoint);
 			lookAtPointFollower = Vector3.Lerp(lookAtPointFollower, lookAtPoint, Time.deltaTime * lookAtTrackingSpeed);
 			transform.position = Vector3.Lerp(transform.position, lookAtPointFollower + (attemptedZoomPosition)*(transform.rotation*-Vector3.forward), Time.deltaTime * scrollSpeed);
 			//transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(eulerAngles), Time.deltaTime * cameraSpeed);
@@ -102,7 +109,7 @@ public class InGameCamera : MonoBehaviour {
 		lookAtPoint = new Vector3(point.x, 0, point.z);
 		LookingBoundsCheck();
 	}
-	private float cameraBoundsFactor = .45f;
+	
 	private void LookingBoundsCheck()
 	{
 		if(lookAtPoint.x < InGameController.currentTerrain.lowerXMapBound + cameraBoundsFactor * transform.position.y)
