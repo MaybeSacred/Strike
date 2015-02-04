@@ -1043,7 +1043,7 @@ public class AIPlayerMedium : AIPlayer
 				ProduceUnits();
 				if(productionAttempts >= producingProperties)
 				{
-					InGameController.AdvanceTurn();
+					InGameController.instance.AdvanceTurn();
 				}
 			}
 		}

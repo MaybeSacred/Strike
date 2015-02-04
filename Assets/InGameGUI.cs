@@ -4,16 +4,42 @@ using System.Collections;
 public class InGameGUI : MonoBehaviour {
 	// static instance available to other classes
 	public static InGameGUI instance;
+	// current block input device is over, if any
 	private TerrainBlock blockMousedOver;
+	// current property input device is over, if any
 	private Property propertyMousedOver;
+	// current unit input device is over, if any
 	private UnitController unitMousedOver;
-	public GUIStyle healthBarStyle;
-	public InGamePlayerStatsView currentPlayerView, hoveredPlayerView;
+							//Current player's stats
+	public InGamePlayerStatsView currentPlayerView,
+		// Stats of unit/property that input device is over, if owner is different from current player
+		hoveredPlayerView;
+	// Displays high-level detail about the current terrain block
 	public TerrainGameViewer terrainView;
+	// A displayer for high-level property details
 	public PropertyGameView propertyView;
+	// A displayer for high-level unit details
 	public UnitGameViewer unitView;
+	// The root canvas, for attaching other panels to
+	public Canvas parentCanvas;
 	void Awake(){
 		instance = this;
+		SetupDisplayPanels();
+	}
+	/// <summary>
+	/// Setup the display panels.
+	/// </summary>
+	void SetupDisplayPanels(){
+		currentPlayerView = Instantiate(currentPlayerView) as InGamePlayerStatsView;
+		
+		hoveredPlayerView = Instantiate(hoveredPlayerView) as InGamePlayerStatsView;
+		
+		terrainView = Instantiate(terrainView) as TerrainGameViewer;
+		
+		propertyView = Instantiate(propertyView) as PropertyGameView;
+		
+		unitView = Instantiate(unitView) as UnitGameViewer;
+		
 	}
 	// Use this for initialization
 	void Start () {
@@ -68,6 +94,7 @@ public class InGameGUI : MonoBehaviour {
 		}
 		else
 		{
+			// Set everything to null and displays off
 			blockMousedOver = null;
 			unitMousedOver = null;
 			propertyMousedOver = null;
@@ -85,6 +112,7 @@ public class InGameGUI : MonoBehaviour {
 		}
 		else
 		{
+			// If "info" key, display detailed information about what is hovered over
 			if(Input.GetKey("i"))
 			{
 				if(unitMousedOver != null)
@@ -179,7 +207,7 @@ public class InGameGUI : MonoBehaviour {
 		GUI.BeginGroup(new Rect(unitPointOnScreen.x - imageWidth*5, Screen.height - unitPointOnScreen.y + imageWidth + 8, 10*imageWidth, imageWidth*2));
 		for(int i = 0; i < numberOfHP; i++)
 		{
-			GUI.Label(new Rect(i*imageWidth, 0, imageWidth, imageWidth*2), Utilities.healthPoint[i], healthBarStyle);
+			GUI.Label(new Rect(i*imageWidth, 0, imageWidth, imageWidth*2), Utilities.healthPoint[i]);
 		}
 		GUI.EndGroup();
 	}

@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class UnitGameViewer : MonoBehaviour {
-	public UnityEngine.UI.Text nameText, healthText, ammoText, fuelText, carriedUnitText;
+	public UnityEngine.UI.Text nameText, healthText, ammoText, fuelText;
 	public UnityEngine.UI.Image[] rankImages, 
 		// Array of carried unit images
 		carriedUnitImages;
@@ -17,7 +17,7 @@ public class UnitGameViewer : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		animationTimer += Time.deltaTime;
-		UpdateMultipleModifiers();
+		UpdateMultipleGraphics();
 	}
 	/// <summary>
 	/// Sets the values of the Gui box
@@ -33,34 +33,49 @@ public class UnitGameViewer : MonoBehaviour {
 		fuelText.text = fuel;
 		currentDisplayedUnitRank = rank;
 		currentDisplayedCarriedCount = carriedUnitCount;
-		if(rank == UnitRanks.UnRanked){
+		if(rank != UnitRanks.UnRanked && carriedUnitCount > 0){
+			UpdateMultipleGraphics();
+		}
+		else if(carriedUnitCount > 0){
+			DisplayUnitsCarried();
 			HideRank();
 		}
-		if(carriedUnitCount == 0){
+		else if(rank != UnitRanks.UnRanked){
+			DisplayRank();
 			HideCarriedUnits();
 		}
+		else{
+			HideCarriedUnits();
+			HideRank();
+		}
 	}
-	void UpdateMultipleModifiers(){
+	/// <summary>
+	/// Updates when there are multiple unit info graphics to display
+	/// </summary>
+	void UpdateMultipleGraphics(){
 		if(currentDisplayedUnitRank != UnitRanks.UnRanked && currentDisplayedCarriedCount > 0){
 			if((Mathf.FloorToInt(animationTimer)/2) % 2 == 0){
 				DisplayRank();
+				HideCarriedUnits();
 			}
 			else {
-				
+				DisplayUnitsCarried();
+				HideRank();
 			}
-		}
-		else if(currentDisplayedUnitRank != UnitRanks.UnRanked){
-			DisplayRank();
-		}
-		else if(currentDisplayedCarriedCount > 0){
-			
 		}
 	}
 	/// <summary>
 	/// Displays the number of units carried
 	/// </summary>
 	void DisplayUnitsCarried(){
-		carriedUnitText.text = currentDisplayedCarriedCount.ToString();
+		for(int i = 0; i < carriedUnitImages.Length; i++){
+			if(i < currentDisplayedCarriedCount){
+				carriedUnitImages[i].gameObject.SetActive(true);
+			}
+			else{
+				carriedUnitImages[i].gameObject.SetActive(false);
+			}
+		}
 	}
 	/// <summary>
 	/// Displays the proper rank image
@@ -79,7 +94,9 @@ public class UnitGameViewer : MonoBehaviour {
 	/// Hides the carried units display
 	/// </summary>
 	void HideCarriedUnits(){
-		
+		for(int i = 0; i < carriedUnitImages.Length; i++){
+			carriedUnitImages[i].gameObject.SetActive(false);
+		}
 	}
 	/// <summary>
 	/// Hides all rank images

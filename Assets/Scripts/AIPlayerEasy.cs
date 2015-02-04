@@ -57,7 +57,7 @@ public class AIPlayerEasy : AIPlayer
 			else
 			{
 				ProduceUnits();
-				InGameController.AdvanceTurn();
+				InGameController.instance.AdvanceTurn();
 			}
 		}
 	}

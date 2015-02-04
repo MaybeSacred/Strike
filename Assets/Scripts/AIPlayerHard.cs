@@ -271,7 +271,7 @@ public class AIPlayerHard : AIPlayer
 			else
 			{
 				ProduceUnits();
-				InGameController.AdvanceTurn();
+				InGameController.instance.AdvanceTurn();
 			}
 		}
 	}

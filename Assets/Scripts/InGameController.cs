@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 public class InGameController : MonoBehaviour {
+	public static InGameController instance;
 	private static List<Player> players;
 	private static List<PlayerInGameStatistics> collectedStatistics;
 	public static ParticleSystem mouseOverParticles;
@@ -21,6 +22,7 @@ public class InGameController : MonoBehaviour {
 	private static int turnState;
 	// Use this for initialization
 	void Awake() {
+		instance = this;
 		currentTerrain = GameObject.FindObjectOfType<TerrainBuilder>();
 		mouseOverParticles = Instantiate(mouseParticles) as ParticleSystem;
 		mouseOverParticles.particleSystem.Stop();
@@ -179,7 +181,7 @@ public class InGameController : MonoBehaviour {
 		currentPlayer = 0;
 	}
 
-	public static void AdvanceTurn()
+	public void AdvanceTurn()
 	{
 		players[currentPlayer].EndTurn();
 		isPaused = false;
