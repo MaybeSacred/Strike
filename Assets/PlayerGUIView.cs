@@ -30,8 +30,13 @@ public class PlayerGUIView : MonoBehaviour {
 	}
 	void Start(){
 		thisPlayer = Instantiate(thisPlayer) as Player;
-		thisPlayer.Setup(Random.Range(0, 4), Generals.Taron, new Color(.8f, .8f, .8f), "Player");
-		ChangeSliderHue(Random.Range(0, 359));
+		thisPlayer.Setup(Random.Range(1, 4), Generals.Taron, new Color(.8f, .8f, .8f), "Player");
+		// Initialize sliders
+		playerSideSlider.value = thisPlayer.side;
+		ChangeSide(thisPlayer.side);
+		int tempRandom = Random.Range(0, 359);
+		ChangeSliderHue(tempRandom);
+		colorSelectSlider.value = tempRandom;
 		// Set up dropdowns
 		generalSelectDropdown = SkirmishMenuViewer.InstantiateUIPrefab(generalSelectDropdown, generalTopButton);
 		// Check whether its a higher or lower button, adjust to align with bottom or top edge

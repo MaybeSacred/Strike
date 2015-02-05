@@ -289,23 +289,6 @@ public class Property : MonoBehaviour, AttackableObject
 			}
 		}
 	}
-	public void ShowDetailedInfo()
-	{
-		GUI.BeginGroup(new Rect(Screen.width/2 - UnitController.infoBoxWidth, Screen.height/2 - UnitController.infoBoxHeight, 2 * UnitController.infoBoxWidth, 2 * UnitController.infoBoxHeight));
-		GUI.Box(new Rect(0, 0, 2 * UnitController.infoBoxWidth, 2 * UnitController.infoBoxHeight), "");
-		GUI.Label(new Rect(2, 2, 2 * UnitController.infoBoxWidth, 2 * UnitController.infoBoxHeight), description);
-		GUI.EndGroup();
-	}
-	public void ShowPropertyInfo()
-	{
-		GUI.BeginGroup(new Rect(Screen.width - 2*UnitController.infoBoxWidth, 0, UnitController.infoBoxWidth, UnitController.infoBoxHeight));
-		GUI.Box(new Rect(0, 0, UnitController.infoBoxWidth, UnitController.infoBoxHeight), "");
-		GUI.Label(new Rect(0, 0, UnitController.infoBoxWidth, 20), prettyName);
-		GUI.Label(new Rect(0, 20, UnitController.infoBoxWidth, 20), "HP: " + (health.GetRawHealth() >= 0 ? health.PrettyHealth().ToString() : "0"));
-		GUI.Label(new Rect(0, 40, UnitController.infoBoxWidth, 20), "Defense: " + propertyClass.defenseBonus);
-		GUI.Label(new Rect(0, 60, UnitController.infoBoxWidth, 20), "Capture: " + captureCount);
-		GUI.EndGroup();
-	}
 	public Vector3 GetPosition()
 	{
 		return transform.position;

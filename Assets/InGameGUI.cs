@@ -20,6 +20,9 @@ public class InGameGUI : MonoBehaviour {
 	public PropertyGameView propertyView;
 	// A displayer for high-level unit details
 	public UnitGameViewer unitView;
+	// Components for displaying detailed unit info
+	public GameObject detailedTextBox;
+	public UnityEngine.UI.Text detailedInfoText;
 	// Advance turn button
 	public UnityEngine.UI.Button advanceTurnButton;
 	void Awake(){
@@ -31,6 +34,7 @@ public class InGameGUI : MonoBehaviour {
 	/// </summary>
 	void SetupDisplayPanels(){
 		advanceTurnButton.onClick.AddListener(() => FindObjectOfType<InGameController>().AdvanceTurn());
+		detailedTextBox.SetActive(false);
 	}
 	// Use this for initialization
 	void Start () {
@@ -94,6 +98,23 @@ public class InGameGUI : MonoBehaviour {
 			terrainView.gameObject.SetActive(false);
 			hoveredPlayerView.gameObject.SetActive(false);
 		}
+		// If "info" key, display detailed information about what is hovered over
+		if(Input.GetKeyDown("i"))
+		{
+			detailedTextBox.SetActive(!detailedTextBox.activeSelf);
+			if(unitMousedOver != null)
+			{
+				detailedInfoText.text = unitMousedOver.description;
+			}
+			else if(propertyMousedOver != null)
+			{
+				detailedInfoText.text = propertyMousedOver.description;
+			}
+			else if(blockMousedOver != null)
+			{
+				detailedInfoText.text = blockMousedOver.description;
+			}
+		}
 	}
 	void OnGUI()
 	{
@@ -103,32 +124,13 @@ public class InGameGUI : MonoBehaviour {
 		}
 		else
 		{
-			// If "info" key, display detailed information about what is hovered over
-			if(Input.GetKey("i"))
-			{
-				if(unitMousedOver != null)
-				{
-					unitMousedOver.ShowDetailedInfo();
-				}
-				else if(propertyMousedOver != null)
-				{
-					propertyMousedOver.ShowDetailedInfo();
-				}
-				else if(blockMousedOver != null)
-				{
-					blockMousedOver.ShowDetailedInfo();
-				}
-			}
 			if(unitMousedOver != null)
 			{
 				ShowHealthDisplay(unitMousedOver.health.PrettyHealth(), unitMousedOver.transform.position);
 			}
-			if(propertyMousedOver != null)
+			else if(propertyMousedOver != null)
 			{
-				if(unitMousedOver == null)
-				{
-					ShowHealthDisplay(propertyMousedOver.health.PrettyHealth(), propertyMousedOver.transform.position);
-				}
+				ShowHealthDisplay(propertyMousedOver.health.PrettyHealth(), propertyMousedOver.transform.position);
 			}
 		}
 	}
