@@ -36,7 +36,7 @@ public class SkirmishMenuViewer : MonoBehaviour {
 	public int mapNameButtonOffset;
 	public RectTransform mapSelect, playerSelect;
 	//current root folder where map data are located
-		public static string ApplicationServerURL = "https://dl.dropboxusercontent.com/u/65011402/strike";
+	public static string ApplicationServerURL = "https://dl.dropboxusercontent.com/u/65011402/strike";
 	void Awake(){
 		instance = this;
 	}
@@ -44,38 +44,14 @@ public class SkirmishMenuViewer : MonoBehaviour {
 	void Start () {
 		settings = new GameSettings();
 		generalNames = System.Enum.GetNames(typeof(Generals));
-		mapNames = GetMapNames();
-		mapNames = ExtractPrettyMapNames(mapNames);
-		LoadMapMetaData(mapNames);
-		int smallestFontSize = int.MaxValue;
-		List<RectTransform> mapButtons = new List<RectTransform>();
-		foreach(string name in mapNames){
-			RectTransform t = InstantiateUIPrefab(mapNameLoadButton, mapNamePanel);
-			t.GetComponentsInChildren<UnityEngine.UI.Text>(true)[0].text = name;
-			mapButtons.Add(t);
-			string captured = name;
-			//add our delegate to the onClick handler, with appropriate indexing
-			t.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => {SetCurrentMap(captured); OnMapSelected();});
-			smallestFontSize = Mathf.Min(smallestFontSize, t.GetComponentsInChildren<UnityEngine.UI.Text>(true)[0].fontSize);
-		}
-		var offset = -mapNameButtonOffset/2;
-		foreach(RectTransform rt in mapButtons){
-			rt.anchoredPosition3D = new Vector3(0, offset, 0);
-			offset -= mapNameButtonOffset;
-		}
-		if(Mathf.Abs(offset) > mapNamePanel.rect.height){
-			mapNamePanel.offsetMax = new Vector2(mapNamePanel.offsetMax.x, offset);
-		}
-		SetCurrentMap(mapNames[0]);
-		mapNameOuterPanel.gameObject.SetActive(false);
-		scrollBar.gameObject.SetActive(false);
-		StartCoroutine(FinishedLoadingPlayer());
+		StartCoroutine(LoadMapsAsync());
+		StartCoroutine(FinishedLoadingPlayers());
 	}
 	/// <summary>
 	/// Callback when all player gui's have loaded
 	/// </summary>
 	/// <returns>The loading player.</returns>
-	IEnumerator FinishedLoadingPlayer(){
+	IEnumerator FinishedLoadingPlayers(){
 		bool done = false;
 		while(!done){
 			foreach(PlayerGUIView pg in players){
@@ -87,11 +63,41 @@ public class SkirmishMenuViewer : MonoBehaviour {
 		}
 		SwitchToMapSelect();
 	}
+	IEnumerator LoadMapsAsync(){
+		yield return StartCoroutine(GetMapNames());
+		int smallestFontSize = int.MaxValue;
+		List<RectTransform> mapButtons = new List<RectTransform>();
+		for(int i = 0; i < mapNames.Length; i++){
+			RectTransform t = InstantiateUIPrefab(mapNameLoadButton, mapNamePanel);
+			t.GetComponentsInChildren<UnityEngine.UI.Text>(true)[0].text = mapNames[i];
+			mapButtons.Add(t);
+			string captured = mapNames[i].ToString();
+			//add our delegate to the onClick handler, with appropriate indexing
+			Encapsulater(t, captured);
+			smallestFontSize = Mathf.Min(smallestFontSize, t.GetComponentsInChildren<UnityEngine.UI.Text>(true)[0].fontSize);
+		}
+		//mapButtons[0].GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => {SetCurrentMap(mapNames[0]); OnMapSelected();});
+		var offset = -mapNameButtonOffset/2;
+		foreach(RectTransform rt in mapButtons){
+			rt.anchoredPosition3D = new Vector3(0, offset, 0);
+			offset -= mapNameButtonOffset;
+		}
+		if(Mathf.Abs(offset) > mapNamePanel.rect.height){
+			mapNamePanel.offsetMax = new Vector2(mapNamePanel.offsetMax.x, offset);
+		}
+		SetCurrentMap(mapNames[0]);
+		mapNameOuterPanel.gameObject.SetActive(false);
+		scrollBar.gameObject.SetActive(false);
+	}
+	void Encapsulater(RectTransform t, string input){
+		t.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => {SetCurrentMap(input); OnMapSelected();});
+	}
 	/// <summary>
 	/// Sets the current mapData from the provided map name
 	/// </summary>
 	/// <param name="map">Map.</param>
 	void SetCurrentMap(string map){
+		Debug.Log(map);
 		selectedMapName = map;
 		foreach(MapData mp in maps){
 			if(mp.mapName.Equals(selectedMapName)){
@@ -135,16 +141,28 @@ public class SkirmishMenuViewer : MonoBehaviour {
 	/// Gets the map names from file
 	/// </summary>
 	/// <returns>The map names.</returns>
-	public string[] GetMapNames(){
+	public IEnumerator GetMapNames(){
 #if UNITY_WEBPLAYER
 		var names = new WWW(ApplicationServerURL + @"/Maps/MapNames.bin");
 		while(!names.isDone){
-			
+			yield return new WaitForSeconds(.001f);
 		}
 		MemoryStream ms = new MemoryStream(names.bytes);
 		BinaryFormatter deserializer = new BinaryFormatter();
-		string[] obj = (string[])deserializer.Deserialize(ms);
-		return obj;
+		mapNames = (string[])deserializer.Deserialize(ms);
+		mapNames = ExtractPrettyMapNames(mapNames);
+		maps = new List<MapData>();
+		for(int i = 0; i < mapNames.Length; i++)
+		{
+			names = new WWW(ApplicationServerURL + @"/Maps/" + mapNames[i] + ".bin");
+			while(!names.isDone){
+				yield return new WaitForSeconds(.001f);
+			}
+			ms = new MemoryStream(names.bytes);
+			deserializer = new BinaryFormatter();
+			MapData obj = (MapData)deserializer.Deserialize(ms);
+			maps.Add(obj);
+		}
 #endif
 #if UNITY_STANDALONE
 		if(File.Exists(Application.dataPath + @"\Maps\MapNames.bin"))
@@ -174,15 +192,15 @@ public class SkirmishMenuViewer : MonoBehaviour {
 	/// Loads the map meta data for provided names
 	/// </summary>
 	/// <param name="namesToLoad">Names to load.</param>
-	void LoadMapMetaData(string[] namesToLoad)
+	IEnumerator LoadMapMetaData()
 	{
 		maps = new List<MapData>();
 #if UNITY_WEBPLAYER
-		for(int i = 0; i < namesToLoad.Length; i++)
+		for(int i = 0; i < mapNames.Length; i++)
 		{
-			var names = new WWW(ApplicationServerURL + @"/Maps/" + namesToLoad[i] + ".bin");
+			var names = new WWW(ApplicationServerURL + @"/Maps/" + mapNames[i] + ".bin");
 			while(!names.isDone){
-				
+				yield return new WaitForSeconds(.01f);
 			}
 			MemoryStream ms = new MemoryStream(names.bytes);
 			BinaryFormatter deserializer = new BinaryFormatter();
