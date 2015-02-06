@@ -14,17 +14,18 @@ public class MapData{
 	public int shipyards;
 	public int comTowers;
 	public bool isPreDeploy;
-	public MapTerrainBlock[][] mapData;
+	public TerrainObject[][] mapData;
+	public TerrainObject[] properties;
 	public string mapName;
 	public float[] blockStatistics;
 	public MapData(string name, int mapX, int mapY)
 	{
 		mapName = name;
 		blockStatistics = new float[System.Enum.GetValues(typeof(TERRAINTYPE)).Length];
-		mapData = new MapTerrainBlock[mapX][];
+		mapData = new TerrainObject[mapX][];
 		for(int i = 0; i < mapData.Length; i++)
 		{
-			mapData[i] = new MapTerrainBlock[mapY];
+			mapData[i] = new TerrainObject[mapY];
 		}
 	}
 	public string InstanceData()
@@ -74,22 +75,27 @@ public class MapData{
 	}
 }
 /// <summary>
-/// Provides a serializable conversion for terrain blocks
+/// Provides a serializable conversion for terrain blocks and other objects
 /// </summary>
 [System.Serializable]
-public class MapTerrainBlock
+public class TerrainObject
 {
 	public string name;
 	public Vector3Serializer position;
 	public QuaternionSerializer rotation;
-	public MapTerrainBlock(string inName, Vector3 pos, Quaternion rot){
+	public TerrainObject(string inName, Vector3 pos, Quaternion rot){
 		name = inName;
 		position = new Vector3Serializer(pos);
 		rotation = new QuaternionSerializer(rot);
 	}
+	public TerrainObject(GameObject go){
+		name = go.name;
+		position = new Vector3Serializer(go.transform.position);
+		rotation = new QuaternionSerializer(go.transform.rotation);
+	}
 }
 /// <summary>
-/// Serializable wrapper class for Quaternion
+/// Serializable wrapper struct for Quaternion
 /// </summary>
 [System.Serializable]
 public struct QuaternionSerializer
@@ -115,7 +121,7 @@ public struct QuaternionSerializer
 	}
 }
 /// <summary>
-/// Serializable wrapper class for Vector3
+/// Serializable wrapper struct for Vector3
 /// </summary>
 [System.Serializable]
 public struct Vector3Serializer

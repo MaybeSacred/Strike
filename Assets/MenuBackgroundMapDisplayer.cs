@@ -26,6 +26,15 @@ public class MenuBackgroundMapDisplayer : MonoBehaviour {
 				temp.transform.localRotation = data.mapData[i][j].rotation.ToQuaternion();
 			}
 		}
+		for(int i = 0; i < data.properties.Length; i++){
+			Debug.Log(data.properties[i].name);
+			GameObject temp = Instantiate(Resources.Load<GameObject>(data.properties[i].name)) as GameObject;
+			temp.GetComponent<Property>().enabled = false;
+			temp.transform.parent = transform;
+			Vector3 vec = data.properties[i].position.ToVector3();
+			temp.transform.localPosition = new Vector3(vec.x - data.mapData.Length/2, vec.y, vec.z - data.mapData[0].Length/2);
+			temp.transform.localRotation = data.properties[i].rotation.ToQuaternion();
+		}
 		transform.localPosition = new Vector3(0, transform.localPosition.y, Mathf.Max(data.mapData.Length, data.mapData[0].Length) + 1);
 	}
 }

@@ -868,12 +868,13 @@ public class TerrainBuilder : MonoBehaviour {
 		}
 		MapData outgoingData = new MapData(mapName, Mathf.RoundToInt(largestX) + 1, Mathf.RoundToInt(largestZ) + 1);
 		List<Vector3Serializer> HQLocations = new List<Vector3Serializer>();
+		List<Property> properties = new List<Property>();
 		RaycastHit hit;
 		for(int i = 0; i < blocks.Length; i++)
 		{
 			if(outgoingData.mapData[Mathf.RoundToInt(blocks[i].transform.position.x)][Mathf.RoundToInt(blocks[i].transform.position.z)] == null)
 			{
-				outgoingData.mapData[Mathf.RoundToInt(blocks[i].transform.position.x)][Mathf.RoundToInt(blocks[i].transform.position.z)] = new MapTerrainBlock(blocks[i].name, blocks[i].transform.position, blocks[i].transform.rotation);
+				outgoingData.mapData[Mathf.RoundToInt(blocks[i].transform.position.x)][Mathf.RoundToInt(blocks[i].transform.position.z)] = new TerrainObject(blocks[i].name, blocks[i].transform.position, blocks[i].transform.rotation);
 				outgoingData.blockStatistics[(int)blocks[i].typeOfTerrain]++;
 				if(blocks[i].HasProperty() || Physics.Raycast(new Vector3(Mathf.RoundToInt(blocks[i].transform.position.x), 100f, Mathf.RoundToInt(blocks[i].transform.position.z)), Vector3.down, out hit, 1000f, 1 << LayerMask.NameToLayer("PropertyLayer")))
 				{
@@ -881,10 +882,12 @@ public class TerrainBuilder : MonoBehaviour {
 					if(hit.collider != null)
 					{
 						propertyType = hit.collider.GetComponent<Property>().propertyType;
+						properties.Add(hit.collider.GetComponent<Property>());
 					}
 					else
 					{
 						propertyType = blocks[i].occupyingProperty.propertyType;
+						properties.Add(blocks[i].occupyingProperty);
 					}
 					switch(propertyType)
 					{
@@ -932,6 +935,10 @@ public class TerrainBuilder : MonoBehaviour {
 			}
 		}
 		outgoingData.HQLocations = HQLocations.ToArray();
+		outgoingData.properties = new TerrainObject[properties.Count];
+		for(int i = 0; i < outgoingData.properties.Length; i++){
+			outgoingData.properties[i] = new TerrainObject(properties[i].gameObject);
+		}
 		outgoingData.blockStatistics = NormalizeVector(outgoingData.blockStatistics);
 		return outgoingData;
 	}

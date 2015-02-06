@@ -82,14 +82,14 @@ public class SkirmishMenuViewer : MonoBehaviour {
 			Encapsulater(t, captured);
 			smallestFontSize = Mathf.Min(smallestFontSize, t.GetComponentsInChildren<UnityEngine.UI.Text>(true)[0].fontSize);
 		}
-		//mapButtons[0].GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => {SetCurrentMap(mapNames[0]); OnMapSelected();});
 		var offset = -mapNameButtonOffset/2;
 		foreach(RectTransform rt in mapButtons){
 			rt.anchoredPosition3D = new Vector3(0, offset, 0);
 			offset -= mapNameButtonOffset;
 		}
+		offset += mapNameButtonOffset/2;
 		if(Mathf.Abs(offset) > mapNamePanel.rect.height){
-			mapNamePanel.offsetMax = new Vector2(mapNamePanel.offsetMax.x, offset);
+			mapNamePanel.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Bottom, mapNamePanel.rect.height, -offset);
 		}
 		SetCurrentMap(mapNames[0]);
 		mapNameOuterPanel.gameObject.SetActive(false);
