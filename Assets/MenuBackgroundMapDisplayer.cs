@@ -19,11 +19,11 @@ public class MenuBackgroundMapDisplayer : MonoBehaviour {
 		}
 		for(int i = 0; i < data.mapData.Length; i++){
 			for(int j = 0; j < data.mapData[i].Length; j++){
-				GameObject temp = Instantiate(Resources.Load<GameObject>(data.mapData[i][j])) as GameObject;
+				GameObject temp = Instantiate(Resources.Load<GameObject>(data.mapData[i][j].name)) as GameObject;
 				temp.GetComponent<TerrainBlock>().enabled = false;
 				temp.transform.parent = transform;
 				temp.transform.localPosition = new Vector3(i - data.mapData.Length/2, 0, j - data.mapData[i].Length/2);
-				temp.transform.localRotation = Quaternion.identity;
+				temp.transform.localRotation = data.mapData[i][j].rotation.ToQuaternion();
 			}
 		}
 		transform.localPosition = new Vector3(0, transform.localPosition.y, Mathf.Max(data.mapData.Length, data.mapData[0].Length) + 1);

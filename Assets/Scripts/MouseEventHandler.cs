@@ -7,6 +7,7 @@ public class MouseEventHandler : MonoBehaviour {
 	private List<ReinforcementInstance> reinforcementInstances;
 	private ARFFDataHandler trainingArff, testingArff, trainingReinforcementArff, testingReinforcementArff;
 	private bool clearInstancesKeyDown;
+#if UNITY_STANDALONE
 	void Start () {
 		instances = new List<Instance>();
 		reinforcementInstances = new List<ReinforcementInstance>();
@@ -84,4 +85,5 @@ public class MouseEventHandler : MonoBehaviour {
 	{
 		trainingReinforcementArff.WriteInstanceData(reinforcementInstances.ToArray());
 	}
+#endif
 }

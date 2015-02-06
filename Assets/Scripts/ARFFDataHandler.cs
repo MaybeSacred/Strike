@@ -16,6 +16,7 @@ public class ARFFDataHandler
 	public int exportBlockHeight;
 	public int exportBlockWidth;
 	public bool exportMoreReadable;
+#if UNITY_STANDALONE
 	/*Create sparse export function*/
 	public ARFFDataHandler (string dPath, string fName, bool overwrite, bool exportReadable)
 	{
@@ -140,5 +141,6 @@ public class ARFFDataHandler
 		}
 		return true;
 	}
+#endif
 }
 

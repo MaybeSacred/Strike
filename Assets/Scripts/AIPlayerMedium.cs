@@ -830,107 +830,39 @@ public class AIPlayerMedium : AIPlayer
 	{
 		if(producingUnits)
 		{
-			switch(productionType)
+			UnitNames rankedName = productionEngine.Evaluate(this);
+			string unitsSelected = "";
+			if(rankedName != null)
 			{
-			case ProductionTest.RandomProd:
-			{
-				UnitNames rand = RandomUnitName();
-				if(((UnitController)Utilities.GetPrefabFromUnitName(rand)).baseCost <= funds)
+				if(makeSupplyLand)
 				{
+					rankedName = UnitNames.SupplyTank;
+					makeSupplyLand = false;
+				}
+				else if(makeSupplySea)
+				{
+					rankedName = UnitNames.SupplyShip;
+					makeSupplySea = false;
+				}
+				else if(makeTransport)
+				{
+					rankedName = transportToMake;
+					makeTransport = false;
+				}
+				if(((UnitController)Utilities.GetPrefabFromUnitName(rankedName)).baseCost <= funds)
+				{
+					SortPropertiesByHQDistance(((UnitController)Utilities.GetPrefabFromUnitName(rankedName)).moveClass);
 					for(int i = 0; i < properties.Count; i++)
 					{
-						if(properties[i].currentState == UnitState.UnMoved && !properties[i].GetOccupyingBlock().IsOccupied() && properties[i].CanProduceUnit(rand))
+						if(properties[i].currentState == UnitState.UnMoved && !properties[i].GetOccupyingBlock().IsOccupied() && properties[i].CanProduceUnit(rankedName))
 						{
-							properties[i].AIProduceUnit(rand);
+							properties[i].AIProduceUnit(rankedName);
 							break;
 						}
 					}
 				}
 				productionAttempts++;
 				producingUnits = false;
-				break;
-			}
-			case ProductionTest.HalfNHalf:
-			{
-				if(UnityEngine.Random.value < .5f)
-				{
-					UnitNames rand = RandomUnitName();
-					if(((UnitController)Utilities.GetPrefabFromUnitName(rand)).baseCost <= funds)
-					{
-						for(int i = 0; i < properties.Count; i++)
-						{
-							if(properties[i].currentState == UnitState.UnMoved && !properties[i].GetOccupyingBlock().IsOccupied() && properties[i].CanProduceUnit(rand))
-							{
-								properties[i].AIProduceUnit(rand);
-								break;
-							}
-						}
-					}
-					productionAttempts++;
-					producingUnits = false;
-				}
-				else
-				{
-					List<UnitNames> rankedNames = GetComponent<MouseEventHandler>().CheckTestInstanceClassificationRanked();
-					if(rankedNames != null)
-					{
-						UnitNames rand = rankedNames[UnityEngine.Random.Range(0, rankedNames.Count-1)];
-						if(((UnitController)Utilities.GetPrefabFromUnitName(rand)).baseCost <= funds)
-						{
-							for(int i = 0; i < properties.Count; i++)
-							{
-								if(properties[i].currentState == UnitState.UnMoved && !properties[i].GetOccupyingBlock().IsOccupied() && properties[i].CanProduceUnit(rand))
-								{
-									properties[i].AIProduceUnit(rand);
-									break;
-								}
-							}
-						}
-						productionAttempts++;
-						producingUnits = false;
-					}
-				}
-				break;
-			}
-			case ProductionTest.Learned:
-			{
-				UnitNames rankedName = productionEngine.Evaluate(this);
-				string unitsSelected = "";
-				if(rankedName != null)
-				{
-					if(makeSupplyLand)
-					{
-						rankedName = UnitNames.SupplyTank;
-						makeSupplyLand = false;
-					}
-					else if(makeSupplySea)
-					{
-						rankedName = UnitNames.SupplyShip;
-						makeSupplySea = false;
-					}
-					else if(makeTransport)
-					{
-						rankedName = transportToMake;
-						makeTransport = false;
-					}
-					if(((UnitController)Utilities.GetPrefabFromUnitName(rankedName)).baseCost <= funds)
-					{
-						SortPropertiesByHQDistance(((UnitController)Utilities.GetPrefabFromUnitName(rankedName)).moveClass);
-						for(int i = 0; i < properties.Count; i++)
-						{
-							if(properties[i].currentState == UnitState.UnMoved && !properties[i].GetOccupyingBlock().IsOccupied() && properties[i].CanProduceUnit(rankedName))
-							{
-								properties[i].AIProduceUnit(rankedName);
-								break;
-							}
-						}
-						break;
-					}
-					productionAttempts++;
-					producingUnits = false;
-				}
-				break;
-			}
 			}
 		}
 		else

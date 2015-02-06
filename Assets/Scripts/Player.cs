@@ -208,10 +208,12 @@ public class Player : MonoBehaviour{
 	public UnitController ProduceUnit(UnitNames unit)
 	{
 		UnitController outUnit = (UnitController)MonoBehaviour.Instantiate(Utilities.GetPrefabFromUnitName(unit));
+#if UNITY_STANDALONE
 		if(loggingProductionData)
 		{
 			GetComponent<MouseEventHandler>().AddInstance(outUnit.unitClass);
 		}
+#endif
 		AddUnit(outUnit);
 		RemoveFunds(outUnit.baseCost);
 		pigs.unitsCreated++;
@@ -410,6 +412,7 @@ public class Player : MonoBehaviour{
 	/// <param name="won">If set to <c>true</c> won.</param>
 	public PlayerInGameStatistics RemovePlayer(bool won)
 	{
+#if UNITY_STANDALONE
 		if(won)
 		{
 			GetComponent<MouseEventHandler>().WriteInstances();
@@ -417,6 +420,7 @@ public class Player : MonoBehaviour{
 		if(aiLevel != AILevel.Human){
 			GetComponent<MouseEventHandler>().WriteReinforcementInstances();
 		}
+#endif
 		CompileInGameStatistics(won);
 		UnitController[] unitArray = units.ToArray();
 		for(int i = 0; i < unitArray.Length; i++)

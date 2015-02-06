@@ -30,7 +30,9 @@ public class Utilities : MonoBehaviour{
 	public AIPlayer easyAIPrototype, mediumAIPrototype, hardAIPrototype;
 	private static List<PlayerInGameStatistics> statistics;
 	void Awake() {
+#if UNITY_STANDALONE
 		LearnerUtilities.SetJREPath();
+#endif
 	}
 	// Use this for initialization
 	void Start () {
@@ -43,7 +45,9 @@ public class Utilities : MonoBehaviour{
 		cannotFireNowRangeColor = new Color((float)96/256, (float)75/256, 0, (float)143/256);
 		fogOfWarEnabled = true;
 		carryingUnitImage = Resources.Load<Texture2D>("UnitBar");
+#if UNITY_STANDALONE
 		LearnerUtilities.TerminateNeuralTraining();
+#endif
 	}
 	public static General GetGeneral(Generals id)
 	{
@@ -71,7 +75,9 @@ public class Utilities : MonoBehaviour{
 				Destroy(a);
 			}
 		}
+#if UNITY_STANDALONE
 		LearnerUtilities.TrainCurrentClassifier(LearnerUtilities.dataFileName);
+#endif
 		Application.LoadLevel("SkirmishEnd");
 	}
 	public void LoadSkirmishMap(Player[] players, string mapName, GameSettings gs)

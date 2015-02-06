@@ -14,17 +14,17 @@ public class MapData{
 	public int shipyards;
 	public int comTowers;
 	public bool isPreDeploy;
-	public string[][] mapData;
+	public MapTerrainBlock[][] mapData;
 	public string mapName;
 	public float[] blockStatistics;
 	public MapData(string name, int mapX, int mapY)
 	{
 		mapName = name;
 		blockStatistics = new float[System.Enum.GetValues(typeof(TERRAINTYPE)).Length];
-		mapData = new string[mapX][];
+		mapData = new MapTerrainBlock[mapX][];
 		for(int i = 0; i < mapData.Length; i++)
 		{
-			mapData[i] = new string[mapY];
+			mapData[i] = new MapTerrainBlock[mapY];
 		}
 	}
 	public string InstanceData()
@@ -67,9 +67,56 @@ public class MapData{
 		if(maxPlayers < 1 || maxPlayers > 8){
 			return false;
 		}
+		if(HQLocations.Length != maxPlayers){
+			return false;
+		}
 		return true;
 	}
 }
+/// <summary>
+/// Provides a serializable conversion for terrain blocks
+/// </summary>
+[System.Serializable]
+public class MapTerrainBlock
+{
+	public string name;
+	public Vector3Serializer position;
+	public QuaternionSerializer rotation;
+	public MapTerrainBlock(string inName, Vector3 pos, Quaternion rot){
+		name = inName;
+		position = new Vector3Serializer(pos);
+		rotation = new QuaternionSerializer(rot);
+	}
+}
+/// <summary>
+/// Serializable wrapper class for Quaternion
+/// </summary>
+[System.Serializable]
+public struct QuaternionSerializer
+{
+	public float x, y, z, w;
+	public QuaternionSerializer(float inX, float inY, float inZ, float inW){
+		x = inX;
+		y = inY;
+		z = inZ;
+		w = inW;
+	}
+	public QuaternionSerializer(Quaternion quatToSerialize){
+		x = quatToSerialize.x;
+		y = quatToSerialize.y;
+		z = quatToSerialize.z;
+		w = quatToSerialize.w;
+	}
+	public Vector3 ToEulerAngles(){
+		return (new Quaternion(x, y, z, w)).eulerAngles;
+	}
+	public Quaternion ToQuaternion(){
+		return new Quaternion(x, y, z, w);
+	}
+}
+/// <summary>
+/// Serializable wrapper class for Vector3
+/// </summary>
 [System.Serializable]
 public struct Vector3Serializer
 {
@@ -87,5 +134,8 @@ public struct Vector3Serializer
 		x = v3.x;
 		y = v3.y;
 		z = v3.z;
+	}
+	public Vector3 ToVector3(){
+		return new Vector3(x, y, z);
 	}
 }

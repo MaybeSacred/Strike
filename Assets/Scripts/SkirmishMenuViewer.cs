@@ -36,7 +36,7 @@ public class SkirmishMenuViewer : MonoBehaviour {
 	public int mapNameButtonOffset;
 	public RectTransform mapSelect, playerSelect;
 	//current root folder where map data are located
-	public static string ApplicationServerURL = "https://dl.dropboxusercontent.com/u/65011402/strike";
+		public static string ApplicationServerURL = "https://dl.dropboxusercontent.com/u/65011402/strike";
 	void Awake(){
 		instance = this;
 	}
@@ -137,7 +137,7 @@ public class SkirmishMenuViewer : MonoBehaviour {
 	/// <returns>The map names.</returns>
 	public string[] GetMapNames(){
 #if UNITY_WEBPLAYER
-		var names = new WWW(ApplicationServerURL + "/Maps/MapNames.bin");
+		var names = new WWW(ApplicationServerURL + @"/Maps/MapNames.bin");
 		while(!names.isDone){
 			
 		}
@@ -159,8 +159,8 @@ public class SkirmishMenuViewer : MonoBehaviour {
 		{
 			Debug.Log("Could not open MapNames data");
 		}
-#endif
 		return null;
+#endif
 	}
 	
 	public void SetGameSettingsPropertyIncome(int input){
@@ -180,7 +180,7 @@ public class SkirmishMenuViewer : MonoBehaviour {
 #if UNITY_WEBPLAYER
 		for(int i = 0; i < namesToLoad.Length; i++)
 		{
-			var names = new WWW(ApplicationServerURL + "/Maps/MapNames.bin");
+			var names = new WWW(ApplicationServerURL + @"/Maps/" + namesToLoad[i] + ".bin");
 			while(!names.isDone){
 				
 			}

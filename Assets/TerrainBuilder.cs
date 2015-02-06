@@ -873,7 +873,7 @@ public class TerrainBuilder : MonoBehaviour {
 		{
 			if(outgoingData.mapData[Mathf.RoundToInt(blocks[i].transform.position.x)][Mathf.RoundToInt(blocks[i].transform.position.z)] == null)
 			{
-				outgoingData.mapData[Mathf.RoundToInt(blocks[i].transform.position.x)][Mathf.RoundToInt(blocks[i].transform.position.z)] = blocks[i].name;
+				outgoingData.mapData[Mathf.RoundToInt(blocks[i].transform.position.x)][Mathf.RoundToInt(blocks[i].transform.position.z)] = new MapTerrainBlock(blocks[i].name, blocks[i].transform.position, blocks[i].transform.rotation);
 				outgoingData.blockStatistics[(int)blocks[i].typeOfTerrain]++;
 				if(blocks[i].HasProperty() || Physics.Raycast(new Vector3(Mathf.RoundToInt(blocks[i].transform.position.x), 100f, Mathf.RoundToInt(blocks[i].transform.position.z)), Vector3.down, out hit, 1000f, 1 << LayerMask.NameToLayer("PropertyLayer")))
 				{

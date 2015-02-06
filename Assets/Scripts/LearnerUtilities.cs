@@ -24,6 +24,7 @@ public class LearnerUtilities
 	private static float classificationThreshold = .075f;
 	private static Process neuralNetTrainer;
 	private static string logFile = "log.txt";
+#if UNITY_STANDALONE
 	public static void SetJREPath()
 	{
 		LearnerUtilities.jrePath = LearnerUtilities.GetJavaInstallationPath();
@@ -277,5 +278,6 @@ public class LearnerUtilities
 			}
 		}
 	}
+#endif
 }
 

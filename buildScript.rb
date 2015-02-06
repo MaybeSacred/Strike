@@ -12,7 +12,7 @@ linux64 = "-buildLinux64Player #{build_dir}/gridia-#{build_name}-linux64/client.
 puts 'building clients for each platform'
 #add web functionality back #{web}
 unity = '"%PROGRAMFILES%/Unity/Editor/Unity.exe"'
-`#{unity} -batchmode -quit -projectPath #{base_dir} #{win32} #{win64} #{osx} #{linux32} #{linux64}`
+`#{unity} -batchmode -quit -projectPath #{base_dir} #{web} #{win32} #{win64} #{osx} #{linux32} #{linux64}`
 require 'FileUtils'
 
 FileUtils.cp_r(Dir.pwd + "/Assets/Data/.", "#{build_dir}/gridia-#{build_name}-win32/client_Data/Data")

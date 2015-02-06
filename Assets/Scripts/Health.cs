@@ -6,7 +6,7 @@ public class Health {
 	public Health(){
 		
 	}
-	public string ToString(){
+	public override string ToString(){
 		return PrettyHealth().ToString();
 	}
 	public Health(int startingHealth){

@@ -19,6 +19,7 @@ public class SplashMenu : MonoBehaviour {
 	public void OnLoadOptions(){
 		Application.LoadLevel("Options");
 	}
+#if UNITY_STANDALONE
 	private bool checkIfJavaIsInstalled()
 	{
 		bool ok = false;
@@ -47,4 +48,5 @@ public class SplashMenu : MonoBehaviour {
 		
 		return (ok);
 	}
+#endif
 }
