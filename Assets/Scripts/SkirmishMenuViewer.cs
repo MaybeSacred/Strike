@@ -35,6 +35,7 @@ public class SkirmishMenuViewer : MonoBehaviour {
 	//spacing for between button centers
 	public int mapNameButtonOffset;
 	public RectTransform mapSelect, playerSelect;
+	public GameObject loadingDisplay;
 	//current root folder where map data are located
 	public static string ApplicationServerURL = "https://dl.dropboxusercontent.com/u/65011402/strike";
 	void Awake(){
@@ -44,6 +45,8 @@ public class SkirmishMenuViewer : MonoBehaviour {
 	void Start () {
 		settings = new GameSettings();
 		generalNames = System.Enum.GetNames(typeof(Generals));
+		mapNameOuterPanel.gameObject.SetActive(false);
+		scrollBar.gameObject.SetActive(false);
 		StartCoroutine(LoadMapsAsync());
 		StartCoroutine(FinishedLoadingPlayers());
 	}
@@ -65,6 +68,9 @@ public class SkirmishMenuViewer : MonoBehaviour {
 	}
 	IEnumerator LoadMapsAsync(){
 		yield return StartCoroutine(GetMapNames());
+		loadingDisplay.SetActive(false);
+		mapNameOuterPanel.gameObject.SetActive(true);
+		scrollBar.gameObject.SetActive(true);
 		int smallestFontSize = int.MaxValue;
 		List<RectTransform> mapButtons = new List<RectTransform>();
 		for(int i = 0; i < mapNames.Length; i++){
@@ -89,6 +95,11 @@ public class SkirmishMenuViewer : MonoBehaviour {
 		mapNameOuterPanel.gameObject.SetActive(false);
 		scrollBar.gameObject.SetActive(false);
 	}
+	/// <summary>
+	/// Overcomes a possible bug between mono/Unity and lambdas/anonymous functions
+	/// </summary>
+	/// <param name="t">T.</param>
+	/// <param name="input">Input.</param>
 	void Encapsulater(RectTransform t, string input){
 		t.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => {SetCurrentMap(input); OnMapSelected();});
 	}
@@ -97,7 +108,6 @@ public class SkirmishMenuViewer : MonoBehaviour {
 	/// </summary>
 	/// <param name="map">Map.</param>
 	void SetCurrentMap(string map){
-		Debug.Log(map);
 		selectedMapName = map;
 		foreach(MapData mp in maps){
 			if(mp.mapName.Equals(selectedMapName)){
@@ -165,19 +175,36 @@ public class SkirmishMenuViewer : MonoBehaviour {
 		}
 #endif
 #if UNITY_STANDALONE
-		if(File.Exists(Application.dataPath + @"\Maps\MapNames.bin"))
+		if(File.Exists(Application.dataPath + @"/Maps/MapNames.bin"))
 		{
-			Stream TestFileStream = File.OpenRead(Application.dataPath + @"\Maps\MapNames.bin");
+			Stream TestFileStream = File.OpenRead(Application.dataPath + @"/Maps/MapNames.bin");
 			BinaryFormatter deserializer = new BinaryFormatter();
-			string[] obj = (string[])deserializer.Deserialize(TestFileStream);
+			mapNames = (string[])deserializer.Deserialize(TestFileStream);
 			TestFileStream.Close();
-			return obj;
+			mapNames = ExtractPrettyMapNames(mapNames);
+			maps = new List<MapData>();
+			for(int i = 0; i < mapNames.Length; i++)
+			{
+				if(File.Exists(Application.dataPath + @"/Maps/" + mapNames[i] + ".bin"))
+				{
+					TestFileStream = File.OpenRead(Application.dataPath + @"/Maps/" + mapNames[i] + ".bin");
+					deserializer = new BinaryFormatter();
+					MapData obj = (MapData)deserializer.Deserialize(TestFileStream);
+					maps.Add(obj);
+					TestFileStream.Close();
+				}
+				else
+				{
+					Debug.Log("No data found for map: " + mapNames[i]);
+				}
+			}
 		}
 		else
 		{
 			Debug.Log("Could not open MapNames data");
 		}
-		return null;
+		//Added to maintain consistency with web deployment code
+		yield return new WaitForSeconds(.001f);
 #endif
 	}
 	
@@ -209,11 +236,11 @@ public class SkirmishMenuViewer : MonoBehaviour {
 		}
 #endif
 #if UNITY_STANDALONE
-		for(int i = 0; i < namesToLoad.Length; i++)
+		for(int i = 0; i < mapNames.Length; i++)
 		{
-			if(File.Exists(Application.dataPath + @"\Maps\" + namesToLoad[i] + ".bin"))
+			if(File.Exists(Application.dataPath + @"/Maps/" + mapNames[i] + ".bin"))
 			{
-				Stream TestFileStream = File.OpenRead(Application.dataPath + @"\Maps\" + namesToLoad[i] + ".bin");
+				Stream TestFileStream = File.OpenRead(Application.dataPath + @"/Maps/" + mapNames[i] + ".bin");
 				BinaryFormatter deserializer = new BinaryFormatter();
 				MapData obj = (MapData)deserializer.Deserialize(TestFileStream);
 				maps.Add(obj);
@@ -221,9 +248,10 @@ public class SkirmishMenuViewer : MonoBehaviour {
 			}
 			else
 			{
-				Debug.Log("No data found for map: " + namesToLoad[i]);
+				Debug.Log("No data found for map: " + mapNames[i]);
 			}
 		}
+		return null;
 #endif
 	}
 	/// <summary>
