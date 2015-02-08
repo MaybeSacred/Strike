@@ -27,7 +27,6 @@ public class MenuBackgroundMapDisplayer : MonoBehaviour {
 			}
 		}
 		for(int i = 0; i < data.properties.Length; i++){
-			Debug.Log(data.properties[i].name);
 			GameObject temp = Instantiate(Resources.Load<GameObject>(data.properties[i].name)) as GameObject;
 			temp.GetComponent<Property>().enabled = false;
 			temp.transform.parent = transform;

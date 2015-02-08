@@ -16,6 +16,7 @@ public class MapData{
 	public bool isPreDeploy;
 	public TerrainObject[][] mapData;
 	public TerrainObject[] properties;
+	public TerrainObject[] units;
 	public string mapName;
 	public float[] blockStatistics;
 	public MapData(string name, int mapX, int mapY)
