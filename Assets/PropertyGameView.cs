@@ -1,17 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class PropertyGameView : MonoBehaviour {
+public class PropertyGameView : GameView {
 	public UnityEngine.UI.Text[] parameterText;
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
 	/// <summary>
 	/// Sets the values of the Gui box
 	/// </summary>
