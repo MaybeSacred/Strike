@@ -46,6 +46,7 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\CameraSpinner.cs" />
      <Compile Include="Assets\Editor Default Resources\MapDataDummy.cs" />
      <Compile Include="Assets\Fantasy Skybox FREE\Scripts\FSPlayer.cs" />
      <Compile Include="Assets\InGameCamera.cs" />
@@ -89,6 +90,7 @@
      <Compile Include="Assets\Scripts\UnitPropertyModifier.cs" />
      <Compile Include="Assets\Scripts\Utilities.cs" />
      <Compile Include="Assets\Scripts\WeatherController.cs" />
+     <Compile Include="Assets\SkirmishEndMenuPlayer.cs" />
      <Compile Include="Assets\SplashMenu.cs" />
      <Compile Include="Assets\TerrainBlock.cs" />
      <Compile Include="Assets\TerrainBuilder.cs" />

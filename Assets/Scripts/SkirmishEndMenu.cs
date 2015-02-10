@@ -1,46 +1,20 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-
-public class SkirmishEndMenu : MonoBehaviour
+/// <summary>
+/// Controls and displays the end menu for skirmishes
+/// </summary>
+public sealed class SkirmishEndMenu : MonoBehaviour
 {
-	private List<PlayerInGameStatistics> playerStatistics;
-	public float statisticsDisplayWidth, statisticsDisplayHeight, statisticsDisplayHeightOffset;
-	void Start ()
+	List<PlayerInGameStatistics> playerStatistics;
+	public SkirmishEndMenuPlayer[] endPlayerDisplays;
+	public void Start ()
 	{
 	
 	}
-	void Update ()
-	{
-		
-	}
-	void OnGUI ()
-	{
-		if (playerStatistics != null) {
-			GUILayout.BeginArea (new Rect (Screen.width * (1 - statisticsDisplayWidth) / 2, statisticsDisplayHeightOffset * Screen.height, statisticsDisplayWidth * Screen.width, statisticsDisplayHeight * Screen.height));
-			GUILayout.BeginVertical ();
-			GUILayout.BeginHorizontal ();
-			GUILayout.Label ("Name");
-			GUILayout.Label ("Funds Gathered");
-			GUILayout.Label ("Funds Spent");
-			GUILayout.Label ("Units Created");
-			GUILayout.Label ("Units Lost");
-			GUILayout.EndHorizontal ();
-			for (int i = 0; i < playerStatistics.Count; i++) {
-				GUILayout.BeginHorizontal ();
-				GUILayout.Label (playerStatistics [i].name);
-				GUILayout.Label (playerStatistics [i].totalFundsGathered.ToString ());
-				GUILayout.Label (playerStatistics [i].totalFundsSpent.ToString ());
-				GUILayout.Label (playerStatistics [i].unitsCreated.ToString ());
-				GUILayout.Label (playerStatistics [i].unitsLost.ToString ());
-				GUILayout.EndHorizontal ();
-			}
-			GUILayout.EndVertical ();
-			GUILayout.EndArea ();
-		}
-		if (GUI.Button (new Rect (.375f * Screen.width, (9 / 10f) * Screen.height, .25f * Screen.width, (1 / 10f) * Screen.height - 1), "Return to Menu")) {
-			Utilities.LoadTitleScreen ();
-		}
-	}
+	/// <summary>
+	/// Sets the game statistics on each of the player displays
+	/// </summary>
+	/// <param name="pigs">Pigs.</param>
 	public void SetGameStatistics (List<PlayerInGameStatistics> pigs)
 	{
 		playerStatistics = pigs;
@@ -51,5 +25,19 @@ public class SkirmishEndMenu : MonoBehaviour
 			}
 		}
 		playerStatistics.Sort ();
+		for (int i = 0; i < 8; i++) {
+			if (i < playerStatistics.Count) {
+				endPlayerDisplays [i].SetText (playerStatistics [i]);
+			} else {
+				endPlayerDisplays [i].gameObject.SetActive (false);
+			}
+		}
+	}
+	/// <summary>
+	/// Returns the application to the start screen
+	/// </summary>
+	public void OnReturnToStartScreen ()
+	{
+		Utilities.LoadTitleScreen ();
 	}
 }

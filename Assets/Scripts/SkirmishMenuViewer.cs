@@ -284,11 +284,6 @@ public class SkirmishMenuViewer : MonoBehaviour
 		return inNames;
 	}
 	
-	void Update ()
-	{
-		transform.eulerAngles += new Vector3 (0, .5f * Time.deltaTime, 0);
-	}
-	
 	/// <summary>
 	/// Switches panels to player setup
 	/// </summary>
