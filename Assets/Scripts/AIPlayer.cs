@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 public abstract class AIPlayer : Player
 {
+
 	public float attackModifier, captureModifier, 
 		produceMissileModifier, buildBridgeModifier, supplyModifier, 
 		repairModifier, loadModifier, unloadModifier, 
@@ -17,128 +18,115 @@ public abstract class AIPlayer : Player
 	protected int[] countsOfEachUnit;
 	protected int producingProperties = 0;
 	protected int productionAttempts;
-	protected override void Awake()
+	protected override void Awake ()
 	{
-		base.Awake();
-		unitsToMove = new Stack<UnitController>();
-		unitsToMake = new Queue<UnitNames>();
-		countsOfEachUnit = new int[System.Enum.GetValues(typeof(UnitNames)).Length];
-		for(int i = 0; i < countsOfEachUnit.Length; i++)
-		{
-			countsOfEachUnit[i] = 0;
+		base.Awake ();
+		unitsToMove = new Stack<UnitController> ();
+		unitsToMake = new Queue<UnitNames> ();
+		countsOfEachUnit = new int[System.Enum.GetValues (typeof(UnitNames)).Length];
+		for (int i = 0; i < countsOfEachUnit.Length; i++) {
+			countsOfEachUnit [i] = 0;
 		}
 	}
-	void Start()
+	void Start ()
 	{
 		
 	}
-	public void Setup(Player oldPlayer)
+	public void Setup (Player oldPlayer)
 	{
-		DontDestroyOnLoad(this);
+		DontDestroyOnLoad (this);
 		playerName = name;
-		playerNumber = oldPlayer.GetPlayerNumber();
-		this.side = oldPlayer.GetSide();
+		playerNumber = oldPlayer.GetPlayerNumber ();
+		this.side = oldPlayer.GetSide ();
 		mainPlayerColor = oldPlayer.mainPlayerColor;
-		pigs = new PlayerInGameStatistics();
+		pigs = new PlayerInGameStatistics ();
 		pigs.name = playerName;
-		units = new List<UnitController>();
-		properties = new List<Property>();
+		units = new List<UnitController> ();
+		properties = new List<Property> ();
 		aiLevel = oldPlayer.aiLevel;
 		generalSelectedInGUI = oldPlayer.generalSelectedInGUI;
 		loggingProductionData = oldPlayer.loggingProductionData;
-		if(loggingProductionData)
-		{
-			gameObject.AddComponent<MouseEventHandler>();
+		if (loggingProductionData) {
+			gameObject.AddComponent<MouseEventHandler> ();
 		}
 	}
-	public override void StartTurn()
+	public override void StartTurn ()
 	{
-		base.StartTurn();
-		PushUnits();
+		base.StartTurn ();
+		PushUnits ();
 		productionAttempts = 0;
 	}
-	public override void EndTurn()
+	public override void EndTurn ()
 	{
-		base.EndTurn();
+		base.EndTurn ();
 	}
-	public override void AddUnit(UnitController inUnit)
+	public override void AddUnit (UnitController inUnit)
 	{
-		if(!units.Contains(inUnit))
-		{
-			units.Add(inUnit);
-			inUnit.SetOwner(this);
-			countsOfEachUnit[(int)inUnit.unitClass]++;
+		if (!units.Contains (inUnit)) {
+			units.Add (inUnit);
+			inUnit.SetOwner (this);
+			countsOfEachUnit [(int)inUnit.unitClass]++;
 		}
 	}
-	public override void DeleteUnitFromGame(UnitController inUnit)
+	public override void DeleteUnitFromGame (UnitController inUnit)
 	{
-		if(units.Contains(inUnit))
-		{
-			if(inUnit == currentGeneralUnit)
-			{
+		if (units.Contains (inUnit)) {
+			if (inUnit == currentGeneralUnit) {
 				currentGeneralUnit = null;
-				selectedGeneral.Hide();
+				selectedGeneral.Hide ();
 			}
-			countsOfEachUnit[(int)inUnit.unitClass]--;
-			inUnit.KillUnit();
-			units.Remove(inUnit);
+			countsOfEachUnit [(int)inUnit.unitClass]--;
+			inUnit.KillUnit ();
+			units.Remove (inUnit);
 			pigs.unitsLost++;
 		}
-		if(units.Count == 0)
-		{
-			InGameController.RemovePlayer(this);
+		if (units.Count == 0) {
+			InGameController.RemovePlayer (this);
 		}
 	}
-	public override void AddProperty(Property inUnit)
+	public override void AddProperty (Property inUnit)
 	{
-		if(!properties.Contains(inUnit))
-		{
-			properties.Add(inUnit);
-			countsOfEachUnit[(int)inUnit.propertyType]++;
-			if(inUnit.propertyClass.producableUnits.Length > 0)
-			{
+		if (!properties.Contains (inUnit)) {
+			properties.Add (inUnit);
+			countsOfEachUnit [(int)inUnit.propertyType]++;
+			if (inUnit.propertyClass.producableUnits.Length > 0) {
 				producingProperties++;
 			}
-			inUnit.SetOwner(this);
-			if(inUnit.propertyType == UnitNames.Headquarters)
-			{
-				hQBlock = inUnit.GetCurrentBlock();
+			inUnit.SetOwner (this);
+			if (inUnit.propertyType == UnitNames.Headquarters) {
+				hQBlock = inUnit.GetCurrentBlock ();
 			}
 		}
 	}
-	public override void RemoveProperty(Property inUnit)
+	public override void RemoveProperty (Property inUnit)
 	{
-		if(properties.Contains(inUnit))
-		{
-			countsOfEachUnit[(int)inUnit.propertyType]--;
-			if(inUnit.propertyClass.producableUnits.Length > 0)
-			{
+		if (properties.Contains (inUnit)) {
+			countsOfEachUnit [(int)inUnit.propertyType]--;
+			if (inUnit.propertyClass.producableUnits.Length > 0) {
 				producingProperties--;
 			}
-			if(inUnit.propertyType == UnitNames.Headquarters)
-			{
-				InGameController.RemovePlayer(this);
+			if (inUnit.propertyType == UnitNames.Headquarters) {
+				InGameController.RemovePlayer (this);
 			}
-			properties.Remove(inUnit);
+			properties.Remove (inUnit);
 		}
 	}
-	protected abstract TerrainBlock StateSearch(int numSearchTurns, int statesKept);
+	protected abstract TerrainBlock StateSearch (int numSearchTurns, int statesKept);
 
-	protected abstract float EvaluatePosition(TerrainBlock position, out UnitOrderOptions order);
-	public float MoveTowardsEnemyHQ(TerrainBlock block)
+	protected abstract float EvaluatePosition (TerrainBlock position, out UnitOrderOptions order);
+	public float MoveTowardsEnemyHQ (TerrainBlock block)
 	{
-		float closest = InGameController.ClosestEnemyHQ(block, currentUnit.moveClass, currentUnit.GetOwner());
-		if(closest < 1 && !currentUnit.canCapture)
-		{
+		float closest = InGameController.ClosestEnemyHQ (block, currentUnit.moveClass, currentUnit.GetOwner ());
+		if (closest < 1 && !currentUnit.canCapture) {
 			return -10;
 		}
 		return (100 - closest) * hQMoveTowardsModifier;
 	}
-	protected virtual float UtilityOfAddingGeneral()
+	protected virtual float UtilityOfAddingGeneral ()
 	{
-		return ((float)currentUnit.baseCost)/30000f;
+		return ((float)currentUnit.baseCost) / 30000f;
 	}
-	protected abstract void ProduceUnits();
+	protected abstract void ProduceUnits ();
 	
 	[System.Serializable]
 	public class UnitNameIntBinder
@@ -148,26 +136,23 @@ public abstract class AIPlayer : Player
 	}
 	protected bool HasBuildingToProduceUnit (UnitNames name)
 	{
-		for(int i = 0; i < properties.Count; i++)
-		{
-			if(properties[i].CanProduceUnit(name))
-			{
+		for (int i = 0; i < properties.Count; i++) {
+			if (properties [i].CanProduceUnit (name)) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	protected UnitNames RandomUnitName()
+	protected UnitNames RandomUnitName ()
 	{
-		return (UnitNames)System.Enum.GetValues(typeof(UnitNames)).GetValue(UnityEngine.Random.Range(0, 27));
+		return (UnitNames)System.Enum.GetValues (typeof(UnitNames)).GetValue (UnityEngine.Random.Range (0, 27));
 	}
-	protected void PushUnits()
+	protected void PushUnits ()
 	{
-		unitsToMove.Clear();
-		for(int i = 0; i < units.Count; i++)
-		{
-			unitsToMove.Push(units[i]);
+		unitsToMove.Clear ();
+		for (int i = 0; i < units.Count; i++) {
+			unitsToMove.Push (units [i]);
 		}
 	}
 }

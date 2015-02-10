@@ -2,7 +2,8 @@
 using UnityEngine.UI;
 using System.Collections.Generic;
 
-public class PlayerGUIView : MonoBehaviour {
+public class PlayerGUIView : MonoBehaviour
+{
 	public Player thisPlayer;
 	// Displays and selects player colour
 	public Slider colorSelectSlider;
@@ -25,113 +26,119 @@ public class PlayerGUIView : MonoBehaviour {
 	static PlayerGUIView playerSelected;
 	public bool started = false;
 	// Use this for initialization
-	void Awake() {
+	void Awake ()
+	{
 		
 	}
-	void Start(){
-		thisPlayer = Instantiate(thisPlayer) as Player;
-		thisPlayer.Setup(Random.Range(1, 4), Generals.Taron, new Color(.8f, .8f, .8f), "Player");
+	void Start ()
+	{
+		thisPlayer = Instantiate (thisPlayer) as Player;
+		thisPlayer.Setup (Random.Range (1, 4), Generals.Taron, new Color (.8f, .8f, .8f), "Player");
 		// Initialize sliders
 		playerSideSlider.value = thisPlayer.side;
-		ChangeSide(thisPlayer.side);
-		int tempRandom = Random.Range(0, 359);
-		ChangeSliderHue(tempRandom);
+		ChangeSide (thisPlayer.side);
+		int tempRandom = Random.Range (0, 359);
+		ChangeSliderHue (tempRandom);
 		colorSelectSlider.value = tempRandom;
 		// Set up dropdowns
-		generalSelectDropdown = SkirmishMenuViewer.InstantiateUIPrefab(generalSelectDropdown, generalTopButton);
+		generalSelectDropdown = SkirmishMenuViewer.InstantiateUIPrefab (generalSelectDropdown, generalTopButton);
 		// Check whether its a higher or lower button, adjust to align with bottom or top edge
-		if(GetComponent<RectTransform>().localPosition.y > 0){
-			generalSelectDropdown.offsetMin = new Vector2(0, -generalTopButton.rect.height - System.Enum.GetValues(typeof(Generals)).Length * mapNameButtonOffset);
-			generalSelectDropdown.offsetMax = new Vector2(0, -generalTopButton.rect.height);
+		if (GetComponent<RectTransform> ().localPosition.y > 0) {
+			generalSelectDropdown.offsetMin = new Vector2 (0, -generalTopButton.rect.height - System.Enum.GetValues (typeof(Generals)).Length * mapNameButtonOffset);
+			generalSelectDropdown.offsetMax = new Vector2 (0, -generalTopButton.rect.height);
+		} else {
+			generalSelectDropdown.offsetMin = new Vector2 (0, 0);
+			generalSelectDropdown.offsetMax = new Vector2 (0, System.Enum.GetValues (typeof(Generals)).Length * mapNameButtonOffset);
 		}
-		else{
-			generalSelectDropdown.offsetMin = new Vector2(0, 0);
-			generalSelectDropdown.offsetMax = new Vector2(0, System.Enum.GetValues(typeof(Generals)).Length * mapNameButtonOffset);
-		}
-		generalDropdownButtons = new List<RectTransform>();
-		foreach(Generals name in System.Enum.GetValues(typeof(Generals))){
-			RectTransform t = SkirmishMenuViewer.InstantiateUIPrefab(buttonPrototype, generalSelectDropdown.GetComponent<RectTransform>());
-			t.GetComponentsInChildren<UnityEngine.UI.Text>(true)[0].text = name.ToString();
-			generalDropdownButtons.Add(t);
+		generalDropdownButtons = new List<RectTransform> ();
+		foreach (Generals name in System.Enum.GetValues(typeof(Generals))) {
+			RectTransform t = SkirmishMenuViewer.InstantiateUIPrefab (buttonPrototype, generalSelectDropdown.GetComponent<RectTransform> ());
+			t.GetComponentsInChildren<UnityEngine.UI.Text> (true) [0].text = name.ToString ();
+			generalDropdownButtons.Add (t);
 			Generals captured = name;
 			// add our delegate to the onClick handler, with appropriate indexing
-			t.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => {SetGeneral(captured);});
+			t.GetComponent<UnityEngine.UI.Button> ().onClick.AddListener (() => {
+				SetGeneral (captured);});
 		}
-		var offset = -mapNameButtonOffset/2;
-		foreach(RectTransform rt in generalDropdownButtons){
-			rt.offsetMin = new Vector2(0, 0);
-			rt.offsetMax = new Vector2(0, mapNameButtonOffset);
-			rt.anchoredPosition3D = new Vector3(0, offset, 0);
+		var offset = -mapNameButtonOffset / 2;
+		foreach (RectTransform rt in generalDropdownButtons) {
+			rt.offsetMin = new Vector2 (0, 0);
+			rt.offsetMax = new Vector2 (0, mapNameButtonOffset);
+			rt.anchoredPosition3D = new Vector3 (0, offset, 0);
 			offset -= mapNameButtonOffset;
 		}
-		generalSelectDropdown.SetParent(GetComponent<RectTransform>().parent);
-		generalSelectDropdown.gameObject.SetActive(false);
+		generalSelectDropdown.SetParent (GetComponent<RectTransform> ().parent);
+		generalSelectDropdown.gameObject.SetActive (false);
 		
-		AISelectDropdown = SkirmishMenuViewer.InstantiateUIPrefab(AISelectDropdown, AITopButton);
-		if(GetComponent<RectTransform>().localPosition.y > 0){
-			AISelectDropdown.offsetMin = new Vector2(0, -AITopButton.rect.height - System.Enum.GetValues(typeof(AILevel)).Length * mapNameButtonOffset);
-			AISelectDropdown.offsetMax = new Vector2(0, -AITopButton.rect.height);
+		AISelectDropdown = SkirmishMenuViewer.InstantiateUIPrefab (AISelectDropdown, AITopButton);
+		if (GetComponent<RectTransform> ().localPosition.y > 0) {
+			AISelectDropdown.offsetMin = new Vector2 (0, -AITopButton.rect.height - System.Enum.GetValues (typeof(AILevel)).Length * mapNameButtonOffset);
+			AISelectDropdown.offsetMax = new Vector2 (0, -AITopButton.rect.height);
+		} else {
+			AISelectDropdown.offsetMin = new Vector2 (0, 0);
+			AISelectDropdown.offsetMax = new Vector2 (0, System.Enum.GetValues (typeof(AILevel)).Length * mapNameButtonOffset);
 		}
-		else{
-			AISelectDropdown.offsetMin = new Vector2(0, 0);
-			AISelectDropdown.offsetMax = new Vector2(0, System.Enum.GetValues(typeof(AILevel)).Length * mapNameButtonOffset);
-		}
-		AIDropdownButtons = new List<RectTransform>();
-		foreach(AILevel name in System.Enum.GetValues(typeof(AILevel))){
-			RectTransform t = SkirmishMenuViewer.InstantiateUIPrefab(buttonPrototype, AISelectDropdown.GetComponent<RectTransform>());
-			t.GetComponentsInChildren<UnityEngine.UI.Text>(true)[0].text = name.ToString();
-			AIDropdownButtons.Add(t);
+		AIDropdownButtons = new List<RectTransform> ();
+		foreach (AILevel name in System.Enum.GetValues(typeof(AILevel))) {
+			RectTransform t = SkirmishMenuViewer.InstantiateUIPrefab (buttonPrototype, AISelectDropdown.GetComponent<RectTransform> ());
+			t.GetComponentsInChildren<UnityEngine.UI.Text> (true) [0].text = name.ToString ();
+			AIDropdownButtons.Add (t);
 			AILevel captured = name;
-			t.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => {SetAILevel(captured);});
+			t.GetComponent<UnityEngine.UI.Button> ().onClick.AddListener (() => {
+				SetAILevel (captured);});
 			// hotfix to disable AI modules that arent ready
-			if(name == AILevel.Easy || name == AILevel.Hard){
-				t.GetComponent<UnityEngine.UI.Button>().enabled = false;
+			if (name == AILevel.Easy || name == AILevel.Hard) {
+				t.GetComponent<UnityEngine.UI.Button> ().enabled = false;
 			}
 		}
-		offset = -mapNameButtonOffset/2;
-		foreach(RectTransform rt in AIDropdownButtons){
-			rt.offsetMin = new Vector2(0, 0);
-			rt.offsetMax = new Vector2(0, mapNameButtonOffset);
-			rt.anchoredPosition3D = new Vector3(0, offset, 0);
+		offset = -mapNameButtonOffset / 2;
+		foreach (RectTransform rt in AIDropdownButtons) {
+			rt.offsetMin = new Vector2 (0, 0);
+			rt.offsetMax = new Vector2 (0, mapNameButtonOffset);
+			rt.anchoredPosition3D = new Vector3 (0, offset, 0);
 			offset -= mapNameButtonOffset;
 		}
-		AISelectDropdown.SetParent(GetComponent<RectTransform>().parent);
-		AISelectDropdown.gameObject.SetActive(false);
+		AISelectDropdown.SetParent (GetComponent<RectTransform> ().parent);
+		AISelectDropdown.gameObject.SetActive (false);
 		started = true;
 	}
 	
 	// Update is called once per frame
-	void Update () {
-		if(Input.GetMouseButtonUp(1)){
-			generalSelectDropdown.gameObject.SetActive(false);
-			AISelectDropdown.gameObject.SetActive(false);
+	void Update ()
+	{
+		if (Input.GetMouseButtonUp (1)) {
+			generalSelectDropdown.gameObject.SetActive (false);
+			AISelectDropdown.gameObject.SetActive (false);
 			playerSelected = null;
 		}
 	}
 	/// <summary>
 	/// Opens the general select dropdown.
 	/// </summary>
-	public void OpenGeneralSelectDropdown(){
-		if(playerSelected == null || playerSelected == this){
-			generalSelectDropdown.gameObject.SetActive(true);
+	public void OpenGeneralSelectDropdown ()
+	{
+		if (playerSelected == null || playerSelected == this) {
+			generalSelectDropdown.gameObject.SetActive (true);
 			playerSelected = this;
 		}
 	}
 	/// <summary>
 	/// Sets the general from dropdown menu
 	/// <param name="input">Input.</param>
-	public void SetGeneral(Generals input){
+	public void SetGeneral (Generals input)
+	{
 		thisPlayer.generalSelectedInGUI = input;
-		generalTopButton.GetComponentInChildren<Text>().text = input.ToString();
-		generalSelectDropdown.gameObject.SetActive(false);
+		generalTopButton.GetComponentInChildren<Text> ().text = input.ToString ();
+		generalSelectDropdown.gameObject.SetActive (false);
 		playerSelected = null;
 	}
 	/// <summary>
 	/// Opens the AI select dropdown.
 	/// </summary>
-	public void OpenAISelectDropdown(){
-		if(playerSelected == null || playerSelected == this){
-			AISelectDropdown.gameObject.SetActive(true);
+	public void OpenAISelectDropdown ()
+	{
+		if (playerSelected == null || playerSelected == this) {
+			AISelectDropdown.gameObject.SetActive (true);
 			playerSelected = this;
 		}
 	}
@@ -139,50 +146,56 @@ public class PlayerGUIView : MonoBehaviour {
 	/// Sets the AI level.
 	/// </summary>
 	/// <param name="input">Input.</param>
-	public void SetAILevel(AILevel input){
+	public void SetAILevel (AILevel input)
+	{
 		thisPlayer.aiLevel = input;
-		AITopButton.GetComponentInChildren<Text>().text = input.ToString();
-		AISelectDropdown.gameObject.SetActive(false);
+		AITopButton.GetComponentInChildren<Text> ().text = input.ToString ();
+		AISelectDropdown.gameObject.SetActive (false);
 		playerSelected = null;
 	}
 	/// <summary>
 	/// Returns the player associated with this gui block
 	/// </summary>
 	/// <returns>The player.</returns>
-	public Player GetPlayer(){
+	public Player GetPlayer ()
+	{
 		return thisPlayer;
 	}
 	
 	/// <summary>
 	/// Changes the hue of a slider
 	/// </summary>
-	public void ChangeSliderHue(float hue){
-		Color col = HSVtoRGB(hue, 1, 1);
-		colorSelectSlider.GetComponentInChildren<UnityEngine.UI.Image>().color = col;
+	public void ChangeSliderHue (float hue)
+	{
+		Color col = HSVtoRGB (hue, 1, 1);
+		colorSelectSlider.GetComponentInChildren<UnityEngine.UI.Image> ().color = col;
 		thisPlayer.mainPlayerColor = col;
 	}
 	/// <summary>
 	/// Sets the maximum number of sides based on the current map
 	/// </summary>
 	/// <param name="maxSides">Max sides.</param>
-	public void SetMaxSides(int maxSides){
+	public void SetMaxSides (int maxSides)
+	{
 		playerSideSlider.maxValue = maxSides;
 	}
 	/// <summary>
 	/// Sets the side of the player and displays this back to the user
 	/// </summary>
 	/// <param name="newSide">New side.</param>
-	public void ChangeSide(float newSide){
-		thisPlayer.side = Mathf.RoundToInt(newSide);
-		sideText.text = "Side: " + thisPlayer.side.ToString();
+	public void ChangeSide (float newSide)
+	{
+		thisPlayer.side = Mathf.RoundToInt (newSide);
+		sideText.text = "Side: " + thisPlayer.side.ToString ();
 		
 	}
 	/// <summary>
 	/// Sets the name of the player, if legal
 	/// </summary>
 	/// <param name="newName">New name.</param>
-	public void SetPlayerName(string newName){
-		if(NameIsValid(newName)){
+	public void SetPlayerName (string newName)
+	{
+		if (NameIsValid (newName)) {
 			thisPlayer.playerName = thisPlayer.name = newName;
 		}
 	}
@@ -191,8 +204,9 @@ public class PlayerGUIView : MonoBehaviour {
 	/// </summary>
 	/// <returns><c>true</c>, if is valid was named, <c>false</c> otherwise.</returns>
 	/// <param name="input">Input.</param>
-	bool NameIsValid(string input){
-		if(input.Contains("fuck")){
+	bool NameIsValid (string input)
+	{
+		if (input.Contains ("fuck")) {
 			return false;
 		}
 		return true;
@@ -200,7 +214,8 @@ public class PlayerGUIView : MonoBehaviour {
 	/// <summary>
 	/// Displays a drop down menu selecter in a legal place
 	/// </summary>
-	public void DisplayDropDownMenu(){
+	public void DisplayDropDownMenu ()
+	{
 		
 	}
 	/// <summary>
@@ -210,25 +225,25 @@ public class PlayerGUIView : MonoBehaviour {
 	/// <param name="h">hue</param>
 	/// <param name="s">saturation</param>
 	/// <param name="v">value</param>
-	Color HSVtoRGB(float h, float s, float v )
+	Color HSVtoRGB (float h, float s, float v)
 	{
 		int i;
 		float f, p, q, t;
-		Color outColor = new Color();
+		Color outColor = new Color ();
 		outColor.a = 1;
-		if( s == 0 ) {
+		if (s == 0) {
 			// achromatic (grey)
 			outColor.r = outColor.g = outColor.b = v;
 			return outColor;
 		}
 		h /= 60;			// sector 0 to 5
-		i = Mathf.FloorToInt(h);
+		i = Mathf.FloorToInt (h);
 		f = h - i;			// factorial part of h
-		p = v * ( 1 - s );
-		q = v * ( 1 - s * f );
-		t = v * ( 1 - s * ( 1 - f ) );
+		p = v * (1 - s);
+		q = v * (1 - s * f);
+		t = v * (1 - s * (1 - f));
 		
-		switch( i ) {
+		switch (i) {
 		case 0:
 			outColor.r = v;
 			outColor.g = t;

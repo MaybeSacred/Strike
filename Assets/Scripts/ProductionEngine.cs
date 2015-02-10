@@ -14,6 +14,7 @@ using System.Reflection;
 using UnityEngine;
 public partial class ProductionEngine
 {
+
 	List<ProductionRule> rules;
 	/// <summary>
 	/// A list of unitNames and their associated frequencies
@@ -21,40 +22,41 @@ public partial class ProductionEngine
 	Dictionary<UnitNames, float> frequencyList;
 	public ProductionEngine ()
 	{
-		rules = new List<ProductionRule>();
-		frequencyList = new Dictionary<UnitNames, float>();
-		foreach(UnitNames u in System.Enum.GetValues(typeof(UnitNames))){
-			frequencyList.Add(u, 0);
+		rules = new List<ProductionRule> ();
+		frequencyList = new Dictionary<UnitNames, float> ();
+		foreach (UnitNames u in System.Enum.GetValues(typeof(UnitNames))) {
+			frequencyList.Add (u, 0);
 		}
 		// Initialize rules with some common to all maps
-		rules.Add(EarlyGroundRule);
-		rules.Add(MidGroundRule);
-		rules.Add(LateGroundRule);
-		rules.Add(TankGroundRule);
-		rules.Add(ResupplyTankRule);
+		rules.Add (EarlyGroundRule);
+		rules.Add (MidGroundRule);
+		rules.Add (LateGroundRule);
+		rules.Add (TankGroundRule);
+		rules.Add (ResupplyTankRule);
 		//rules.Add()
 	}
 	/// <summary>
 	/// A rule for the production engine. Returns a list of possible units to make given the counts of enemy units
 	/// </summary>
 	/// <param name="player">Player.</param>
-	public delegate List<UnitNames> ProductionRule(Instance data, Player thisPlayer);
+	public delegate List<UnitNames> ProductionRule (Instance data,Player thisPlayer);
 	/// <summary>
 	/// Evaluates the currently stored rules, selecting a best unit and returning it
 	/// </summary>
 	/// <param name="player">Player.</param>
-	public UnitNames Evaluate(Player player){
-		frequencyList = ZeroOut(frequencyList);
+	public UnitNames Evaluate (Player player)
+	{
+		frequencyList = ZeroOut (frequencyList);
 		// Apply rules
-		foreach(ProductionRule pr in rules){
-			List<UnitNames> temp = pr.Invoke(InGameController.CreateInstance(UnitNames.Infantry, false), player);
+		foreach (ProductionRule pr in rules) {
+			List<UnitNames> temp = pr.Invoke (InGameController.CreateInstance (UnitNames.Infantry, false), player);
 			// Increase returned units in frequency list
-			foreach(UnitNames u in temp){
-				frequencyList[u]++;
+			foreach (UnitNames u in temp) {
+				frequencyList [u]++;
 			}
 		}
-		frequencyList = Normalize(frequencyList);
-		UnitNames one = SelectUnit(frequencyList);
+		frequencyList = Normalize (frequencyList);
+		UnitNames one = SelectUnit (frequencyList);
 		return one;
 	}
 	/// <summary>
@@ -63,15 +65,15 @@ public partial class ProductionEngine
 	/// </summary>
 	/// <returns>The unit.</returns>
 	/// <param name="dic">Dic.</param>
-	UnitNames SelectUnit(Dictionary<UnitNames, float> dic){
+	UnitNames SelectUnit (Dictionary<UnitNames, float> dic)
+	{
 		float randomValue = UnityEngine.Random.value;
 		float currentMinimum = 0;
-		foreach(UnitNames u in dic.Keys){
-			if(currentMinimum + dic[u] >= randomValue){
+		foreach (UnitNames u in dic.Keys) {
+			if (currentMinimum + dic [u] >= randomValue) {
 				return u;
-			}
-			else{
-				currentMinimum += dic[u];
+			} else {
+				currentMinimum += dic [u];
 			}
 		}
 		return UnitNames.Headquarters;
@@ -80,15 +82,16 @@ public partial class ProductionEngine
 	/// Normalizes the values of a dictionary
 	/// </summary>
 	/// <param name="dic">Dic.</param>
-	Dictionary<UnitNames, float> Normalize(Dictionary<UnitNames, float> dic){
+	Dictionary<UnitNames, float> Normalize (Dictionary<UnitNames, float> dic)
+	{
 		float sum = 0;
-		foreach(float value in dic.Values){
+		foreach (float value in dic.Values) {
 			sum += value;
 		}
 		UnitNames[] copy = new UnitNames[dic.Count];
-		dic.Keys.CopyTo(copy, 0);
-		for(int i = 0; i < dic.Count; i++){
-			dic[copy[i]] /= sum;
+		dic.Keys.CopyTo (copy, 0);
+		for (int i = 0; i < dic.Count; i++) {
+			dic [copy [i]] /= sum;
 		}
 		return dic;
 	}
@@ -97,11 +100,12 @@ public partial class ProductionEngine
 	/// </summary>
 	/// <returns>The out.</returns>
 	/// <param name="dic">Dic.</param>
-	Dictionary<UnitNames, float> ZeroOut(Dictionary<UnitNames, float> dic){
+	Dictionary<UnitNames, float> ZeroOut (Dictionary<UnitNames, float> dic)
+	{
 		UnitNames[] copy = new UnitNames[dic.Count];
-		dic.Keys.CopyTo(copy, 0);
-		for(int i = 0; i < dic.Count; i++){
-			dic[copy[i]] = 0;
+		dic.Keys.CopyTo (copy, 0);
+		for (int i = 0; i < dic.Count; i++) {
+			dic [copy [i]] = 0;
 		}
 		return dic;
 	}
@@ -111,30 +115,30 @@ public partial class ProductionEngine
 	/// <returns>The ground rule.</returns>
 	/// <param name="data">Data.</param>
 	/// <param name="thisPlayer">This player.</param>
-	public List<UnitNames> EarlyGroundRule(Instance data, Player thisPlayer){
-		List<UnitNames> outList = new List<UnitNames>();
+	public List<UnitNames> EarlyGroundRule (Instance data, Player thisPlayer)
+	{
+		List<UnitNames> outList = new List<UnitNames> ();
 		// only activates if turn is less than 4
-		if(InGameController.currentTurn <= 4){
+		if (InGameController.currentTurn <= 4) {
 			// If we have decent amount of money, build some light vehicles
-			if(thisPlayer.funds >= (Utilities.GetPrefabFromUnitName(UnitNames.Stryker) as UnitController).baseCost + 
-			   (Utilities.GetPrefabFromUnitName(UnitNames.Infantry) as UnitController).baseCost){
-				outList.Add(UnitNames.Stryker);
-				if(data.playerUnitCount[(int)UnitNames.Infantry] > 1){
-					outList.Add(UnitNames.Mortar);
-					outList.Add(UnitNames.Stinger);
-					outList.Add(UnitNames.Humvee);
+			if (thisPlayer.funds >= (Utilities.GetPrefabFromUnitName (UnitNames.Stryker) as UnitController).baseCost + 
+				(Utilities.GetPrefabFromUnitName (UnitNames.Infantry) as UnitController).baseCost) {
+				outList.Add (UnitNames.Stryker);
+				if (data.playerUnitCount [(int)UnitNames.Infantry] > 1) {
+					outList.Add (UnitNames.Mortar);
+					outList.Add (UnitNames.Stinger);
+					outList.Add (UnitNames.Humvee);
 				}
 				// Produce some early power units if we have the funds
-				if(thisPlayer.funds >= (Utilities.GetPrefabFromUnitName(UnitNames.FieldArtillery) as UnitController).baseCost +
-				   (Utilities.GetPrefabFromUnitName(UnitNames.Infantry) as UnitController).baseCost){
-					outList.Add(UnitNames.LightTank);
-					outList.Add(UnitNames.FieldArtillery);
+				if (thisPlayer.funds >= (Utilities.GetPrefabFromUnitName (UnitNames.FieldArtillery) as UnitController).baseCost +
+					(Utilities.GetPrefabFromUnitName (UnitNames.Infantry) as UnitController).baseCost) {
+					outList.Add (UnitNames.LightTank);
+					outList.Add (UnitNames.FieldArtillery);
 				}
+			} else if (thisPlayer.funds >= 3000) {
+				outList.Add (UnitNames.Mortar);
 			}
-			else if(thisPlayer.funds >= 3000){
-				outList.Add(UnitNames.Mortar);
-			}
-			outList.Add(UnitNames.Infantry);
+			outList.Add (UnitNames.Infantry);
 		}
 		return outList;
 	}
@@ -144,21 +148,21 @@ public partial class ProductionEngine
 	/// <returns>The ground rule.</returns>
 	/// <param name="data">Data.</param>
 	/// <param name="thisPlayer">This player.</param>
-	public List<UnitNames> TankGroundRule(Instance data, Player thisPlayer){
-		List<UnitNames> outList = new List<UnitNames>();
-		if(InGameController.currentTurn >= 5){
+	public List<UnitNames> TankGroundRule (Instance data, Player thisPlayer)
+	{
+		List<UnitNames> outList = new List<UnitNames> ();
+		if (InGameController.currentTurn >= 5) {
 			// If we're close to building a tank
-			if(thisPlayer.funds >= (Utilities.GetPrefabFromUnitName(UnitNames.LightTank) as UnitController).baseCost * .75f){
-				if(data.playerUnitCount[(int)UnitNames.Infantry] >= 2 || data.playerUnitCount[(int)UnitNames.Mortar] >= 2 ||
-				   data.playerUnitCount[(int)UnitNames.Stinger] >= 2){
-				   // Build a light tank if we have fewer of them than medium tanks
-					if(data.playerUnitCount[(int)UnitNames.LightTank] <= data.playerUnitCount[(int)UnitNames.MediumTank] - 1){
-						outList.Add(UnitNames.LightTank);
-					}
-					else{
+			if (thisPlayer.funds >= (Utilities.GetPrefabFromUnitName (UnitNames.LightTank) as UnitController).baseCost * .75f) {
+				if (data.playerUnitCount [(int)UnitNames.Infantry] >= 2 || data.playerUnitCount [(int)UnitNames.Mortar] >= 2 ||
+					data.playerUnitCount [(int)UnitNames.Stinger] >= 2) {
+					// Build a light tank if we have fewer of them than medium tanks
+					if (data.playerUnitCount [(int)UnitNames.LightTank] <= data.playerUnitCount [(int)UnitNames.MediumTank] - 1) {
+						outList.Add (UnitNames.LightTank);
+					} else {
 						// Only build a medium tank if we have some artillery support
-						if(data.playerUnitCount[(int)UnitNames.Rockets] > 0 || data.playerUnitCount[(int)UnitNames.FieldArtillery] > 1){
-							outList.Add(UnitNames.MediumTank);
+						if (data.playerUnitCount [(int)UnitNames.Rockets] > 0 || data.playerUnitCount [(int)UnitNames.FieldArtillery] > 1) {
+							outList.Add (UnitNames.MediumTank);
 						}
 					}
 				}
@@ -172,12 +176,13 @@ public partial class ProductionEngine
 	/// <returns>The ground rule.</returns>
 	/// <param name="data">Data.</param>
 	/// <param name="thisPlayer">This player.</param>
-	public List<UnitNames> SniperGroundRule(Instance data, Player thisPlayer){
-		List<UnitNames> outList = new List<UnitNames>();
-		if(data.enemyAverageUnitCounts[(int)UnitNames.Rockets] > 0 || data.enemyAverageUnitCounts[(int)UnitNames.Missiles] > 0 
-			|| data.enemyAverageUnitCounts[(int)UnitNames.MediumTank] > 0){
-			if(data.playerUnitCount[(int)UnitNames.Sniper] < 2){
-				outList.Add(UnitNames.Sniper);
+	public List<UnitNames> SniperGroundRule (Instance data, Player thisPlayer)
+	{
+		List<UnitNames> outList = new List<UnitNames> ();
+		if (data.enemyAverageUnitCounts [(int)UnitNames.Rockets] > 0 || data.enemyAverageUnitCounts [(int)UnitNames.Missiles] > 0 
+			|| data.enemyAverageUnitCounts [(int)UnitNames.MediumTank] > 0) {
+			if (data.playerUnitCount [(int)UnitNames.Sniper] < 2) {
+				outList.Add (UnitNames.Sniper);
 			}
 		}
 		return outList;
@@ -188,19 +193,21 @@ public partial class ProductionEngine
 	/// <returns>The ground rule.</returns>
 	/// <param name="data">Data.</param>
 	/// <param name="thisPlayer">This player.</param>
-	public List<UnitNames> ResupplyTankRule(Instance data, Player thisPlayer){
-		List<UnitNames> outList = new List<UnitNames>();
-		if(data.playerUnitCount[(int)UnitNames.SupplyTank] < thisPlayer.units.Count / 10){
-			outList.Add(UnitNames.SupplyTank);
+	public List<UnitNames> ResupplyTankRule (Instance data, Player thisPlayer)
+	{
+		List<UnitNames> outList = new List<UnitNames> ();
+		if (data.playerUnitCount [(int)UnitNames.SupplyTank] < thisPlayer.units.Count / 10) {
+			outList.Add (UnitNames.SupplyTank);
 		}
 		return outList;
 	}
-	public List<UnitNames> FOWRadarRule(Instance data, Player thisPlayer){
-		List<UnitNames> outList = new List<UnitNames>();
-		if(Utilities.fogOfWarEnabled){
-			if(InGameController.currentTurn > 2 && thisPlayer.units.Count / 8 >= 
-				data.playerUnitCount[(int)UnitNames.MobileRadar]){
-				outList.Add(UnitNames.MobileRadar);
+	public List<UnitNames> FOWRadarRule (Instance data, Player thisPlayer)
+	{
+		List<UnitNames> outList = new List<UnitNames> ();
+		if (Utilities.fogOfWarEnabled) {
+			if (InGameController.currentTurn > 2 && thisPlayer.units.Count / 8 >= 
+				data.playerUnitCount [(int)UnitNames.MobileRadar]) {
+				outList.Add (UnitNames.MobileRadar);
 			}
 		}
 		return outList;
@@ -211,39 +218,40 @@ public partial class ProductionEngine
 	/// <returns>The ground rule.</returns>
 	/// <param name="data">Data.</param>
 	/// <param name="thisPlayer">This player.</param>
-	public List<UnitNames> MidGroundRule(Instance data, Player thisPlayer){
-		List<UnitNames> outList = new List<UnitNames>();
+	public List<UnitNames> MidGroundRule (Instance data, Player thisPlayer)
+	{
+		List<UnitNames> outList = new List<UnitNames> ();
 		// only activates between 2 and 10 turns in
-		if(InGameController.currentTurn > 2 && InGameController.currentTurn < 10){
-			if(thisPlayer.funds >= (Utilities.GetPrefabFromUnitName(UnitNames.LightTank) as UnitController).baseCost){
-				outList.Add(UnitNames.LightTank);
+		if (InGameController.currentTurn > 2 && InGameController.currentTurn < 10) {
+			if (thisPlayer.funds >= (Utilities.GetPrefabFromUnitName (UnitNames.LightTank) as UnitController).baseCost) {
+				outList.Add (UnitNames.LightTank);
 			}
-			if(thisPlayer.funds >= (Utilities.GetPrefabFromUnitName(UnitNames.FieldArtillery) as UnitController).baseCost){
-				outList.Add(UnitNames.FieldArtillery);
+			if (thisPlayer.funds >= (Utilities.GetPrefabFromUnitName (UnitNames.FieldArtillery) as UnitController).baseCost) {
+				outList.Add (UnitNames.FieldArtillery);
 			}
 			
 			// Build stronger infantry if there are several strong artillery units
-			if(data.enemyAverageUnitCounts[(int)UnitNames.Rockets] + data.enemyAverageUnitCounts[(int)UnitNames.FieldArtillery] > 1.5f){
-				outList.Add(UnitNames.Mortar);
+			if (data.enemyAverageUnitCounts [(int)UnitNames.Rockets] + data.enemyAverageUnitCounts [(int)UnitNames.FieldArtillery] > 1.5f) {
+				outList.Add (UnitNames.Mortar);
 			}
-			if(data.enemyAverageUnitCounts[(int)UnitNames.Rockets] + data.enemyAverageUnitCounts[(int)UnitNames.FieldArtillery] > 1.5f){
-				outList.Add(UnitNames.Stinger);
+			if (data.enemyAverageUnitCounts [(int)UnitNames.Rockets] + data.enemyAverageUnitCounts [(int)UnitNames.FieldArtillery] > 1.5f) {
+				outList.Add (UnitNames.Stinger);
 			}
 
 			// Build more infantry if theres a lot of buildings left to capture and move them out
-			if(data.mapData.cities + data.mapData.factories + data.mapData.airports + data.mapData.shipyards > 
-			   .7f * (data.enemyAverageUnitCounts[(int)UnitNames.City] + data.enemyAverageUnitCounts[(int)UnitNames.Airport] + 
-			   data.enemyAverageUnitCounts[(int)UnitNames.Factory] + data.enemyAverageUnitCounts[(int)UnitNames.Shipyard] + 
-			   data.playerUnitCount[(int)UnitNames.City] + data.playerUnitCount[(int)UnitNames.Airport] + 
-			   data.playerUnitCount[(int)UnitNames.Factory] + data.playerUnitCount[(int)UnitNames.Shipyard])) {
-				if(data.playerUnitCount[(int)UnitNames.Infantry] <= 4){
-					outList.Add(UnitNames.Infantry);
+			if (data.mapData.cities + data.mapData.factories + data.mapData.airports + data.mapData.shipyards > 
+				.7f * (data.enemyAverageUnitCounts [(int)UnitNames.City] + data.enemyAverageUnitCounts [(int)UnitNames.Airport] + 
+				data.enemyAverageUnitCounts [(int)UnitNames.Factory] + data.enemyAverageUnitCounts [(int)UnitNames.Shipyard] + 
+				data.playerUnitCount [(int)UnitNames.City] + data.playerUnitCount [(int)UnitNames.Airport] + 
+				data.playerUnitCount [(int)UnitNames.Factory] + data.playerUnitCount [(int)UnitNames.Shipyard])) {
+				if (data.playerUnitCount [(int)UnitNames.Infantry] <= 4) {
+					outList.Add (UnitNames.Infantry);
 				}
-				if(data.playerUnitCount[(int)UnitNames.Stinger] <= 3){
-					outList.Add(UnitNames.Stinger);
+				if (data.playerUnitCount [(int)UnitNames.Stinger] <= 3) {
+					outList.Add (UnitNames.Stinger);
 				}
-				if(data.playerUnitCount[(int)UnitNames.Mortar] <= 3){
-					outList.Add(UnitNames.Mortar);
+				if (data.playerUnitCount [(int)UnitNames.Mortar] <= 3) {
+					outList.Add (UnitNames.Mortar);
 				}
 			}
 		}
@@ -255,28 +263,27 @@ public partial class ProductionEngine
 	/// <returns>The ground rule.</returns>
 	/// <param name="data">Data.</param>
 	/// <param name="thisPlayer">This player.</param>
-	public List<UnitNames> LateGroundRule(Instance data, Player thisPlayer){
-		List<UnitNames> outList = new List<UnitNames>();
+	public List<UnitNames> LateGroundRule (Instance data, Player thisPlayer)
+	{
+		List<UnitNames> outList = new List<UnitNames> ();
 		// only activates between 2 and 10 turns in
-		if(InGameController.currentTurn > 6){
-			if(thisPlayer.funds >= 10000){
-				outList.Add(UnitNames.Rockets);
-				outList.Add(UnitNames.MediumTank);
+		if (InGameController.currentTurn > 6) {
+			if (thisPlayer.funds >= 10000) {
+				outList.Add (UnitNames.Rockets);
+				outList.Add (UnitNames.MediumTank);
 			}
 			// Build units to counter triangle
-			if(data.enemyAverageUnitCounts[(int)UnitNames.Rockets] + data.enemyAverageUnitCounts[(int)UnitNames.FieldArtillery] >= 
-			   data.enemyAverageUnitCounts[(int)UnitNames.MediumTank] + data.enemyAverageUnitCounts[(int)UnitNames.LightTank] - 1) {
-			   outList.Add(UnitNames.Stinger);
-				if(data.enemyAverageUnitCounts[(int)UnitNames.FieldArtillery] > data.enemyAverageUnitCounts[(int)UnitNames.Rockets]){
-					outList.Add(UnitNames.Mortar);
+			if (data.enemyAverageUnitCounts [(int)UnitNames.Rockets] + data.enemyAverageUnitCounts [(int)UnitNames.FieldArtillery] >= 
+				data.enemyAverageUnitCounts [(int)UnitNames.MediumTank] + data.enemyAverageUnitCounts [(int)UnitNames.LightTank] - 1) {
+				outList.Add (UnitNames.Stinger);
+				if (data.enemyAverageUnitCounts [(int)UnitNames.FieldArtillery] > data.enemyAverageUnitCounts [(int)UnitNames.Rockets]) {
+					outList.Add (UnitNames.Mortar);
 				}
-			}
-			else if(data.enemyAverageUnitCounts[(int)UnitNames.MediumTank] + data.enemyAverageUnitCounts[(int)UnitNames.LightTank] >= 
-			        data.enemyAverageUnitCounts[(int)UnitNames.Mortar] + data.enemyAverageUnitCounts[(int)UnitNames.Stinger] - 2) {
-				outList.Add(UnitNames.FieldArtillery);
-			}
-			else {
-				outList.Add(UnitNames.LightTank);
+			} else if (data.enemyAverageUnitCounts [(int)UnitNames.MediumTank] + data.enemyAverageUnitCounts [(int)UnitNames.LightTank] >= 
+				data.enemyAverageUnitCounts [(int)UnitNames.Mortar] + data.enemyAverageUnitCounts [(int)UnitNames.Stinger] - 2) {
+				outList.Add (UnitNames.FieldArtillery);
+			} else {
+				outList.Add (UnitNames.LightTank);
 			}
 		}
 		return outList;
@@ -285,7 +292,8 @@ public partial class ProductionEngine
 	/// Adds a production rule to the engine for evaluation. See <see cref="ProductionEngine.ProductionRule"/>
 	/// </summary>
 	/// <param name="pr">Pr.</param>
-	public void AddProductionRule(ProductionRule pr){
-		rules.Add(pr);
+	public void AddProductionRule (ProductionRule pr)
+	{
+		rules.Add (pr);
 	}
 }
