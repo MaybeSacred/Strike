@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
 using System;
@@ -83,7 +83,7 @@ public class Player : MonoBehaviour{
 		int boost = 0;
 		foreach(Property com in comTowers)
 		{
-			if(com.IsInRange(block))
+			if(com.IsInComTowerRange(block))
 			{
 				boost++;
 			}

@@ -557,7 +557,7 @@ public class Property : MonoBehaviour, AttackableObject
 	{
 		return currentBlock;
 	}
-	public bool IsInRange(TerrainBlock block)
+	public bool IsInComTowerRange(TerrainBlock block)
 	{
 		if(TerrainBuilder.ManhattanDistance(block, currentBlock) <= comTowerRange)
 		{

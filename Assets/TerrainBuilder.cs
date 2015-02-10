@@ -869,6 +869,7 @@ public class TerrainBuilder : MonoBehaviour {
 		MapData outgoingData = new MapData(mapName, Mathf.RoundToInt(largestX) + 1, Mathf.RoundToInt(largestZ) + 1);
 		List<Vector3Serializer> HQLocations = new List<Vector3Serializer>();
 		List<Property> properties = new List<Property>();
+		List<TerrainObject> units = new List<TerrainObject>();
 		RaycastHit hit;
 		for(int i = 0; i < blocks.Length; i++)
 		{
@@ -927,6 +928,7 @@ public class TerrainBuilder : MonoBehaviour {
 				if(Physics.Raycast(new Vector3(Mathf.RoundToInt(blocks[i].transform.position.x), 100f, Mathf.RoundToInt(blocks[i].transform.position.z)), Vector3.down, out hit, 1000f, LayerMask.NameToLayer("UnitLayer")))
 				{
 					outgoingData.isPreDeploy = true;
+					units.Add(new TerrainObject(hit.collider.gameObject));
 				}
 			}
 			else
@@ -939,6 +941,7 @@ public class TerrainBuilder : MonoBehaviour {
 		for(int i = 0; i < outgoingData.properties.Length; i++){
 			outgoingData.properties[i] = new TerrainObject(properties[i].gameObject);
 		}
+		outgoingData.units = units.ToArray();
 		outgoingData.blockStatistics = NormalizeVector(outgoingData.blockStatistics);
 		return outgoingData;
 	}

@@ -83,6 +83,10 @@ public class PlayerGUIView : MonoBehaviour {
 			AIDropdownButtons.Add(t);
 			AILevel captured = name;
 			t.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => {SetAILevel(captured);});
+			// hotfix to disable AI modules that arent ready
+			if(name == AILevel.Easy || name == AILevel.Hard){
+				t.GetComponent<UnityEngine.UI.Button>().enabled = false;
+			}
 		}
 		offset = -mapNameButtonOffset/2;
 		foreach(RectTransform rt in AIDropdownButtons){
