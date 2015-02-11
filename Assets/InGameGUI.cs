@@ -26,6 +26,8 @@ public class InGameGUI : MonoBehaviour
 	public UnityEngine.UI.Text detailedInfoText;
 	// Advance turn button
 	public UnityEngine.UI.Button advanceTurnButton;
+	// Pause menu
+	public GameObject pauseMenu;
 	void Awake ()
 	{
 		instance = this;
@@ -38,6 +40,7 @@ public class InGameGUI : MonoBehaviour
 	{
 		advanceTurnButton.onClick.AddListener (() => FindObjectOfType<InGameController> ().AdvanceTurn ());
 		detailedTextBox.SetActive (false);
+		pauseMenu.SetActive (false);
 	}
 	// Use this for initialization
 	void Start ()
@@ -109,7 +112,7 @@ public class InGameGUI : MonoBehaviour
 	void OnGUI ()
 	{
 		if (InGameController.isPaused) {
-			PauseMenu ();
+			Pause ();
 		} else {
 			if (unitMousedOver != null) {
 				ShowHealthDisplay (unitMousedOver.health.PrettyHealth (), unitMousedOver.transform.position);
@@ -182,6 +185,13 @@ public class InGameGUI : MonoBehaviour
 				
 	}
 	/// <summary>
+	/// Forces skirmish ending.
+	/// </summary>
+	public void ForceQuitSkirmish ()
+	{
+		InGameController.QuitSkirmish ();
+	}
+	/// <summary>
 	/// Shows the health display for a unit or property
 	/// </summary>
 	/// <param name="health">Health.</param>
@@ -200,8 +210,8 @@ public class InGameGUI : MonoBehaviour
 	/// <summary>
 	/// Displays the pause menu
 	/// </summary>
-	void PauseMenu ()
+	public void Pause ()
 	{
-		
+		pauseMenu.SetActive (InGameController.isPaused);
 	}
 }

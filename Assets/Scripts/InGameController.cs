@@ -57,6 +57,7 @@ public class InGameController : MonoBehaviour
 		if (isPaused) {
 			if (Input.GetKeyDown (KeyCode.Escape)) {
 				isPaused = false;
+				InGameGUI.instance.Pause ();
 				Utilities.gameCamera.otherMenuActive = false;
 			}
 		} else {
@@ -70,6 +71,7 @@ public class InGameController : MonoBehaviour
 					}
 				}
 				isPaused = true;
+				InGameGUI.instance.Pause ();
 			}
 			if (Input.GetKeyDown ("q")) {
 				MoveCameraToNextPlayerUnit ();
@@ -164,6 +166,7 @@ public class InGameController : MonoBehaviour
 	{
 		players [currentPlayer].EndTurn ();
 		isPaused = false;
+		InGameGUI.instance.Pause ();
 		currentTerrain.AllFogOn ();
 		currentPlayer++;
 		if (currentPlayer >= players.Count) {
@@ -176,6 +179,23 @@ public class InGameController : MonoBehaviour
 		turnState = 0;
 		InGameGUI.instance.SetCurrentPlayerDisplay (players [currentPlayer]);
 	}
+	/// <summary>
+	/// Removes all players, ending the current skirmish
+	/// </summary>
+	public static void QuitSkirmish ()
+	{
+		for (int i = players.Count - 1; i >= 0; i--) {
+			if (players != null) {
+				if (players [i] != null) {
+					RemovePlayer (players [i]);
+				}
+			}
+		}
+	}
+	/// <summary>
+	/// Removes the player.
+	/// </summary>
+	/// <param name="toRemove">To remove.</param>
 	public static void RemovePlayer (Player toRemove)
 	{
 		collectedStatistics.Add (toRemove.RemovePlayer (false));
@@ -195,7 +215,7 @@ public class InGameController : MonoBehaviour
 			}
 			Utilities.LoadSkirmishEndScreen (collectedStatistics);
 		}
-		if (currentPlayer >= players.Count) {
+		if (currentPlayer >= players.Count && players.Count > 0) {
 			currentPlayer = 0;
 			players [currentPlayer].StartTurn ();
 		}

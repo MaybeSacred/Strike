@@ -14,7 +14,13 @@ public class Player : MonoBehaviour
 	public static int TotalUnitsAllowedPPlayer = 50;
 	public int currentHue;
 	public General selectedGeneral;
-	public string playerName;
+	public string playerName {
+		get{ return name;}
+		set {
+			name = value;
+			pigs.name = value;
+		}
+	}
 	protected int playerNumber = 0;
 	public int side = 0;//0 is neutral, first player is 1
 	public List<UnitController> units { get; protected set; }
@@ -54,6 +60,7 @@ public class Player : MonoBehaviour
 	protected virtual void Awake ()
 	{
 		comTowers = new List<Property> ();
+		pigs = new PlayerInGameStatistics ();
 	}
 	/// <summary>
 	/// Setup the specified side, general, playerColor and name.
@@ -70,8 +77,6 @@ public class Player : MonoBehaviour
 		playerNumber = ++playerCount;
 		this.side = side;
 		mainPlayerColor = playerColor;
-		pigs = new PlayerInGameStatistics ();
-		pigs.name = playerName;
 		units = new List<UnitController> ();
 		properties = new List<Property> ();
 		if (loggingProductionData) {

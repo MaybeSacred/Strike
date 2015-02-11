@@ -3,7 +3,7 @@ using System.Collections;
 
 public class SkirmishEndMenuPlayer : MonoBehaviour
 {
-	public UnityEngine.UI.Text name, fundsGathered, fundsSpent, unitsCreated, unitsLost;
+	public UnityEngine.UI.Text nameText, fundsGathered, fundsSpent, unitsCreated, unitsLost;
 	// Use this for initialization
 	void Start ()
 	{
@@ -25,7 +25,7 @@ public class SkirmishEndMenuPlayer : MonoBehaviour
 	}
 	public void SetText (string name, string fundsGathered, string fundsSpent, string unitsCreated, string unitsLost)
 	{
-		this.name.text = name;
+		this.nameText.text = name;
 		this.fundsGathered.text = fundsGathered;
 		this.fundsSpent.text = fundsSpent;
 		this.unitsCreated.text = unitsCreated;

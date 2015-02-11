@@ -2,7 +2,8 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-public class Utilities : MonoBehaviour{
+public class Utilities : MonoBehaviour
+{
 	[System.Serializable]
 	public class UnitPrefabBindingClass
 	{
@@ -29,138 +30,123 @@ public class Utilities : MonoBehaviour{
 	public static InGameCamera gameCamera;
 	public AIPlayer easyAIPrototype, mediumAIPrototype, hardAIPrototype;
 	private static List<PlayerInGameStatistics> statistics;
-	void Awake() {
+	void Awake ()
+	{
 #if UNITY_STANDALONE
 		LearnerUtilities.SetJREPath();
 #endif
 	}
 	// Use this for initialization
-	void Start () {
-		DontDestroyOnLoad(this);
+	void Start ()
+	{
+		DontDestroyOnLoad (this);
 		generalPrototypes = generals;
 		units = editorUnits;
 		healthPoint = hpPic;
 		unitRankInsignias = unitRankInsigniasEditor;
-		canFireNowRangeColor = new Color((float)113/256, 0, 0, (float)143/256);
-		cannotFireNowRangeColor = new Color((float)96/256, (float)75/256, 0, (float)143/256);
+		canFireNowRangeColor = new Color ((float)113 / 256, 0, 0, (float)143 / 256);
+		cannotFireNowRangeColor = new Color ((float)96 / 256, (float)75 / 256, 0, (float)143 / 256);
 		fogOfWarEnabled = true;
-		carryingUnitImage = Resources.Load<Texture2D>("UnitBar");
+		carryingUnitImage = Resources.Load<Texture2D> ("UnitBar");
 #if UNITY_STANDALONE
 		LearnerUtilities.TerminateNeuralTraining();
 #endif
 	}
-	public static General GetGeneral(Generals id)
+	public static General GetGeneral (Generals id)
 	{
-		for(int i = 0; i < generalPrototypes.Length; i++)
-		{
-			if(generalPrototypes[i].name.Equals(id.ToString()))
-			{
-				return Instantiate(generalPrototypes[i]) as General;
+		for (int i = 0; i < generalPrototypes.Length; i++) {
+			if (generalPrototypes [i].name.Equals (id.ToString ())) {
+				return Instantiate (generalPrototypes [i]) as General;
 			}
 		}
-		throw new UnityException("General not found");
+		throw new UnityException ("General not found");
 	}
-	public static void LoadSkirmishEndScreen(List<PlayerInGameStatistics> pigs)
+	public static void LoadSkirmishEndScreen (List<PlayerInGameStatistics> pigs)
 	{
 		statistics = pigs;
-		MonoBehaviour[] all = FindObjectsOfType<MonoBehaviour>();
-		foreach(MonoBehaviour a in all)
-		{
-			if(a is InGameController || a is Utilities)
-			{
+		MonoBehaviour[] all = FindObjectsOfType<MonoBehaviour> ();
+		foreach (MonoBehaviour a in all) {
+			if (a is InGameController || a is Utilities) {
 				
-			}
-			else
-			{
-				Destroy(a);
+			} else {
+				Destroy (a);
 			}
 		}
 #if UNITY_STANDALONE
 		LearnerUtilities.TrainCurrentClassifier(LearnerUtilities.dataFileName);
 #endif
-		Application.LoadLevel("SkirmishEnd");
+		Application.LoadLevel ("SkirmishEnd");
 	}
-	public void LoadSkirmishMap(Player[] players, string mapName, GameSettings gs)
+	public void LoadSkirmishMap (Player[] players, string mapName, GameSettings gs)
 	{
 		isInMenu = false;
 		playersToAdd = players;
 		gameSettings = gs;
-		Application.LoadLevel(mapName);
+		Application.LoadLevel (mapName);
 	}
-	void OnLevelWasLoaded()
+	void OnLevelWasLoaded ()
 	{
-		if(!isInMenu)
-		{
+		if (!isInMenu) {
 			isInMenu = true;
-			for(int i = 0; i < playersToAdd.Length; i++)
-			{
-				if(playersToAdd[i].aiLevel != AILevel.Human)
-				{
+			for (int i = 0; i < playersToAdd.Length; i++) {
+				if (playersToAdd [i].aiLevel != AILevel.Human) {
 					AIPlayer temp = null;
-					switch(playersToAdd[i].aiLevel)
-					{
+					switch (playersToAdd [i].aiLevel) {
 					case AILevel.Easy:
-					{
-						temp = Instantiate(easyAIPrototype) as AIPlayer;
-						break;
-					}
+						{
+							temp = Instantiate (easyAIPrototype) as AIPlayer;
+							break;
+						}
 					case AILevel.Medium:
-					{
-						temp = Instantiate(mediumAIPrototype) as AIPlayer;
-						break;
-					}
+						{
+							temp = Instantiate (mediumAIPrototype) as AIPlayer;
+							break;
+						}
 					case AILevel.Hard:
-					{
-						temp = Instantiate(hardAIPrototype) as AIPlayer;
-						break;
+						{
+							temp = Instantiate (hardAIPrototype) as AIPlayer;
+							break;
+						}
 					}
-					}
-					temp.Setup(playersToAdd[i]);
-					Destroy(playersToAdd[i]);
-					playersToAdd[i] = temp;
+					temp.Setup (playersToAdd [i]);
+					Destroy (playersToAdd [i]);
+					playersToAdd [i] = temp;
 				}
 			}
-			InGameController.Setup(playersToAdd);
+			InGameController.Setup (playersToAdd);
 			fogOfWarEnabled = gameSettings.fogOfWarEnabled;
-			if(gameSettings.startingFunds > 0)
-			{
-				for(int i = 0; i < playersToAdd.Length; i++)
-				{
-					playersToAdd[i].AddFunds(gameSettings.startingFunds);
+			if (gameSettings.startingFunds > 0) {
+				for (int i = 0; i < playersToAdd.Length; i++) {
+					playersToAdd [i].AddFunds (gameSettings.startingFunds);
 				}
 			}
-			Property[] allProperties = GameObject.FindObjectsOfType<Property>();
-			for(int i = 0; i < allProperties.Length; i++)
-			{
-				if(allProperties[i].propertyClass.baseFunds > 0)
-				{
-					allProperties[i].propertyClass.baseFunds = gameSettings.propertyBaseFunds;
+			Property[] allProperties = GameObject.FindObjectsOfType<Property> ();
+			for (int i = 0; i < allProperties.Length; i++) {
+				if (allProperties [i].propertyClass.baseFunds > 0) {
+					allProperties [i].propertyClass.baseFunds = gameSettings.propertyBaseFunds;
 				}
 			}
-			GameObject.FindObjectOfType<WeatherController>().SetWeatherType(gameSettings.selectedWeather, new List<Player>(playersToAdd));
-			gameCamera = GameObject.FindObjectOfType<InGameCamera>();
+			GameObject.FindObjectOfType<WeatherController> ().SetWeatherType (gameSettings.selectedWeather, new List<Player> (playersToAdd));
+			gameCamera = GameObject.FindObjectOfType<InGameCamera> ();
 		}
-		if(Application.loadedLevelName.Equals("SkirmishEnd"))
-		{
-			GameObject.FindObjectOfType<SkirmishEndMenu>().SetGameStatistics(statistics);
-			Destroy(this);
+		if (Application.loadedLevelName.Equals ("SkirmishEnd")) {
+			GameObject.FindObjectOfType<SkirmishEndMenu> ().SetGameStatistics (statistics);
+			Destroy (this);
 		}
 	}
-	void Update()
+	void Update ()
 	{
-		if(Input.GetKeyDown("g"))
-		{
-			InGameController.RemovePlayer(InGameController.GetCurrentPlayer());
+		if (Input.GetKeyDown ("g")) {
+			InGameController.RemovePlayer (InGameController.GetCurrentPlayer ());
 		}
 	}
 
 	public static Texture2D GetRankImage (UnitRanks rank)
 	{
-		if(rank != UnitRanks.UnRanked)
-		{
-			return unitRankInsignias[(int)rank - 1];
+		if (rank != UnitRanks.UnRanked) {
+			return unitRankInsignias [(int)rank - 1];
 		}
-		throw new UnityException("Invalid Rank Image Request " + StackTraceUtility.ExtractStackTrace());
+		throw new UnityException ("Invalid Rank Image Request " + StackTraceUtility.ExtractStackTrace ());
 	}
 
 	public static Texture2D GetCarryingImage (UnitNames unitClass)
@@ -168,28 +154,25 @@ public class Utilities : MonoBehaviour{
 		return carryingUnitImage;
 	}
 	
-	public static MonoBehaviour GetPrefabFromUnitName(UnitNames inName)
+	public static MonoBehaviour GetPrefabFromUnitName (UnitNames inName)
 	{
-		 if((int)inName < units.Length && units[(int)inName].prefab != null)
-		 {
-			return units[(int)inName].prefab;
-		 }
-		 return null;
+		if ((int)inName < units.Length && units [(int)inName].prefab != null) {
+			return units [(int)inName].prefab;
+		}
+		return null;
 	}
-	public static void LoadTitleScreen()
+	public static void LoadTitleScreen ()
 	{
-		Application.LoadLevel("Splash");
+		Application.LoadLevel ("Splash");
 	}
-	public static string PrettifyVariableName(string inVariable)
+	public static string PrettifyVariableName (string inVariable)
 	{
 		string temp = inVariable;
 		string outString = inVariable;
 		int numberOfChanges = 0;
-		for(int i = 2; i < temp.Length; i++)
-		{
-			if(char.IsUpper(temp[i]))
-			{
-				outString = outString.Insert(i+numberOfChanges, " ");
+		for (int i = 2; i < temp.Length; i++) {
+			if (char.IsUpper (temp [i])) {
+				outString = outString.Insert (i + numberOfChanges, " ");
 				numberOfChanges++;
 			}
 		}
