@@ -47,6 +47,9 @@ public class InGameController : MonoBehaviour
 			if (turnState == 1) {
 				turnState = 2;
 				players [currentPlayer].StartTurn ();
+				if (currentPlayer > 0) {
+					InGameGUI.instance.StartTurnChange (players [currentPlayer].playerName);
+				}
 				if (currentPlayer == 0) {
 					AdvanceTurn ();
 				}

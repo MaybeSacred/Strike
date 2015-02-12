@@ -57,6 +57,7 @@
      <Compile Include="Assets\MenuBackgroundMapDisplayer.cs" />
      <Compile Include="Assets\OptionsMenu.cs" />
      <Compile Include="Assets\PlayerGUIView.cs" />
+     <Compile Include="Assets\PlayerTurnAnimation.cs" />
      <Compile Include="Assets\PropertyGameView.cs" />
      <Compile Include="Assets\Scripts\AIPlayer.cs" />
      <Compile Include="Assets\Scripts\AIPlayerEasy.cs" />
@@ -103,6 +104,7 @@
      <None Include="Assets\Models\Submarine\readme.txt" />
      <None Include="Assets\Standard Assets\Skyboxes\_skybox info.txt" />
      <None Include="Assets\Models\Boomer\S_o_f\readme (instructions).txt" />
+     <None Include="Assets\Materials\ausaf.txt" />
      <None Include="Assets\Fantasy Skybox FREE\Readme\Readme.txt" />
      <None Include="Assets\Models\S_o_f\readme (instructions).txt" />
      <None Include="Assets\Models\Halo ODST\Readme.txt" />

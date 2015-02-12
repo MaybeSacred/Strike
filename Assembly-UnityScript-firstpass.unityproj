@@ -58,6 +58,7 @@
      <None Include="Assets\Models\Submarine\readme.txt" />
      <None Include="Assets\Standard Assets\Skyboxes\_skybox info.txt" />
      <None Include="Assets\Models\Boomer\S_o_f\readme (instructions).txt" />
+     <None Include="Assets\Materials\ausaf.txt" />
      <None Include="Assets\Fantasy Skybox FREE\Readme\Readme.txt" />
      <None Include="Assets\Models\S_o_f\readme (instructions).txt" />
      <None Include="Assets\Models\Halo ODST\Readme.txt" />

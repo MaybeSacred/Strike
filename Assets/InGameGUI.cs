@@ -28,6 +28,8 @@ public class InGameGUI : MonoBehaviour
 	public UnityEngine.UI.Button advanceTurnButton;
 	// Pause menu
 	public GameObject pauseMenu;
+	// Turn animation controller
+	public PlayerTurnAnimation turnAnimation;
 	void Awake ()
 	{
 		instance = this;
@@ -213,5 +215,10 @@ public class InGameGUI : MonoBehaviour
 	public void Pause ()
 	{
 		pauseMenu.SetActive (InGameController.isPaused);
+	}
+
+	public void StartTurnChange (string nameToDisplay)
+	{
+		turnAnimation.AddName (nameToDisplay);
 	}
 }
