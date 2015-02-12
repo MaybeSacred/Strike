@@ -10,7 +10,7 @@ public class Instance
 	public int currentTurn;
 	public int funds;
 	public MapData mapData;
-	public UnitNames classification;
+	public UnitName classification;
 	public string prettyName;
 	protected static long currentNumber;
 	public Instance(int numUnits)
@@ -46,16 +46,16 @@ public class Instance
 		sb.Append(MapData.AttributeString());
 		sb.Append("@attribute 'Turn' numeric\n");
 		sb.Append("@attribute 'Funds' numeric\n");
-		foreach(string value in Enum.GetNames(typeof(UnitNames)))
+		foreach(string value in Enum.GetNames(typeof(UnitName)))
 		{
 			sb.Append("@attribute 'Player " + value + "' real\n");
 		}
-		foreach(string value in Enum.GetNames(typeof(UnitNames)))
+		foreach(string value in Enum.GetNames(typeof(UnitName)))
 		{
 			sb.Append("@attribute 'EnemyAverage " + value + "' real\n");
 		}
 		sb.Append("@attribute 'class' {");
-		foreach(string strokeS in Enum.GetNames(typeof(UnitNames)))
+		foreach(string strokeS in Enum.GetNames(typeof(UnitName)))
 		{
 			sb.Append(strokeS+",");
 		}

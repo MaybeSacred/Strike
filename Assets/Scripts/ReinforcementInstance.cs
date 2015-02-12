@@ -39,16 +39,16 @@ public class ReinforcementInstance : Instance
 		sb.Append(MapData.AttributeString());
 		sb.Append("@attribute 'Turn' numeric\n");
 		sb.Append("@attribute 'Funds' numeric\n");
-		foreach(string value in Enum.GetNames(typeof(UnitNames)))
+		foreach(string value in Enum.GetNames(typeof(UnitName)))
 		{
 			sb.Append("@attribute 'Player " + value + "' real\n");
 		}
-		foreach(string value in Enum.GetNames(typeof(UnitNames)))
+		foreach(string value in Enum.GetNames(typeof(UnitName)))
 		{
 			sb.Append("@attribute 'EnemyAverage " + value + "' real\n");
 		}
 		sb.Append("@attribute 'class' {");
-		foreach(string strokeS in Enum.GetNames(typeof(UnitNames)))
+		foreach(string strokeS in Enum.GetNames(typeof(UnitName)))
 		{
 			sb.Append(strokeS+",");
 		}

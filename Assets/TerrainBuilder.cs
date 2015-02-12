@@ -728,7 +728,7 @@ public class TerrainBuilder : MonoBehaviour
 				outgoingData.mapData [Mathf.RoundToInt (blocks [i].transform.position.x)] [Mathf.RoundToInt (blocks [i].transform.position.z)] = new TerrainObject (blocks [i].name, blocks [i].transform.position, blocks [i].transform.rotation);
 				outgoingData.blockStatistics [(int)blocks [i].typeOfTerrain]++;
 				if (blocks [i].HasProperty () || Physics.Raycast (new Vector3 (Mathf.RoundToInt (blocks [i].transform.position.x), 100f, Mathf.RoundToInt (blocks [i].transform.position.z)), Vector3.down, out hit, 1000f, 1 << LayerMask.NameToLayer ("PropertyLayer"))) {
-					UnitNames propertyType = UnitNames.Infantry;
+					UnitName propertyType = UnitName.Infantry;
 					if (hit.collider != null) {
 						propertyType = hit.collider.GetComponent<Property> ().propertyType;
 						properties.Add (hit.collider.GetComponent<Property> ());
@@ -737,33 +737,33 @@ public class TerrainBuilder : MonoBehaviour
 						properties.Add (blocks [i].occupyingProperty);
 					}
 					switch (propertyType) {
-					case UnitNames.Headquarters:
+					case UnitName.Headquarters:
 						{
 							HQLocations.Add (new Vector3Serializer (blocks [i].transform.position));
 							outgoingData.maxPlayers++;
 							break;
 						}
-					case UnitNames.City:
+					case UnitName.City:
 						{
 							outgoingData.cities++;
 							break;
 						}
-					case UnitNames.Factory:
+					case UnitName.Factory:
 						{
 							outgoingData.factories++;
 							break;
 						}
-					case UnitNames.Airport:
+					case UnitName.Airport:
 						{
 							outgoingData.airports++;
 							break;
 						}
-					case UnitNames.Shipyard:
+					case UnitName.Shipyard:
 						{
 							outgoingData.shipyards++;
 							break;
 						}
-					case UnitNames.ComTower:
+					case UnitName.ComTower:
 						{
 							outgoingData.comTowers++;
 							break;

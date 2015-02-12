@@ -12,7 +12,7 @@ public abstract class AIPlayer : Player
 		randomnessModifier, defensiveTerrainDesireModifier, healModifier,
 		joinModifier, waitModifier;
 	protected Stack<UnitController> unitsToMove;
-	protected Queue<UnitNames> unitsToMake;
+	protected Queue<UnitName> unitsToMake;
 	protected List<UnitController> sightedEnemyUnits;
 	protected UnitController currentUnit;
 	protected int[] countsOfEachUnit;
@@ -22,8 +22,8 @@ public abstract class AIPlayer : Player
 	{
 		base.Awake ();
 		unitsToMove = new Stack<UnitController> ();
-		unitsToMake = new Queue<UnitNames> ();
-		countsOfEachUnit = new int[System.Enum.GetValues (typeof(UnitNames)).Length];
+		unitsToMake = new Queue<UnitName> ();
+		countsOfEachUnit = new int[System.Enum.GetValues (typeof(UnitName)).Length];
 		for (int i = 0; i < countsOfEachUnit.Length; i++) {
 			countsOfEachUnit [i] = 0;
 		}
@@ -93,7 +93,7 @@ public abstract class AIPlayer : Player
 				producingProperties++;
 			}
 			inUnit.SetOwner (this);
-			if (inUnit.propertyType == UnitNames.Headquarters) {
+			if (inUnit.propertyType == UnitName.Headquarters) {
 				hQBlock = inUnit.GetCurrentBlock ();
 			}
 		}
@@ -105,7 +105,7 @@ public abstract class AIPlayer : Player
 			if (inUnit.propertyClass.producableUnits.Length > 0) {
 				producingProperties--;
 			}
-			if (inUnit.propertyType == UnitNames.Headquarters) {
+			if (inUnit.propertyType == UnitName.Headquarters) {
 				InGameController.RemovePlayer (this);
 			}
 			properties.Remove (inUnit);
@@ -131,10 +131,10 @@ public abstract class AIPlayer : Player
 	[System.Serializable]
 	public class UnitNameIntBinder
 	{
-		public UnitNames name;
+		public UnitName name;
 		public int value;
 	}
-	protected bool HasBuildingToProduceUnit (UnitNames name)
+	protected bool HasBuildingToProduceUnit (UnitName name)
 	{
 		for (int i = 0; i < properties.Count; i++) {
 			if (properties [i].CanProduceUnit (name)) {
@@ -144,9 +144,9 @@ public abstract class AIPlayer : Player
 		return false;
 	}
 
-	protected UnitNames RandomUnitName ()
+	protected UnitName RandomUnitName ()
 	{
-		return (UnitNames)System.Enum.GetValues (typeof(UnitNames)).GetValue (UnityEngine.Random.Range (0, 27));
+		return (UnitName)System.Enum.GetValues (typeof(UnitName)).GetValue (UnityEngine.Random.Range (0, 27));
 	}
 	protected void PushUnits ()
 	{

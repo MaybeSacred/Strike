@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 
-public enum UnitNames
+public enum UnitName
 {
 	Infantry,
 	Stinger,
@@ -105,7 +105,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 	public static float actionDisplayXOffset = -50, actionDisplayYOffset = 0, actionDisplayWidth = 100, actionDisplayHeight = 25,
 		infoBoxXOffset = -80, infoBoxYOffset = 40, infoBoxWidth = 80, infoBoxHeight = 80;
 	public static Texture2D healthPoint;
-	public UnitNames unitClass;
+	public UnitName unitClass;
 	public TextMesh targetedDamageDisplay, targetedDamageOutline;
 	public MovementType moveClass;
 	public bool canMoveAndAttack;
@@ -348,7 +348,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 			if (canBuild) {
 				for (int i = 0; i < block.adjacentBlocks.Length; i++) {
 					if (!block.adjacentBlocks [i].IsOccupied () && !block.adjacentBlocks [i].HasProperty ()) {
-						if (block.adjacentBlocks [i].typeOfTerrain == TERRAINTYPE.River && owner.CanProduceProperty (UnitNames.Bridge)) {
+						if (block.adjacentBlocks [i].typeOfTerrain == TERRAINTYPE.River && owner.CanProduceProperty (UnitName.Bridge)) {
 							TerrainBlock acrossTheRiverBlock = InGameController.currentTerrain.GetBlockAtPos ((block.adjacentBlocks [i].transform.position - block.transform.position) + block.adjacentBlocks [i].transform.position);
 							if (acrossTheRiverBlock != null && acrossTheRiverBlock.typeOfTerrain != TERRAINTYPE.River && acrossTheRiverBlock.typeOfTerrain != TERRAINTYPE.Sea) {
 								possibleOrders.Add (UnitOrderOptions.BuildBridge);
@@ -439,7 +439,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 						if (!awaitingOrdersBlock.adjacentBlocks [i].IsOccupied () && awaitingOrdersBlock.adjacentBlocks [i].typeOfTerrain == TERRAINTYPE.River) {
 							awaitingOrdersBlock.adjacentBlocks [i].DisplaySupportTile ();
 							if (Input.GetMouseButtonDown (0)) {
-								Property prop = owner.ProduceProperty (UnitNames.Bridge, awaitingOrdersBlock.adjacentBlocks [i].transform.position + Vector3.up * .5f, (Mathf.RoundToInt (awaitingOrdersBlock.adjacentBlocks [i].transform.position.x) != Mathf.RoundToInt (awaitingOrdersBlock.transform.position.x) ? Quaternion.AngleAxis (90, Vector3.up) : Quaternion.identity));
+								Property prop = owner.ProduceProperty (UnitName.Bridge, awaitingOrdersBlock.adjacentBlocks [i].transform.position + Vector3.up * .5f, (Mathf.RoundToInt (awaitingOrdersBlock.adjacentBlocks [i].transform.position.x) != Mathf.RoundToInt (awaitingOrdersBlock.transform.position.x) ? Quaternion.AngleAxis (90, Vector3.up) : Quaternion.identity));
 								prop.StartConstruction ();
 								ChangeState (UnitState.BuildingBridge, UnitState.FinishedMove);
 							}
@@ -686,7 +686,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 							}
 						}
 						if (!isInUnit) {
-							InGameController.currentTerrain.ClearFog (currentBlock, modifier.ApplyModifiers (UnitPropertyModifier.PropertyModifiers.VisionRange, fogOfWarRange), unitClass == UnitNames.UAV ? true : false);
+							InGameController.currentTerrain.ClearFog (currentBlock, modifier.ApplyModifiers (UnitPropertyModifier.PropertyModifiers.VisionRange, fogOfWarRange), unitClass == UnitName.UAV ? true : false);
 						}
 						break;
 					}
@@ -950,7 +950,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 					tb.occupyingUnit.SetActive (true);
 				}
 			}
-			InGameController.currentTerrain.ClearFog (currentBlock, modifier.ApplyModifiers (UnitPropertyModifier.PropertyModifiers.VisionRange, fogOfWarRange), unitClass == UnitNames.UAV ? true : false);
+			InGameController.currentTerrain.ClearFog (currentBlock, modifier.ApplyModifiers (UnitPropertyModifier.PropertyModifiers.VisionRange, fogOfWarRange), unitClass == UnitName.UAV ? true : false);
 			if (owner.currentGeneralUnit == this) {
 				owner.selectedGeneral.ShowZone (awaitingOrdersBlock);
 			}
@@ -1090,7 +1090,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 	public void ExchangeFire (UnitController other)
 	{
 		int damageOut = DamageValues.CalculateDamage (this, other) + DamageValues.CalculateLuckDamage (health.GetRawHealth ());
-		if (unitClass == UnitNames.Sniper && (other.moveClass == MovementType.Amphibious
+		if (unitClass == UnitName.Sniper && (other.moveClass == MovementType.Amphibious
 			|| other.moveClass == MovementType.HeavyVehicle 
 			|| other.moveClass == MovementType.LightVehicle
 			|| other.moveClass == MovementType.Tank)) {
@@ -1339,16 +1339,16 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 				unitToCarry.moveClass == MovementType.Tank)) {
 				return true;
 			}
-			if ((unitClass == UnitNames.Stryker || unitClass == UnitNames.LiftCopter) && (unitToCarry.moveClass == MovementType.Infantry || unitToCarry.moveClass == MovementType.Sniper)) {
+			if ((unitClass == UnitName.Stryker || unitClass == UnitName.LiftCopter) && (unitToCarry.moveClass == MovementType.Infantry || unitToCarry.moveClass == MovementType.Sniper)) {
 				return true;
 			}
-			if (unitClass == UnitNames.LiftCopter && unitToCarry.moveClass == MovementType.LightVehicle) {
+			if (unitClass == UnitName.LiftCopter && unitToCarry.moveClass == MovementType.LightVehicle) {
 				return true;
 			}
-			if (unitClass == UnitNames.Carrier && unitToCarry.moveClass == MovementType.Air) {
+			if (unitClass == UnitName.Carrier && unitToCarry.moveClass == MovementType.Air) {
 				return true;
 			}
-			if (unitClass == UnitNames.Corvette && (unitToCarry.unitClass == UnitNames.LiftCopter || unitToCarry.unitClass == UnitNames.AttackCopter)) {
+			if (unitClass == UnitName.Corvette && (unitToCarry.unitClass == UnitName.LiftCopter || unitToCarry.unitClass == UnitName.AttackCopter)) {
 				return true;
 			}
 		}
@@ -1572,7 +1572,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 		}
 		TerrainBlock bridgeBlock = potentialBridgeBlocks [UnityEngine.Random.Range (0, potentialBridgeBlocks.Count - 1)];
 		if (bridgeBlock != null) {
-			Property prop = owner.ProduceProperty (UnitNames.Bridge, bridgeBlock.transform.position + Vector3.up * .5f, (Mathf.RoundToInt (bridgeBlock.transform.position.x) != Mathf.RoundToInt (awaitingOrdersBlock.transform.position.x) ? Quaternion.AngleAxis (90, Vector3.up) : Quaternion.identity));
+			Property prop = owner.ProduceProperty (UnitName.Bridge, bridgeBlock.transform.position + Vector3.up * .5f, (Mathf.RoundToInt (bridgeBlock.transform.position.x) != Mathf.RoundToInt (awaitingOrdersBlock.transform.position.x) ? Quaternion.AngleAxis (90, Vector3.up) : Quaternion.identity));
 			prop.StartConstruction ();
 		}
 	}
@@ -1624,7 +1624,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 		return health;
 	}
 
-	public UnitNames GetUnitClass ()
+	public UnitName GetUnitClass ()
 	{
 		return unitClass;
 	}

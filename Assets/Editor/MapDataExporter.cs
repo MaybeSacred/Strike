@@ -340,7 +340,7 @@ public class MapDataExporter : Editor
 			if (Physics.Raycast (new Vector3 (blocks [i].transform.position.x, 100f, blocks [i].transform.position.z), Vector3.down, out hit, 1000f, 1 << LayerMask.NameToLayer ("PropertyLayer"))) {
 				Property prop = hit.collider.GetComponent<Property> ();
 				TerrainBlock east = null, west = null, south = null, north = null;
-				if (prop.propertyType == UnitNames.Bridge) {
+				if (prop.propertyType == UnitName.Bridge) {
 					if (Physics.Raycast (new Vector3 (blocks [i].transform.position.x + 1, 100f, blocks [i].transform.position.z), Vector3.down, out hit, 1000f, 1)) {
 						east = hit.collider.GetComponent<TerrainBlock> ();
 					}
@@ -387,7 +387,7 @@ public class MapDataExporter : Editor
 			if (Physics.Raycast (new Vector3 (west.transform.position.x, 100f, west.transform.position.z), Vector3.down, out hit, 1000f, 1 << LayerMask.NameToLayer ("PropertyLayer"))) {
 				westProp = hit.collider.GetComponent<Property> ();
 			}
-			if ((east.typeOfTerrain != TERRAINTYPE.Sea && east.typeOfTerrain != TERRAINTYPE.River && west.typeOfTerrain != TERRAINTYPE.Sea && west.typeOfTerrain != TERRAINTYPE.River) || (eastProp != null && eastProp.propertyType == UnitNames.Bridge) || (westProp != null && westProp.propertyType == UnitNames.Bridge)) {
+			if ((east.typeOfTerrain != TERRAINTYPE.Sea && east.typeOfTerrain != TERRAINTYPE.River && west.typeOfTerrain != TERRAINTYPE.Sea && west.typeOfTerrain != TERRAINTYPE.River) || (eastProp != null && eastProp.propertyType == UnitName.Bridge) || (westProp != null && westProp.propertyType == UnitName.Bridge)) {
 				prop.transform.eulerAngles = new Vector3 (0, 90, 0);
 			}
 		}
@@ -401,7 +401,7 @@ public class MapDataExporter : Editor
 			if (Physics.Raycast (new Vector3 (south.transform.position.x, 100f, south.transform.position.z), Vector3.down, out hit, 1000f, 1 << LayerMask.NameToLayer ("PropertyLayer"))) {
 				southProp = hit.collider.GetComponent<Property> ();
 			}
-			if ((north.typeOfTerrain != TERRAINTYPE.Sea && north.typeOfTerrain != TERRAINTYPE.River && south.typeOfTerrain != TERRAINTYPE.Sea && south.typeOfTerrain != TERRAINTYPE.River) || (northProp != null && northProp.propertyType == UnitNames.Bridge) || (southProp != null && southProp.propertyType == UnitNames.Bridge)) {
+			if ((north.typeOfTerrain != TERRAINTYPE.Sea && north.typeOfTerrain != TERRAINTYPE.River && south.typeOfTerrain != TERRAINTYPE.Sea && south.typeOfTerrain != TERRAINTYPE.River) || (northProp != null && northProp.propertyType == UnitName.Bridge) || (southProp != null && southProp.propertyType == UnitName.Bridge)) {
 				prop.transform.rotation = Quaternion.identity;
 			}
 		}

@@ -86,7 +86,7 @@
      <Compile Include="Assets\Scripts\SkirmishEndMenu.cs" />
      <Compile Include="Assets\Scripts\SkirmishMenuViewer.cs" />
      <Compile Include="Assets\Scripts\TextureScale.cs" />
-     <Compile Include="Assets\Scripts\UnitController.cs" />
+     <Compile Include="Assets\Scripts\UnitName.cs" />
      <Compile Include="Assets\Scripts\UnitPropertyModifier.cs" />
      <Compile Include="Assets\Scripts\Utilities.cs" />
      <Compile Include="Assets\Scripts\WeatherController.cs" />

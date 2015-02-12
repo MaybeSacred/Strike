@@ -7,7 +7,7 @@ public class AIPlayerEasy : AIPlayer
 	protected override void Awake()
 	{
 		base.Awake();
-		countsOfEachUnit = new int[System.Enum.GetNames(typeof(UnitNames)).Length];
+		countsOfEachUnit = new int[System.Enum.GetNames(typeof(UnitName)).Length];
 	}
 	void Update()
 	{
@@ -268,7 +268,7 @@ public class AIPlayerEasy : AIPlayer
 		{	
 			for(int i = 0; i < 10; i++)
 			{
-				UnitNames rand = RandomUnitName();
+				UnitName rand = RandomUnitName();
 				if(HasBuildingToProduceUnit(rand))
 				{
 					unitsToMake.Enqueue(rand);

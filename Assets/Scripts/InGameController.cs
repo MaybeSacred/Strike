@@ -184,7 +184,7 @@ public class InGameController : MonoBehaviour
 	/// </summary>
 	public static void QuitSkirmish ()
 	{
-		for (int i = players.Count - 1; i >= 0; i--) {
+		for (int i = players.Count - 1; i >= 1; i--) {
 			if (players != null) {
 				if (players [i] != null) {
 					RemovePlayer (players [i]);
@@ -222,7 +222,10 @@ public class InGameController : MonoBehaviour
 	}
 	public static Player GetCurrentPlayer ()
 	{
-		return players [currentPlayer];
+		if (players.Count > 0 && currentPlayer < players.Count) {
+			return players [currentPlayer];
+		}
+		return null;
 	}
 	public static Player GetPlayer (int playerNum)
 	{
@@ -318,14 +321,14 @@ public class InGameController : MonoBehaviour
 		}
 		return relative.TotalRelativeValue () - (totalEnemies > 0 ? totalEnemyValue / totalEnemies : 0);
 	}
-	public static Instance CreateInstance (UnitNames unitMade, bool reinforcement)
+	public static Instance CreateInstance (UnitName unitMade, bool reinforcement)
 	{
 		Instance outInstance;
 		if (reinforcement) {
-			outInstance = new ReinforcementInstance (System.Enum.GetNames (typeof(UnitNames)).Length);
+			outInstance = new ReinforcementInstance (System.Enum.GetNames (typeof(UnitName)).Length);
 			((ReinforcementInstance)outInstance).accruedReward = InGameController.TotalValueRelativeToPlayer (players [currentPlayer]);
 		} else {
-			outInstance = new Instance (System.Enum.GetNames (typeof(UnitNames)).Length);
+			outInstance = new Instance (System.Enum.GetNames (typeof(UnitName)).Length);
 		}
 		float enemiesOfPlayer = 0;
 		for (int i = 1; i < players.Count; i++) {

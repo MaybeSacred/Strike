@@ -6,7 +6,7 @@ public class Property : MonoBehaviour, AttackableObject
 	public int startingOwner;
 	private bool hasUnitSelectedMutex;
 	public static int productionDisplayWidth = 220;
-	public UnitNames propertyType;
+	public UnitName propertyType;
 	public Health health;
 	private Player currentOwner;
 	public PropertyAttributes propertyClass;
@@ -38,7 +38,7 @@ public class Property : MonoBehaviour, AttackableObject
 		public int baseFunds;
 		public bool capturable;
 		public int defenseBonus;
-		public UnitNames[] producableUnits;
+		public UnitName[] producableUnits;
 	}
 	public bool IsAlive ()
 	{
@@ -87,7 +87,7 @@ public class Property : MonoBehaviour, AttackableObject
 			currentBlock.AttachProperty (this);
 		}
 		isUnderConstruction = false;
-		if (propertyType == UnitNames.ComTower) {
+		if (propertyType == UnitName.ComTower) {
 			mouseOverEffect = (ParticleSystem)Instantiate (mouseOverEffect, transform.position, transform.rotation);
 			mouseOverEffect.particleSystem.Stop ();
 		}
@@ -129,7 +129,7 @@ public class Property : MonoBehaviour, AttackableObject
 		return propertyClass.defenseBonus;
 	}
 
-	public UnitNames GetUnitClass ()
+	public UnitName GetUnitClass ()
 	{
 		return propertyType;
 	}
@@ -141,7 +141,7 @@ public class Property : MonoBehaviour, AttackableObject
 		currentBlock.AttachProperty (this);
 	}
 
-	public void AIProduceUnit (UnitNames unitNames)
+	public void AIProduceUnit (UnitName unitNames)
 	{
 		UnitController newUnit = currentOwner.ProduceUnit (unitNames);
 		newUnit.transform.position = transform.position;
@@ -251,8 +251,8 @@ public class Property : MonoBehaviour, AttackableObject
 	}
 	public void KillUnit ()
 	{
-		if (propertyType == UnitNames.Headquarters) {
-			propertyType = UnitNames.City;
+		if (propertyType == UnitName.Headquarters) {
+			propertyType = UnitName.City;
 			InGameController.RemovePlayer (currentOwner);
 		} else {
 			currentOwner.RemoveProperty (this);
@@ -261,14 +261,14 @@ public class Property : MonoBehaviour, AttackableObject
 		if (InGameController.GetPlayer (0) != null) {	
 			SetOwner (InGameController.GetPlayer (0));
 		}
-		if (propertyType == UnitNames.Bridge) {
+		if (propertyType == UnitName.Bridge) {
 			currentBlock.DetachProperty (this, false);
 			Destroy (gameObject);
 		}
 	}
 	public void DestroyHeadquarters ()
 	{
-		propertyType = UnitNames.City;
+		propertyType = UnitName.City;
 		health.SetRawHealth (-59);
 		if (InGameController.GetPlayer (0) != null) {
 			SetOwner (InGameController.GetPlayer (0));
@@ -277,7 +277,7 @@ public class Property : MonoBehaviour, AttackableObject
 	public void OnMouseOverExtra ()
 	{
 		infoBoxTimeoutCounter = 0;
-		if (propertyType == UnitNames.ComTower) {
+		if (propertyType == UnitName.ComTower) {
 			if (!mouseOverEffect.particleSystem.isPlaying)
 				mouseOverEffect.particleSystem.Play ();
 		}
@@ -313,7 +313,7 @@ public class Property : MonoBehaviour, AttackableObject
 
 	public void OnMouseExitExtra ()
 	{
-		if (propertyType == UnitNames.ComTower) {
+		if (propertyType == UnitName.ComTower) {
 			mouseOverEffect.particleSystem.Stop ();
 		}
 	}
@@ -345,8 +345,8 @@ public class Property : MonoBehaviour, AttackableObject
 		}
 		captureCount -= captureStrength;
 		if (captureCount <= 0) {
-			if (propertyType == UnitNames.Headquarters) {
-				propertyType = UnitNames.City;
+			if (propertyType == UnitName.Headquarters) {
+				propertyType = UnitName.City;
 				InGameController.RemovePlayer (currentOwner);
 			}
 			captureCount = 20;
@@ -419,12 +419,12 @@ public class Property : MonoBehaviour, AttackableObject
 	public bool CanHealUnit (UnitController inUnit)
 	{
 		switch (propertyType) {
-		case UnitNames.Headquarters:
+		case UnitName.Headquarters:
 			{
 				return true;
 			}
-		case UnitNames.City:
-		case UnitNames.Factory:
+		case UnitName.City:
+		case UnitName.Factory:
 			{
 				if (inUnit.moveClass == MovementType.Amphibious || inUnit.moveClass == MovementType.Infantry 
 					|| inUnit.moveClass == MovementType.HeavyVehicle || inUnit.moveClass == MovementType.LightVehicle
@@ -433,7 +433,7 @@ public class Property : MonoBehaviour, AttackableObject
 				}
 				break;
 			}
-		case UnitNames.Shipyard:
+		case UnitName.Shipyard:
 			{
 				if (inUnit.moveClass == MovementType.Amphibious || inUnit.moveClass == MovementType.Littoral
 					|| inUnit.moveClass == MovementType.Sea) {
@@ -441,7 +441,7 @@ public class Property : MonoBehaviour, AttackableObject
 				}
 				break;
 			}
-		case UnitNames.Airport:
+		case UnitName.Airport:
 			{
 				if (inUnit.moveClass == MovementType.Air) {
 					return true;
@@ -451,7 +451,7 @@ public class Property : MonoBehaviour, AttackableObject
 		}
 		return false;
 	}
-	public bool CanProduceUnit (UnitNames inUnit)
+	public bool CanProduceUnit (UnitName inUnit)
 	{
 		for (int i = 0; i < propertyClass.producableUnits.Length; i++) {
 			if (propertyClass.producableUnits [i] == inUnit) {

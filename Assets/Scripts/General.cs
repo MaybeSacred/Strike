@@ -10,7 +10,7 @@ public class General : MonoBehaviour
 {
 	public int zoneSize;
 	public Generals generalName;
-	public List<UnitNames> boostedUnits;
+	public List<UnitName> boostedUnits;
 	public int offensiveBoost, defensiveBoost;
 	public int damageNeededForPower;
 	private int currentStoredPower;
@@ -149,7 +149,7 @@ public class General : MonoBehaviour
 		currentStoredPower = 0;
 		zoneSizeBoost = 0;
 	}
-	public int UnitOffensiveBoost(UnitNames inUnit)
+	public int UnitOffensiveBoost(UnitName inUnit)
 	{
 		if(boostedUnits.Contains(inUnit))
 		{
@@ -185,7 +185,7 @@ public class General : MonoBehaviour
 		}
 		return 1;
 	}
-	public int UnitDefensiveBoost(UnitNames inUnit)
+	public int UnitDefensiveBoost(UnitName inUnit)
 	{
 		if(boostedUnits.Contains(inUnit))
 		{

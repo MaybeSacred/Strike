@@ -15,9 +15,9 @@ public class AIPlayerMedium : AIPlayer
 	private List<AttackableObject> targetedObjects;
 	private float clusterAssignmentOverflow = 1.25f;
 	private bool makeSupplySea, makeSupplyLand, makeTransport;
-	private UnitNames transportToMake;
+	private UnitName transportToMake;
 	public bool produceRandom;
-	private Dictionary<UnitNames, List<UnitController>> supportUnits;
+	private Dictionary<UnitName, List<UnitController>> supportUnits;
 	ProductionEngine productionEngine;
 	
 	protected override void Awake ()
@@ -28,10 +28,10 @@ public class AIPlayerMedium : AIPlayer
 			productionType = (ProductionTest)System.Enum.GetValues (typeof(ProductionTest)).GetValue (UnityEngine.Random.Range (0, System.Enum.GetNames (typeof(ProductionTest)).Length));
 		}
 		clusterer = new Clusterer ();
-		supportUnits = new Dictionary<UnitNames, List<UnitController>> ();
-		Array unitNames = System.Enum.GetValues (typeof(UnitNames));
+		supportUnits = new Dictionary<UnitName, List<UnitController>> ();
+		Array unitNames = System.Enum.GetValues (typeof(UnitName));
 		for (int i = 0; i < unitNames.Length; i++) {
-			MonoBehaviour mono = Utilities.GetPrefabFromUnitName ((UnitNames)unitNames.GetValue (i));
+			MonoBehaviour mono = Utilities.GetPrefabFromUnitName ((UnitName)unitNames.GetValue (i));
 			if (mono is UnitController) {
 				UnitController uc = (UnitController)mono;
 				if (uc.canTransport) {
@@ -61,7 +61,7 @@ public class AIPlayerMedium : AIPlayer
 	void SetTransportToMake (UnitController inUnit)
 	{
 		int lowestCost = int.MaxValue;
-		foreach (UnitNames name in supportUnits.Keys) {
+		foreach (UnitName name in supportUnits.Keys) {
 			UnitController mono = (UnitController)Utilities.GetPrefabFromUnitName (name);
 			if (mono.CanCarryUnit (inUnit)) {
 				for (int i = 0; i < properties.Count; i++) {
@@ -180,7 +180,7 @@ public class AIPlayerMedium : AIPlayer
 		//assign infantry to buildings if possible - easy first step
 		for (int i = 0; i < units.Count; i++) {
 			//although able to capture, snipers are better used in combat
-			if (units [i].canCapture && units [i].unitClass != UnitNames.Sniper) {
+			if (units [i].canCapture && units [i].unitClass != UnitName.Sniper) {
 				units [i].AITarget = GetNextClosestUncapturedProperty (units [i]);
 				if (units [i].AITarget != null) {
 					assignedUnits.Add (units [i]);
@@ -718,14 +718,14 @@ public class AIPlayerMedium : AIPlayer
 	void MediumUnitProductionRandom ()
 	{
 		if (producingUnits) {
-			UnitNames rankedName = productionEngine.Evaluate (this);
+			UnitName rankedName = productionEngine.Evaluate (this);
 			string unitsSelected = "";
 			if (rankedName != null) {
 				if (makeSupplyLand) {
-					rankedName = UnitNames.SupplyTank;
+					rankedName = UnitName.SupplyTank;
 					makeSupplyLand = false;
 				} else if (makeSupplySea) {
-					rankedName = UnitNames.SupplyShip;
+					rankedName = UnitName.SupplyShip;
 					makeSupplySea = false;
 				} else if (makeTransport) {
 					rankedName = transportToMake;

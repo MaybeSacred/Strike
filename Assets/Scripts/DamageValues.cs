@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections.Generic;
 using System;
 using System.IO;
@@ -11,9 +11,9 @@ public class DamageValues : MonoBehaviour
 	void Awake ()
 	{
 		if (unitDamageArray == null) {
-			unitDamageArray = new int[Enum.GetValues (typeof(UnitNames)).Length][];
+			unitDamageArray = new int[Enum.GetValues (typeof(UnitName)).Length][];
 			for (int i = 0; i < unitDamageArray.Length; i++) {
-				unitDamageArray [i] = new int[Enum.GetValues (typeof(UnitNames)).Length];
+				unitDamageArray [i] = new int[Enum.GetValues (typeof(UnitName)).Length];
 				for (int j = 0; j < unitDamageArray[i].Length; j++) {
 					unitDamageArray [i] [j] = -1;
 				}
@@ -25,10 +25,10 @@ public class DamageValues : MonoBehaviour
 				line = reader.ReadLine ();
 				var values = line.Split (new char[]{',', ';'});
 				if (!values [0].Equals ("")) {
-					UnitNames currentName = (UnitNames)Enum.Parse (typeof(UnitNames), values [0]);
+					UnitName currentName = (UnitName)Enum.Parse (typeof(UnitName), values [0]);
 					for (int i = 1; i < values.Length; i++) {
 						if (!values [i].Equals ("")) {
-							unitDamageArray [(int)currentName] [(int)(UnitNames)Enum.Parse (typeof(UnitNames), columnValues [i])] = int.Parse (values [i]);
+							unitDamageArray [(int)currentName] [(int)(UnitName)Enum.Parse (typeof(UnitName), columnValues [i])] = int.Parse (values [i]);
 						}
 					}
 				}

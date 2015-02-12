@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text;
+using System.Text.RegularExpressions;
 
 
 [System.Serializable]
@@ -74,9 +75,27 @@ public class MapData
 		}
 		return true;
 	}
+	/// <summary>
+	/// Formats the name of the map
+	/// </summary>
+	/// <returns>The map name.</returns>
+	/// <param name="str">String.</param>
+	public static string FormatMapName (string str)
+	{
+		string outGoing = Regex.Replace (str, "(?<!-)[A-Z,0-9]", AddSpace);
+		return outGoing;
+	}
+	
+	public static string AddSpace (Match mat)
+	{
+		if (mat.Index == 0) {
+			return mat.Value;
+		}
+		return " " + mat.Value;
+	}
 }
 /// <summary>
-/// Provides a serializable conversion for terrain blocks and other objects
+/// Provides a serializable conversion for terrain blocks and other game objects
 /// </summary>
 [System.Serializable]
 public class TerrainObject

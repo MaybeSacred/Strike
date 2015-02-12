@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public interface AttackableObject
@@ -9,7 +9,7 @@ public interface AttackableObject
 	Health GetHealth ();
 	int OffenseBonus ();
 	int DefenseBonus ();
-	UnitNames GetUnitClass ();
+	UnitName GetUnitClass ();
 	int UnitCost ();
 	TerrainBlock GetOccupyingBlock ();
 }

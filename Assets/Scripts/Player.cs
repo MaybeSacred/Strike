@@ -82,6 +82,7 @@ public class Player : MonoBehaviour
 		if (loggingProductionData) {
 			gameObject.AddComponent<MouseEventHandler> ();
 		}
+		Debug.Log (pigs.name);
 	}
 	/// <summary>
 	/// Returns the number of player's com towers within range of the checking unit
@@ -155,9 +156,9 @@ public class Player : MonoBehaviour
 		if (!properties.Contains (inUnit)) {
 			properties.Add (inUnit);
 			inUnit.SetOwner (this);
-			if (inUnit.propertyType == UnitNames.Headquarters) {
+			if (inUnit.propertyType == UnitName.Headquarters) {
 				hQBlock = inUnit.GetCurrentBlock ();
-			} else if (inUnit.propertyType == UnitNames.ComTower) {
+			} else if (inUnit.propertyType == UnitName.ComTower) {
 				comTowers.Add (inUnit);
 				foreach (UnitController u in inUnit.UnitsInRange()) {
 					u.comTowerEffect++;
@@ -173,9 +174,9 @@ public class Player : MonoBehaviour
 	public virtual void RemoveProperty (Property inUnit)
 	{
 		if (properties.Contains (inUnit)) {
-			if (inUnit.propertyType == UnitNames.Headquarters) {
+			if (inUnit.propertyType == UnitName.Headquarters) {
 				InGameController.RemovePlayer (this);
-			} else if (inUnit.propertyType == UnitNames.ComTower) {
+			} else if (inUnit.propertyType == UnitName.ComTower) {
 				comTowers.Remove (inUnit);
 				foreach (UnitController u in inUnit.UnitsInRange()) {
 					u.comTowerEffect--;
@@ -202,7 +203,7 @@ public class Player : MonoBehaviour
 	/// </summary>
 	/// <returns>The unit.</returns>
 	/// <param name="unit">Unit.</param>
-	public UnitController ProduceUnit (UnitNames unit)
+	public UnitController ProduceUnit (UnitName unit)
 	{
 		UnitController outUnit = (UnitController)MonoBehaviour.Instantiate (Utilities.GetPrefabFromUnitName (unit));
 #if UNITY_STANDALONE
@@ -223,7 +224,7 @@ public class Player : MonoBehaviour
 	/// <param name="prop">Property.</param>
 	/// <param name="position">Position.</param>
 	/// <param name="rotation">Rotation.</param>
-	public Property ProduceProperty (UnitNames prop, Vector3 position, Quaternion rotation)
+	public Property ProduceProperty (UnitName prop, Vector3 position, Quaternion rotation)
 	{
 		Property outUnit = (Property)MonoBehaviour.Instantiate (Utilities.GetPrefabFromUnitName (prop), position, rotation);
 		outUnit.startingOwner = playerNumber;
@@ -275,7 +276,7 @@ public class Player : MonoBehaviour
 	/// </summary>
 	/// <returns><c>true</c> if this instance can produce unit the specified possibleUnit; otherwise, <c>false</c>.</returns>
 	/// <param name="possibleUnit">Possible unit.</param>
-	public bool CanProduceUnit (UnitNames possibleUnit)
+	public bool CanProduceUnit (UnitName possibleUnit)
 	{
 		if (Utilities.GetPrefabFromUnitName (possibleUnit) != null) {
 			if (funds >= ((UnitController)Utilities.GetPrefabFromUnitName (possibleUnit)).baseCost && units.Count <= TotalUnitsAllowedPPlayer) {
@@ -289,7 +290,7 @@ public class Player : MonoBehaviour
 	/// </summary>
 	/// <returns><c>true</c> if this instance can produce property the specified possibleUnit; otherwise, <c>false</c>.</returns>
 	/// <param name="possibleUnit">Possible unit.</param>
-	public bool CanProduceProperty (UnitNames possibleUnit)
+	public bool CanProduceProperty (UnitName possibleUnit)
 	{
 		if (Utilities.GetPrefabFromUnitName (possibleUnit) != null) {
 			if (funds >= ((Property)Utilities.GetPrefabFromUnitName (possibleUnit)).baseCost) {
@@ -408,7 +409,7 @@ public class Player : MonoBehaviour
 		}
 		Property[] propArray = properties.ToArray ();
 		for (int i = 0; i < propArray.Length; i++) {
-			if (propArray [i].propertyType == UnitNames.Headquarters) {
+			if (propArray [i].propertyType == UnitName.Headquarters) {
 				propArray [i].DestroyHeadquarters ();
 			} else {
 				propArray [i].KillUnit ();
@@ -430,7 +431,7 @@ public class Player : MonoBehaviour
 	{
 		EndTurn ();
 		foreach (Property p in properties) {
-			if (p.propertyType == UnitNames.Headquarters) {
+			if (p.propertyType == UnitName.Headquarters) {
 				lastCameraPosition = p.transform.position;
 				break;
 			}

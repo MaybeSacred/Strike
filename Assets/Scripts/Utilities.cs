@@ -7,7 +7,7 @@ public class Utilities : MonoBehaviour
 	[System.Serializable]
 	public class UnitPrefabBindingClass
 	{
-		public UnitNames name;
+		public UnitName name;
 		public MonoBehaviour prefab;
 	}
 	public Texture[] hpPic;
@@ -149,12 +149,12 @@ public class Utilities : MonoBehaviour
 		throw new UnityException ("Invalid Rank Image Request " + StackTraceUtility.ExtractStackTrace ());
 	}
 
-	public static Texture2D GetCarryingImage (UnitNames unitClass)
+	public static Texture2D GetCarryingImage (UnitName unitClass)
 	{
 		return carryingUnitImage;
 	}
 	
-	public static MonoBehaviour GetPrefabFromUnitName (UnitNames inName)
+	public static MonoBehaviour GetPrefabFromUnitName (UnitName inName)
 	{
 		if ((int)inName < units.Length && units [(int)inName].prefab != null) {
 			return units [(int)inName].prefab;

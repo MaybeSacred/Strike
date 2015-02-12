@@ -81,7 +81,7 @@ public class SkirmishMenuViewer : MonoBehaviour
 		List<RectTransform> mapButtons = new List<RectTransform> ();
 		for (int i = 0; i < mapNames.Length; i++) {
 			RectTransform t = InstantiateUIPrefab (mapNameLoadButton, mapNamePanel);
-			t.GetComponentsInChildren<UnityEngine.UI.Text> (true) [0].text = mapNames [i];
+			t.GetComponentsInChildren<UnityEngine.UI.Text> (true) [0].text = MapData.FormatMapName (mapNames [i]);
 			mapButtons.Add (t);
 			string captured = mapNames [i].ToString ();
 			//add our delegate to the onClick handler, with appropriate indexing
@@ -110,7 +110,8 @@ public class SkirmishMenuViewer : MonoBehaviour
 	{
 		t.GetComponent<UnityEngine.UI.Button> ().onClick.AddListener (() => {
 			SetCurrentMap (input);
-			OnMapSelected ();});
+			OnMapSelected ();
+		});
 	}
 	/// <summary>
 	/// Sets the current mapData from the provided map name
@@ -144,7 +145,7 @@ public class SkirmishMenuViewer : MonoBehaviour
 	{
 		mapNameOuterPanel.gameObject.SetActive (false);
 		scrollBar.gameObject.SetActive (false);
-		mapNameText.text = selectedMapName;
+		mapNameText.text = MapData.FormatMapName (selectedMapName);
 	}
 	/// <summary>
 	/// Instantiates a correctly set up UI component from a prefab

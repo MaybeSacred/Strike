@@ -108,11 +108,11 @@ public class TerrainBlock : MonoBehaviour, System.IComparable<TerrainBlock>
 	{
 		occupyingProperty = prop;
 		if (!prop.isUnderConstruction) {
-			if (occupyingProperty.propertyType == UnitNames.Shipyard) {
+			if (occupyingProperty.propertyType == UnitName.Shipyard) {
 				for (int i = 0; i < terrainCosts.Length; i++) {
 					terrainCosts [i].cost = 1;
 				}
-			} else if (occupyingProperty.propertyType == UnitNames.Bridge) {
+			} else if (occupyingProperty.propertyType == UnitName.Bridge) {
 				hidesInFogOfWar = false;
 				for (int i = 0; i < terrainCosts.Length; i++) {
 					if (terrainCosts [i].type == MovementType.Sea || terrainCosts [i].type == MovementType.Littoral) {
@@ -129,7 +129,7 @@ public class TerrainBlock : MonoBehaviour, System.IComparable<TerrainBlock>
 		if (!temporaryDetach) {
 			occupyingProperty = null;
 		}
-		if (prop.propertyType == UnitNames.Bridge) {
+		if (prop.propertyType == UnitName.Bridge) {
 			if (name.Contains ("Sea")) {
 				SeaCosts ();
 			} else if (name.Contains ("River")) {
