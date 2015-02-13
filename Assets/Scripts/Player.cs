@@ -82,7 +82,6 @@ public class Player : MonoBehaviour
 		if (loggingProductionData) {
 			gameObject.AddComponent<MouseEventHandler> ();
 		}
-		Debug.Log (pigs.name);
 	}
 	/// <summary>
 	/// Returns the number of player's com towers within range of the checking unit
@@ -205,6 +204,7 @@ public class Player : MonoBehaviour
 	/// <param name="unit">Unit.</param>
 	public UnitController ProduceUnit (UnitName unit)
 	{
+		Debug.Log (unit);
 		UnitController outUnit = (UnitController)MonoBehaviour.Instantiate (Utilities.GetPrefabFromUnitName (unit));
 #if UNITY_STANDALONE
 		if(loggingProductionData)

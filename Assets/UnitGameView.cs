@@ -7,7 +7,7 @@ public class UnitGameView : GameView
 	public UnityEngine.UI.Image[] rankImages, 
 		// Array of carried unit images
 		carriedUnitImages;
-	public UnityEngine.UI.Image stealthImage;
+	public UnityEngine.UI.RawImage stealthImage;
 	UnitRanks currentDisplayedUnitRank;
 	int currentDisplayedCarriedCount;
 	float animationTimer = 0;

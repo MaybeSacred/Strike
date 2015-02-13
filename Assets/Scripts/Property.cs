@@ -197,7 +197,7 @@ public class Property : MonoBehaviour, AttackableObject
 	}
 	void OnGUI ()
 	{
-		if (currentState == UnitState.AwaitingOrder) {
+		/*if (currentState == UnitState.AwaitingOrder) {
 			if (propertyClass.producableUnits.Length < 8) {
 				GUI.BeginGroup (new Rect (Screen.width / 2 - Property.productionDisplayWidth / 2, -UnitController.actionDisplayYOffset, Property.productionDisplayWidth, UnitController.actionDisplayHeight * propertyClass.producableUnits.Length + 1));
 				for (int i = 0; i < propertyClass.producableUnits.Length; i++) {
@@ -243,7 +243,7 @@ public class Property : MonoBehaviour, AttackableObject
 				}
 				GUI.EndGroup ();
 			}
-		}
+		}*/
 	}
 	public Vector3 GetPosition ()
 	{
@@ -295,11 +295,13 @@ public class Property : MonoBehaviour, AttackableObject
 				case UnitState.UnMoved:
 					{
 						currentState = UnitState.AwaitingOrder;
+						InGameGUI.instance.ShowUnitSelectionDisplay (propertyClass.producableUnits, AIProduceUnit);
 						break;
 					}
 				case UnitState.Selected:
 					{
 						currentState = UnitState.AwaitingOrder;
+						InGameGUI.instance.ShowUnitSelectionDisplay (propertyClass.producableUnits, AIProduceUnit);
 						break;
 					}
 				case UnitState.AwaitingOrder:

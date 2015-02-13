@@ -93,12 +93,13 @@ public enum UnitRanks
 	Sergeant,
 	Elite}
 ;
+//Used for determining counterattack ability
 public enum UnitAttackType
 {
 	Direct,
 	Indirect,
 	Both}
-;//Used for determining counterattack ability
+;
 
 public class UnitController : MonoBehaviour, AttackableObject, IComparable
 {
@@ -1677,7 +1678,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 	{
 		unitView.SetValues (prettyName, UnitGameView.FormatSlashedString (health.ToString (), "10"), 
 		                   UnitGameView.FormatSlashedString (primaryAmmoRemaining.ToString (), primaryAmmo.ToString ()),
-		                   UnitGameView.FormatSlashedString (currentFuel.ToString (), startFuel.ToString ()),
+		                   UnitGameView.FormatSlashedString ((Mathf.FloorToInt (currentFuel)).ToString (), startFuel.ToString ()),
 		                   veteranStatus, carriedUnits.Count, isStealthed);
 	}
 }

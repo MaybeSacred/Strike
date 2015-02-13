@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public class InGameGUI : MonoBehaviour
 {
@@ -30,6 +31,8 @@ public class InGameGUI : MonoBehaviour
 	public GameObject pauseMenu;
 	// Turn animation controller
 	public PlayerTurnAnimation turnAnimation;
+	// Displays units that can be created
+	public UnitSelectionDisplayer unitSelectionDisplayer;
 	void Awake ()
 	{
 		instance = this;
@@ -43,6 +46,7 @@ public class InGameGUI : MonoBehaviour
 		advanceTurnButton.onClick.AddListener (() => FindObjectOfType<InGameController> ().AdvanceTurn ());
 		detailedTextBox.SetActive (false);
 		pauseMenu.SetActive (false);
+		unitSelectionDisplayer.gameObject.SetActive (false);
 	}
 	// Use this for initialization
 	void Start ()
@@ -220,5 +224,10 @@ public class InGameGUI : MonoBehaviour
 	public void StartTurnChange (string nameToDisplay)
 	{
 		turnAnimation.AddName (nameToDisplay);
+	}
+
+	public void ShowUnitSelectionDisplay (UnitName[] producableUnits, Action<UnitName> productionCallback)
+	{
+		unitSelectionDisplayer.DisplayUnitList (producableUnits, productionCallback);
 	}
 }

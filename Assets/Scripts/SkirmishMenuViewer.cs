@@ -33,10 +33,11 @@ public class SkirmishMenuViewer : MonoBehaviour
 		mapNameOuterPanel,
 		scrollBar;
 	public UnityEngine.UI.Text mapNameText;
-	//spacing for between button centers
+	// Spacing for between button centers
 	public int mapNameButtonOffset;
 	public RectTransform mapSelect, playerSelect, optionsSelect;
 	public GameObject loadingDisplay;
+	public UnityEngine.UI.Button setPlayersButton;
 	//current root folder where map data are located
 	public static string ApplicationServerURL = "https://dl.dropboxusercontent.com/u/65011402/strike";
 	void Awake ()
@@ -73,7 +74,13 @@ public class SkirmishMenuViewer : MonoBehaviour
 		for (int i = 0; i < players.Length; i++) {
 			players [i].GetPlayer ().SetSide (i);
 		}
+		mapNameLoadButton.GetComponent<UnityEngine.UI.Button> ().interactable = false;
+		setPlayersButton.interactable = false;
 	}
+	/// <summary>
+	/// Loads the maps after the map names have been loaded
+	/// </summary>
+	/// <returns>The maps async.</returns>
 	IEnumerator LoadMapsAsync ()
 	{
 		yield return StartCoroutine (GetMapNames ());
@@ -103,6 +110,8 @@ public class SkirmishMenuViewer : MonoBehaviour
 		SetCurrentMap (mapNames [0]);
 		mapNameOuterPanel.gameObject.SetActive (false);
 		scrollBar.gameObject.SetActive (false);
+		mapNameLoadButton.GetComponent<UnityEngine.UI.Button> ().interactable = true;
+		setPlayersButton.interactable = true;
 	}
 	/// <summary>
 	/// Overcomes a possible bug between mono/Unity and lambdas/anonymous functions
