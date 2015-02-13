@@ -70,6 +70,9 @@ public class SkirmishMenuViewer : MonoBehaviour
 			done = true;
 		}
 		SwitchToMapSelect ();
+		for (int i = 0; i < players.Length; i++) {
+			players [i].GetPlayer ().SetSide (i);
+		}
 	}
 	IEnumerator LoadMapsAsync ()
 	{
@@ -85,7 +88,7 @@ public class SkirmishMenuViewer : MonoBehaviour
 			mapButtons.Add (t);
 			string captured = mapNames [i].ToString ();
 			//add our delegate to the onClick handler, with appropriate indexing
-			Encapsulater (t, captured);
+			Encapsulator (t, captured);
 			smallestFontSize = Mathf.Min (smallestFontSize, t.GetComponentsInChildren<UnityEngine.UI.Text> (true) [0].fontSize);
 		}
 		var offset = -mapNameButtonOffset / 2;
@@ -106,7 +109,7 @@ public class SkirmishMenuViewer : MonoBehaviour
 	/// </summary>
 	/// <param name="t">T.</param>
 	/// <param name="input">Input.</param>
-	void Encapsulater (RectTransform t, string input)
+	void Encapsulator (RectTransform t, string input)
 	{
 		t.GetComponent<UnityEngine.UI.Button> ().onClick.AddListener (() => {
 			SetCurrentMap (input);
@@ -322,6 +325,7 @@ public class SkirmishMenuViewer : MonoBehaviour
 	void SetPlayersActive (int activePlayers)
 	{
 		for (int i = 0; i < 8; i++) {
+			players [i].playerSideSlider.maxValue = activePlayers;
 			if (i < activePlayers) {
 				players [i].gameObject.SetActive (true);
 			} else {

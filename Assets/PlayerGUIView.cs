@@ -33,7 +33,7 @@ public class PlayerGUIView : MonoBehaviour
 	void Start ()
 	{
 		thisPlayer = Instantiate (thisPlayer) as Player;
-		thisPlayer.Setup (Random.Range (1, 4), Generals.Taron, new Color (.8f, .8f, .8f), "Player");
+		thisPlayer.Setup (Random.Range (1, 4), Generals.Taron, new Color (1, 0, 0), "Player");
 		// Initialize sliders
 		playerSideSlider.value = thisPlayer.side;
 		ChangeSide (thisPlayer.side);
@@ -86,7 +86,7 @@ public class PlayerGUIView : MonoBehaviour
 			AILevel captured = name;
 			t.GetComponent<UnityEngine.UI.Button> ().onClick.AddListener (() => {
 				SetAILevel (captured);});
-			// hotfix to disable AI modules that arent ready
+			// hotfix to disable AI modules that aren't ready
 			if (name == AILevel.Easy || name == AILevel.Hard) {
 				t.GetComponent<UnityEngine.UI.Button> ().enabled = false;
 			}
@@ -196,7 +196,7 @@ public class PlayerGUIView : MonoBehaviour
 	public void SetPlayerName (string newName)
 	{
 		if (NameIsValid (newName)) {
-			thisPlayer.playerName = thisPlayer.name = newName;
+			thisPlayer.playerName = newName;
 		}
 	}
 	/// <summary>
