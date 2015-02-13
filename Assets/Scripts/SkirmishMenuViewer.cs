@@ -37,7 +37,7 @@ public class SkirmishMenuViewer : MonoBehaviour
 	public int mapNameButtonOffset;
 	public RectTransform mapSelect, playerSelect, optionsSelect;
 	public GameObject loadingDisplay;
-	public UnityEngine.UI.Button setPlayersButton;
+	public UnityEngine.UI.Button mapNamesOpenButton, setPlayersButton;
 	//current root folder where map data are located
 	public static string ApplicationServerURL = "https://dl.dropboxusercontent.com/u/65011402/strike";
 	void Awake ()
@@ -74,7 +74,7 @@ public class SkirmishMenuViewer : MonoBehaviour
 		for (int i = 0; i < players.Length; i++) {
 			players [i].GetPlayer ().SetSide (i);
 		}
-		mapNameLoadButton.GetComponent<UnityEngine.UI.Button> ().interactable = false;
+		mapNamesOpenButton.interactable = false;
 		setPlayersButton.interactable = false;
 	}
 	/// <summary>
@@ -110,7 +110,7 @@ public class SkirmishMenuViewer : MonoBehaviour
 		SetCurrentMap (mapNames [0]);
 		mapNameOuterPanel.gameObject.SetActive (false);
 		scrollBar.gameObject.SetActive (false);
-		mapNameLoadButton.GetComponent<UnityEngine.UI.Button> ().interactable = true;
+		mapNamesOpenButton.interactable = true;
 		setPlayersButton.interactable = true;
 	}
 	/// <summary>

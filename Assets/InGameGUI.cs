@@ -142,8 +142,10 @@ public class InGameGUI : MonoBehaviour
 	/// <param name="hoveredPlayer">Hovered player.</param>
 	public void SetHoveredPlayerDisplay (Player hoveredPlayer)
 	{
-		hoveredPlayerView.gameObject.SetActive (true);
-		hoveredPlayer.SetPlayerGUIView (hoveredPlayerView);
+		if (hoveredPlayer != InGameController.GetCurrentPlayer ()) {
+			hoveredPlayerView.gameObject.SetActive (true);
+			hoveredPlayer.SetPlayerGUIView (hoveredPlayerView);
+		}
 	}
 	/// <summary>
 	/// Sets one of the player displays, if applicable. For when relevant properties have changed
@@ -226,8 +228,8 @@ public class InGameGUI : MonoBehaviour
 		turnAnimation.AddName (nameToDisplay);
 	}
 
-	public void ShowUnitSelectionDisplay (UnitName[] producableUnits, Action<UnitName> productionCallback)
+	public void ShowUnitSelectionDisplay (UnitName[] producableUnits, int maxFunds, Action<UnitName> productionCallback, Action unselectedCallback)
 	{
-		unitSelectionDisplayer.DisplayUnitList (producableUnits, productionCallback);
+		unitSelectionDisplayer.DisplayUnitList (producableUnits, maxFunds, productionCallback, unselectedCallback);
 	}
 }

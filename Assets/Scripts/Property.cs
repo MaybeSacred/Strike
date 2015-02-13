@@ -191,59 +191,10 @@ public class Property : MonoBehaviour, AttackableObject
 				currentState = UnitState.UnMoved;
 				hasUnitSelectedMutex = InGameController.ReleaseUnitSelectedMutex ();
 				Utilities.gameCamera.otherMenuActive = false;
+				InGameGUI.instance.unitSelectionDisplayer.gameObject.SetActive (false);
 			}
 		}
 		infoBoxTimeoutCounter += Time.deltaTime;
-	}
-	void OnGUI ()
-	{
-		/*if (currentState == UnitState.AwaitingOrder) {
-			if (propertyClass.producableUnits.Length < 8) {
-				GUI.BeginGroup (new Rect (Screen.width / 2 - Property.productionDisplayWidth / 2, -UnitController.actionDisplayYOffset, Property.productionDisplayWidth, UnitController.actionDisplayHeight * propertyClass.producableUnits.Length + 1));
-				for (int i = 0; i < propertyClass.producableUnits.Length; i++) {
-					if (currentOwner.CanProduceUnit (propertyClass.producableUnits [i])) {
-						if (GUI.Button (new Rect (0, i * UnitController.actionDisplayHeight, Property.productionDisplayWidth, UnitController.actionDisplayHeight), ((UnitController)Utilities.GetPrefabFromUnitName (propertyClass.producableUnits [i])).prettyName + "    " + ((UnitController)Utilities.GetPrefabFromUnitName (propertyClass.producableUnits [i])).baseCost)) {
-							AIProduceUnit (propertyClass.producableUnits [i]);
-						}
-					} else {
-						GUI.Box (new Rect (0, i * UnitController.actionDisplayHeight, Property.productionDisplayWidth, UnitController.actionDisplayHeight), ((UnitController)Utilities.GetPrefabFromUnitName (propertyClass.producableUnits [i])).prettyName + "    " + ((UnitController)Utilities.GetPrefabFromUnitName (propertyClass.producableUnits [i])).baseCost);
-					}
-				}
-				if (GUI.Button (new Rect (0, propertyClass.producableUnits.Length * UnitController.actionDisplayHeight, Property.productionDisplayWidth, UnitController.actionDisplayHeight), "Back")) {
-					currentState = UnitState.UnMoved;
-					hasUnitSelectedMutex = InGameController.ReleaseUnitSelectedMutex ();
-					Utilities.gameCamera.otherMenuActive = false;
-				}
-				GUI.EndGroup ();
-			} else {
-				GUI.BeginGroup (new Rect (Screen.width / 2 - Property.productionDisplayWidth, -UnitController.actionDisplayYOffset, 2 * Property.productionDisplayWidth, UnitController.actionDisplayHeight * propertyClass.producableUnits.Length));
-				int i = 0;
-				for (; i < propertyClass.producableUnits.Length/2 + 1; i++) {
-					if (currentOwner.CanProduceUnit (propertyClass.producableUnits [i])) {
-						if (GUI.Button (new Rect (0, i * UnitController.actionDisplayHeight, Property.productionDisplayWidth, UnitController.actionDisplayHeight), ((UnitController)Utilities.GetPrefabFromUnitName (propertyClass.producableUnits [i])).prettyName + "    " + ((UnitController)Utilities.GetPrefabFromUnitName (propertyClass.producableUnits [i])).baseCost)) {
-							AIProduceUnit (propertyClass.producableUnits [i]);
-						}
-					} else {
-						GUI.Box (new Rect (0, i * UnitController.actionDisplayHeight, Property.productionDisplayWidth, UnitController.actionDisplayHeight), ((UnitController)Utilities.GetPrefabFromUnitName (propertyClass.producableUnits [i])).prettyName + "    " + ((UnitController)Utilities.GetPrefabFromUnitName (propertyClass.producableUnits [i])).baseCost);
-					}
-				}
-				for (; i < propertyClass.producableUnits.Length; i++) {
-					if (currentOwner.CanProduceUnit (propertyClass.producableUnits [i])) {
-						if (GUI.Button (new Rect (Property.productionDisplayWidth, (i - propertyClass.producableUnits.Length / 2 - 1) * UnitController.actionDisplayHeight, Property.productionDisplayWidth, UnitController.actionDisplayHeight), ((UnitController)Utilities.GetPrefabFromUnitName (propertyClass.producableUnits [i])).prettyName + "    " + ((UnitController)Utilities.GetPrefabFromUnitName (propertyClass.producableUnits [i])).baseCost)) {
-							AIProduceUnit (propertyClass.producableUnits [i]);
-						}
-					} else {
-						GUI.Box (new Rect (Property.productionDisplayWidth, (i - propertyClass.producableUnits.Length / 2 - 1) * UnitController.actionDisplayHeight, Property.productionDisplayWidth, UnitController.actionDisplayHeight), ((UnitController)Utilities.GetPrefabFromUnitName (propertyClass.producableUnits [i])).prettyName + "    " + ((UnitController)Utilities.GetPrefabFromUnitName (propertyClass.producableUnits [i])).baseCost);
-					}
-				}
-				if (GUI.Button (new Rect (Property.productionDisplayWidth / 2, (propertyClass.producableUnits.Length / 2 + 1) * UnitController.actionDisplayHeight, Property.productionDisplayWidth, UnitController.actionDisplayHeight), "Back")) {
-					currentState = UnitState.UnMoved;
-					hasUnitSelectedMutex = InGameController.ReleaseUnitSelectedMutex ();
-					Utilities.gameCamera.otherMenuActive = false;
-				}
-				GUI.EndGroup ();
-			}
-		}*/
 	}
 	public Vector3 GetPosition ()
 	{
@@ -295,13 +246,13 @@ public class Property : MonoBehaviour, AttackableObject
 				case UnitState.UnMoved:
 					{
 						currentState = UnitState.AwaitingOrder;
-						InGameGUI.instance.ShowUnitSelectionDisplay (propertyClass.producableUnits, AIProduceUnit);
+						InGameGUI.instance.ShowUnitSelectionDisplay (propertyClass.producableUnits, GetOwner ().funds, AIProduceUnit, OnUnSelect);
 						break;
 					}
 				case UnitState.Selected:
 					{
 						currentState = UnitState.AwaitingOrder;
-						InGameGUI.instance.ShowUnitSelectionDisplay (propertyClass.producableUnits, AIProduceUnit);
+						InGameGUI.instance.ShowUnitSelectionDisplay (propertyClass.producableUnits, GetOwner ().funds, AIProduceUnit, OnUnSelect);
 						break;
 					}
 				case UnitState.AwaitingOrder:
@@ -312,7 +263,12 @@ public class Property : MonoBehaviour, AttackableObject
 			}
 		}
 	}
-
+	public void OnUnSelect ()
+	{
+		currentState = UnitState.UnMoved;
+		hasUnitSelectedMutex = InGameController.ReleaseUnitSelectedMutex ();
+		Utilities.gameCamera.otherMenuActive = false;
+	}
 	public void OnMouseExitExtra ()
 	{
 		if (propertyType == UnitName.ComTower) {
@@ -496,6 +452,7 @@ public class Property : MonoBehaviour, AttackableObject
 				outObjects.Add (u);
 			}
 		}
+		
 		return outObjects;
 	}
 	/// <summary>

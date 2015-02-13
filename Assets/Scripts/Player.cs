@@ -204,7 +204,6 @@ public class Player : MonoBehaviour
 	/// <param name="unit">Unit.</param>
 	public UnitController ProduceUnit (UnitName unit)
 	{
-		Debug.Log (unit);
 		UnitController outUnit = (UnitController)MonoBehaviour.Instantiate (Utilities.GetPrefabFromUnitName (unit));
 #if UNITY_STANDALONE
 		if(loggingProductionData)
@@ -451,7 +450,11 @@ public class Player : MonoBehaviour
 	/// <param name="view">View.</param>
 	public void SetPlayerGUIView (InGamePlayerStatsView view)
 	{
-		view.SetValues (playerName, funds.ToString (), properties.Count.ToString (), units.Count.ToString ());
+		if (IsNeutralSide ()) {
+			view.SetValues ("Neutral", "--", properties.Count.ToString (), units.Count.ToString ());
+		} else {
+			view.SetValues (playerName, funds.ToString (), properties.Count.ToString (), units.Count.ToString ());
+		}
 	}
 }
 

@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using System.Collections;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 public class PlayerGUIView : MonoBehaviour
 {
@@ -23,12 +26,30 @@ public class PlayerGUIView : MonoBehaviour
 	List<RectTransform> generalDropdownButtons, AIDropdownButtons;
 	// Offset for the spacing of dropdown buttons
 	public float mapNameButtonOffset;
+	
 	static PlayerGUIView playerSelected;
+	
 	public bool started = false;
+	static HashSet<string> naughtyWords;
 	// Use this for initialization
 	void Awake ()
 	{
-		
+		if (naughtyWords == null) {
+			naughtyWords = new HashSet<string> ();
+			StartCoroutine (GetNaughtyWords ());
+		}
+	}
+	IEnumerator GetNaughtyWords ()
+	{
+		var names = new WWW (SkirmishMenuViewer.ApplicationServerURL + @"/Data/naughty.txt");
+		while (!names.isDone) {
+			yield return new WaitForSeconds (.001f);
+		}
+		MemoryStream ms = new MemoryStream (names.bytes);
+		StreamReader sr = new StreamReader (ms);
+		while (!sr.EndOfStream) {
+			naughtyWords.Add (sr.ReadLine ());
+		}
 	}
 	void Start ()
 	{
@@ -206,7 +227,10 @@ public class PlayerGUIView : MonoBehaviour
 	/// <param name="input">Input.</param>
 	bool NameIsValid (string input)
 	{
-		if (input.Contains ("fuck")) {
+		if (input.Contains ("--Neutral--")) {
+			return false;
+		}
+		if (naughtyWords.Contains (input)) {
 			return false;
 		}
 		return true;
