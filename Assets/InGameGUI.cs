@@ -6,33 +6,47 @@ public class InGameGUI : MonoBehaviour
 {
 	// static instance available to other classes
 	public static InGameGUI instance;
+	
 	// current block input device is over, if any
 	private TerrainBlock blockMousedOver;
+	
 	// current property input device is over, if any
 	private Property propertyMousedOver;
+	
 	// current unit input device is over, if any
 	private UnitController unitMousedOver;
+	
 	//Current player's stats
 	public InGamePlayerStatsView currentPlayerView,
 		// Stats of unit/property that input device is over, if owner is different from current player
 		hoveredPlayerView;
+		
 	// Displays high-level detail about the current terrain block
 	public TerrainGameView terrainView;
+	
 	// A displayer for high-level property details
 	public PropertyGameView propertyView;
+	
 	// A displayer for high-level unit details
 	public UnitGameView unitView;
+	
 	// Components for displaying detailed unit info
 	public GameObject detailedTextBox;
 	public UnityEngine.UI.Text detailedInfoText;
+	
 	// Advance turn button
 	public UnityEngine.UI.Button advanceTurnButton;
 	// Pause menu
 	public GameObject pauseMenu;
+	
 	// Turn animation controller
-	public PlayerTurnAnimation turnAnimation;
+	PlayerTurnAnimation turnAnimation;
+	
 	// Displays units that can be created
-	public UnitSelectionDisplayer unitSelectionDisplayer;
+	UnitSelectionDisplayer unitSelectionDisplayer;
+	
+	// Displays the current player's general power
+	GeneralBarView generalBarView;
 	void Awake ()
 	{
 		instance = this;
@@ -222,14 +236,38 @@ public class InGameGUI : MonoBehaviour
 	{
 		pauseMenu.SetActive (InGameController.isPaused);
 	}
-
+	/// <summary>
+	/// Starts the turn change animation.
+	/// </summary>
+	/// <param name="nameToDisplay">Name to display.</param>
 	public void StartTurnChange (string nameToDisplay)
 	{
 		turnAnimation.AddName (nameToDisplay);
 	}
-
+	/// <summary>
+	/// Shows the unit selection display.
+	/// </summary>
+	/// <param name="producableUnits">Producable units.</param>
+	/// <param name="maxFunds">Max funds.</param>
+	/// <param name="productionCallback">Production callback.</param>
+	/// <param name="unselectedCallback">Unselected callback.</param>
 	public void ShowUnitSelectionDisplay (UnitName[] producableUnits, int maxFunds, Action<UnitName> productionCallback, Action unselectedCallback)
 	{
 		unitSelectionDisplayer.DisplayUnitList (producableUnits, maxFunds, productionCallback, unselectedCallback);
+	}
+	/// <summary>
+	/// Hides the unit selection display.
+	/// </summary>
+	public void HideUnitSelectionDisplay ()
+	{
+		unitSelectionDisplayer.gameObject.SetActive (false);
+	}
+	/// <summary>
+	/// Shows the general power.
+	/// </summary>
+	/// <param name="level">Level.</param>
+	public void ShowGeneralPower (float level)
+	{
+		generalBarView.SetPowerLevel (level);
 	}
 }

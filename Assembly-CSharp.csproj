@@ -49,6 +49,7 @@
      <Compile Include="Assets\CameraSpinner.cs" />
      <Compile Include="Assets\Editor Default Resources\MapDataDummy.cs" />
      <Compile Include="Assets\Fantasy Skybox FREE\Scripts\FSPlayer.cs" />
+     <Compile Include="Assets\GeneralBarView.cs" />
      <Compile Include="Assets\InGameCamera.cs" />
      <Compile Include="Assets\InGameGUI.cs" />
      <Compile Include="Assets\InGamePlayerStatsView.cs" />

@@ -191,7 +191,7 @@ public class Property : MonoBehaviour, AttackableObject
 				currentState = UnitState.UnMoved;
 				hasUnitSelectedMutex = InGameController.ReleaseUnitSelectedMutex ();
 				Utilities.gameCamera.otherMenuActive = false;
-				InGameGUI.instance.unitSelectionDisplayer.gameObject.SetActive (false);
+				InGameGUI.instance.HideUnitSelectionDisplay ();
 			}
 		}
 		infoBoxTimeoutCounter += Time.deltaTime;

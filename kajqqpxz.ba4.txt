@@ -1,0 +1,27 @@
+﻿
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+# On branch master
+# Your branch is ahead of 'origin/master' by 4 commits.
+#   (use "git push" to publish your local commits)
+#
+# Changes to be committed:
+#	modified:   Assembly-CSharp-vs.csproj
+#	modified:   Assembly-CSharp.csproj
+#	modified:   Assets/GameMenu.unity
+#	new file:   Assets/GeneralBarView.cs
+#	new file:   Assets/GeneralBarView.cs.meta
+#	modified:   Assets/InGameGUI.cs
+#	modified:   Assets/Materials/GeneralPowerBar.png.meta
+#	modified:   Assets/Prefabs/GUI/Canvas.prefab
+#	modified:   Assets/Prefabs/GUI/UnitSelectionButton.prefab
+#	modified:   Assets/Scripts/General.cs
+#	modified:   Assets/Scripts/Property.cs
+#	modified:   Library/assetDatabase3
+#	modified:   Library/guidmapper
+#	modified:   Library/metadata/26/2674726f0fe8f4749ab936e9d816be2c
+#	modified:   Library/metadata/32/32cb84ab73a9a3641974589f961a52e9
+#	modified:   Library/metadata/bf/bfdef92a5e788bd49b1cb95bf25692fb
+#	modified:   Library/metadata/da/da509b2e37b57ab4886dd6f33a24af5c
+#
+
