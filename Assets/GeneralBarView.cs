@@ -19,7 +19,7 @@ public class GeneralBarView : MonoBehaviour
 		if (level > 0) {
 			gameObject.SetActive (true);
 			float width = GetComponent<RectTransform> ().rect.width;
-			mask.offsetMax = new Vector2 ((1 - level) * width, mask.offsetMax.y);
+			mask.offsetMax = new Vector2 (-(1 - level) * width, mask.offsetMax.y);
 			powerImage.offsetMax = new Vector2 (-mask.offsetMax.x, powerImage.offsetMax.y);
 		} else {
 			gameObject.SetActive (false);

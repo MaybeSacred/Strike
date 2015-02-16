@@ -326,6 +326,7 @@ public class Player : MonoBehaviour
 		if (selectedGeneral.powerInEffect) {
 			selectedGeneral.ExitPower ();
 		}
+		selectedGeneral.UpdateGeneral (0);
 		foreach (Property prop in properties) {
 			prop.StartTurn ();
 		}

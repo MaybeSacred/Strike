@@ -40,13 +40,13 @@ public class InGameGUI : MonoBehaviour
 	public GameObject pauseMenu;
 	
 	// Turn animation controller
-	PlayerTurnAnimation turnAnimation;
+	public PlayerTurnAnimation turnAnimation;
 	
 	// Displays units that can be created
-	UnitSelectionDisplayer unitSelectionDisplayer;
+	public UnitSelectionDisplayer unitSelectionDisplayer;
 	
 	// Displays the current player's general power
-	GeneralBarView generalBarView;
+	public GeneralBarView generalBarView;
 	void Awake ()
 	{
 		instance = this;
@@ -61,6 +61,7 @@ public class InGameGUI : MonoBehaviour
 		detailedTextBox.SetActive (false);
 		pauseMenu.SetActive (false);
 		unitSelectionDisplayer.gameObject.SetActive (false);
+		generalBarView.gameObject.SetActive (false);
 	}
 	// Use this for initialization
 	void Start ()
@@ -266,8 +267,10 @@ public class InGameGUI : MonoBehaviour
 	/// Shows the general power.
 	/// </summary>
 	/// <param name="level">Level.</param>
-	public void ShowGeneralPower (float level)
+	public void ShowGeneralPower (float level, Player callingPlayer)
 	{
-		generalBarView.SetPowerLevel (level);
+		if (callingPlayer == InGameController.GetCurrentPlayer ()) {
+			generalBarView.SetPowerLevel (level);
+		}
 	}
 }

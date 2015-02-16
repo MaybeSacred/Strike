@@ -115,6 +115,7 @@ public class General : MonoBehaviour
 				zoneSizeBoost = 1;
 				ShowZone (InGameController.currentTerrain.GetBlockAtPos (transform.position));
 			}
+			InGameGUI.instance.ShowGeneralPower (((float)currentStoredPower / (float)damageNeededForPower), owner);
 		}
 	}
 	public void ShowGeneral (UnitController ridingUnit)
