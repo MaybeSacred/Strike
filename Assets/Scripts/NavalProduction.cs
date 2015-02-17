@@ -22,4 +22,5 @@ class NavalProduction
 		List<ProductionEngine.ProductionRule> rules = new List<ProductionEngine.ProductionRule> ();
 		return rules;
 	}
+	
 }

@@ -23,21 +23,31 @@ public class ProductionEngine
 		}
 		Instance instance = InGameController.CreateInstance (UnitName.Infantry, false);
 		// Add naval rules if there are shipyards
-		if (instance.neutralUnitCount [UnitName.Shipyard] + instance.playerUnitCount [UnitName.Shipyard] 
-			+ instance.enemyAverageUnitCount [UnitName.Shipyard] > 0) {
-			foreach (ProductionRule r in NavalProduction.GetRules()) {
+		if (instance.neutralUnitCount [(int)UnitName.Shipyard] + instance.playerUnitCount [(int)UnitName.Shipyard] 
+			+ instance.enemyAverageUnitCount [(int)UnitName.Shipyard] > 0) {
+			NavalProduction np = new NavalProduction ();
+			foreach (ProductionRule r in np.GetRules()) {
 				rules.Add (r);
 			}
 		}
 		// Add air rules if there are airports
-		if (instance.neutralUnitCount [UnitName.Airport] + instance.playerUnitCount [UnitName.Airport] 
-			+ instance.enemyAverageUnitCount [UnitName.Airport] > 0) {
-			foreach (ProductionRule r in AirProduction.GetRules()) {
+		else if (instance.neutralUnitCount [(int)UnitName.Airport] + instance.playerUnitCount [(int)UnitName.Airport] 
+			+ instance.enemyAverageUnitCount [(int)UnitName.Airport] > 0) {
+			AirProduction ap = new AirProduction ();
+			foreach (ProductionRule r in ap.GetRules()) {
 				rules.Add (r);
 			}
 		}
-		// Initialize rules with some common to all maps
-		foreach (ProductionRule r in GroundProductionGeneral.GetRules()) {
+		// Add ground rules if its a ground-only map
+		else {
+			GroundProductionSpecific gps = new GroundProductionSpecific ();
+			foreach (ProductionRule r in gps.GetRules()) {
+				rules.Add (r);
+			}
+		}
+		// Initialize rules with some ground rules common to all maps
+		GroundProductionGeneral gpg = new GroundProductionGeneral ();
+		foreach (ProductionRule r in gpg.GetRules()) {
 			rules.Add (r);
 		}
 	}
@@ -45,7 +55,7 @@ public class ProductionEngine
 	/// A rule for the production engine. Returns a list of possible units to make given the counts of enemy units
 	/// </summary>
 	/// <param name="player">Player.</param>
-	public delegate List<UnitName> ProductionRule (Instance data, Player thisPlayer);
+	public delegate List<Tuple<UnitName, float>> ProductionRule (Instance data, Player thisPlayer);
 	
 	/// <summary>
 	/// Evaluates the currently stored rules, selecting a best unit and returning it
@@ -54,12 +64,14 @@ public class ProductionEngine
 	public UnitName Evaluate (Player player)
 	{
 		frequencyList = ZeroOut (frequencyList);
+		// Compile a game state instance
+		Instance instance = InGameController.CreateInstance (UnitName.Infantry, false);
 		// Apply rules
 		foreach (ProductionRule pr in rules) {
-			List<UnitName> temp = pr.Invoke (InGameController.CreateInstance (UnitName.Infantry, false), player);
+			List<Tuple<UnitName, float>> temp = pr.Invoke (instance, player);
 			// Increase returned units in frequency list
-			foreach (UnitName u in temp) {
-				frequencyList [u]++;
+			foreach (Tuple<UnitName, float> u in temp) {
+				frequencyList [u.Item1] += u.Item2;
 			}
 		}
 		frequencyList = Normalize (frequencyList);
