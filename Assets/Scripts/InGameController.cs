@@ -334,8 +334,15 @@ public class InGameController : MonoBehaviour
 			outInstance = new Instance (System.Enum.GetNames (typeof(UnitName)).Length);
 		}
 		float enemiesOfPlayer = 0;
-		for (int i = 1; i < players.Count; i++) {
-			if (i == currentPlayer) {
+		for (int i = 0; i < players.Count; i++) {
+			if (i == 0) {
+				foreach (UnitController u in players[i].units) {
+					outInstance.neutralUnitCount [(int)u.unitClass]++;
+				}
+				foreach (Property u in players[i].properties) {
+					outInstance.neutralUnitCount [(int)u.propertyType]++;
+				}
+			} else if (i == currentPlayer) {
 				foreach (UnitController u in players[i].units) {
 					outInstance.playerUnitCount [(int)u.unitClass]++;
 				}
@@ -347,15 +354,15 @@ public class InGameController : MonoBehaviour
 			} else if (!players [currentPlayer].IsSameSide (players [i])) {
 				enemiesOfPlayer++;
 				foreach (UnitController u in players[i].units) {
-					outInstance.enemyAverageUnitCounts [(int)u.unitClass]++;
+					outInstance.enemyAverageUnitCount [(int)u.unitClass]++;
 				}
 				foreach (Property u in players[i].properties) {
-					outInstance.enemyAverageUnitCounts [(int)u.propertyType]++;
+					outInstance.enemyAverageUnitCount [(int)u.propertyType]++;
 				}
 			}
 		}
-		for (int i = 0; i < outInstance.enemyAverageUnitCounts.Length; i++) {
-			outInstance.enemyAverageUnitCounts [i] /= enemiesOfPlayer;
+		for (int i = 0; i < outInstance.enemyAverageUnitCount.Length; i++) {
+			outInstance.enemyAverageUnitCount [i] /= enemiesOfPlayer;
 		}
 		outInstance.mapData = currentTerrain.data;
 		outInstance.classification = unitMade;

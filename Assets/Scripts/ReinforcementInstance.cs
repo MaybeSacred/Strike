@@ -24,9 +24,9 @@ public class ReinforcementInstance : Instance
 		{
 			instanceString.Append(playerUnitCount[i] + ",");
 		}
-		for(int i = 0; i < enemyAverageUnitCounts.Length; i++)
+		for(int i = 0; i < enemyAverageUnitCount.Length; i++)
 		{
-			instanceString.Append(enemyAverageUnitCounts[i] + ",");
+			instanceString.Append(enemyAverageUnitCount[i] + ",");
 		}
 		instanceString.Append(this.classification.ToString() + ",");
 		instanceString.Append(accruedReward);

@@ -65,6 +65,7 @@
      <Compile Include="Assets\Scripts\AIPlayerHard.cs" />
      <Compile Include="Assets\Scripts\AIPlayerMedium.cs" />
      <Compile Include="Assets\Scripts\ARFFDataHandler.cs" />
+     <Compile Include="Assets\Scripts\AirProduction.cs" />
      <Compile Include="Assets\Scripts\AttackableObject.cs" />
      <Compile Include="Assets\Scripts\CameraArrowKeyController.cs" />
      <Compile Include="Assets\Scripts\Clusterer.cs" />
@@ -72,12 +73,14 @@
      <Compile Include="Assets\Scripts\GameSettings.cs" />
      <Compile Include="Assets\Scripts\GameView.cs" />
      <Compile Include="Assets\Scripts\General.cs" />
+     <Compile Include="Assets\Scripts\GroundProductionGeneral.cs" />
      <Compile Include="Assets\Scripts\Health.cs" />
      <Compile Include="Assets\Scripts\InGameController.cs" />
      <Compile Include="Assets\Scripts\Instance.cs" />
      <Compile Include="Assets\Scripts\LearnerUtilities.cs" />
      <Compile Include="Assets\Scripts\MapData.cs" />
      <Compile Include="Assets\Scripts\MouseEventHandler.cs" />
+     <Compile Include="Assets\Scripts\NavalProduction.cs" />
      <Compile Include="Assets\Scripts\Player.cs" />
      <Compile Include="Assets\Scripts\Popup.cs" />
      <Compile Include="Assets\Scripts\PriorityQueuesProgram.cs" />

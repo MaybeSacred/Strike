@@ -255,6 +255,7 @@ public class InGameGUI : MonoBehaviour
 	public void ShowUnitSelectionDisplay (UnitName[] producableUnits, int maxFunds, Action<UnitName> productionCallback, Action unselectedCallback)
 	{
 		unitSelectionDisplayer.DisplayUnitList (producableUnits, maxFunds, productionCallback, unselectedCallback);
+		
 	}
 	/// <summary>
 	/// Hides the unit selection display.
