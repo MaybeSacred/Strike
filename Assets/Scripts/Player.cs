@@ -35,15 +35,17 @@ public class Player : MonoBehaviour
 	}
 	public List<Property> properties{ get; protected set; }
 	public int funds { get; protected set; }
+	// Stores the last funds gained by player
+	public int deltaFunds { get; protected set; }
 	public int menuGeneralNumberSelected;
 	protected static int playerCount;
 	public UnitController currentGeneralUnit { get; protected set; }
 	public Color mainPlayerColor;
 	protected PlayerInGameStatistics pigs;
 	protected Vector3 lastCameraPosition;
-	public Generals generalSelectedInGUI;
-	public AILevel aiLevel;
-	private List<Property> comTowers;
+	public Generals generalSelectedInGUI{ get; set; }
+	public AILevel aiLevel{ get; set; }
+	protected List<Property> comTowers;
 	/// <summary>
 	/// Returns the sum of all units' monetary costs, plus player's funds
 	/// </summary>
@@ -129,6 +131,7 @@ public class Player : MonoBehaviour
 	{
 		funds += inMoney;
 		pigs.totalFundsGathered += inMoney;
+		deltaFunds += inMoney;
 		InGameGUI.instance.SetPlayerDisplay (this);
 	}
 	/// <summary>
@@ -327,6 +330,7 @@ public class Player : MonoBehaviour
 			selectedGeneral.ExitPower ();
 		}
 		selectedGeneral.UpdateGeneral (0);
+		deltaFunds = 0;
 		foreach (Property prop in properties) {
 			prop.StartTurn ();
 		}

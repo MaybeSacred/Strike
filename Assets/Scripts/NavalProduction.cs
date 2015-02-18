@@ -23,6 +23,9 @@ class NavalProduction
 		rules.Add (CarrierRule);
 		rules.Add (SubmarineRule);
 		rules.Add (CorvetteRule);
+		rules.Add (DestroyerRule);
+		rules.Add (BoomerRule);
+		rules.Add (NavalInteractionRule);
 		return rules;
 	}
 	/// <summary>
@@ -106,6 +109,72 @@ class NavalProduction
 		// Lower priority build one anyways
 		if (data.playerUnitCount [(int)UnitName.Corvette] < 1) {
 			outList.Add (new Tuple<UnitName, float> (UnitName.Corvette, .5f));
+		}
+		return outList;
+	}
+	/// <summary>
+	/// When to build a destroyer
+	/// </summary>
+	/// <returns>The rule.</returns>
+	/// <param name="data">Data.</param>
+	/// <param name="thisPlayer">This player.</param>
+	List<Tuple<UnitName, float>> DestroyerRule (Instance data, Player thisPlayer)
+	{
+		List<Tuple<UnitName, float>> outList = new List<Tuple<UnitName, float>> ();
+		// Build destroyer if theres enemy ships
+		if (data.enemyAverageUnitCount [(int)UnitName.Corvette] + data.enemyAverageUnitCount [(int)UnitName.Destroyer] +
+			data.enemyAverageUnitCount [(int)UnitName.Carrier] >= 2) {
+			if (data.playerUnitCount [(int)UnitName.Destroyer] < 1f) {
+				outList.Add (new Tuple<UnitName, float> (UnitName.Destroyer, 1f));
+			} else if (data.playerUnitCount [(int)UnitName.Destroyer] < 3f) {
+				outList.Add (new Tuple<UnitName, float> (UnitName.Destroyer, .66f));
+			} else {
+				outList.Add (new Tuple<UnitName, float> (UnitName.Destroyer, .4f));
+			}
+		}
+		// Lower priority build one anyways
+		if (data.playerUnitCount [(int)UnitName.Destroyer] < 1) {
+			outList.Add (new Tuple<UnitName, float> (UnitName.Destroyer, .2f));
+		}
+		return outList;
+	}
+	/// <summary>
+	/// When to build a boomer anti-everything sub
+	/// </summary>
+	/// <returns>The rule.</returns>
+	/// <param name="data">Data.</param>
+	/// <param name="thisPlayer">This player.</param>
+	List<Tuple<UnitName, float>> BoomerRule (Instance data, Player thisPlayer)
+	{
+		List<Tuple<UnitName, float>> outList = new List<Tuple<UnitName, float>> ();
+		// build a boomer if we have high income or monies
+		if (thisPlayer.properties.Count > 14 || thisPlayer.deltaFunds > 14000 || thisPlayer.funds > 20000) {
+			if (data.playerUnitCount [(int)UnitName.Boomer] < 1) {
+				outList.Add (new Tuple<UnitName, float> (UnitName.Boomer, .75f));
+			} else {
+				outList.Add (new Tuple<UnitName, float> (UnitName.Boomer, .5f));
+			}
+		}
+		return outList;
+	}
+	/// <summary>
+	/// Some general conditions and how different naval units should balance
+	/// </summary>
+	/// <returns>The interaction rule.</returns>
+	/// <param name="data">Data.</param>
+	/// <param name="thisPlayer">This player.</param>
+	List<Tuple<UnitName, float>> NavalInteractionRule (Instance data, Player thisPlayer)
+	{
+		List<Tuple<UnitName, float>> outList = new List<Tuple<UnitName, float>> ();
+		if (1.5f * (data.enemyAverageUnitCount [(int)UnitName.Submarine] + data.enemyAverageUnitCount [(int)UnitName.Boomer]) > 
+			data.enemyAverageUnitCount [(int)UnitName.Corvette] + data.enemyAverageUnitCount [(int)UnitName.Destroyer]) {
+			outList.Add (new Tuple<UnitName, float> (UnitName.Boomer, -.25f));
+			outList.Add (new Tuple<UnitName, float> (UnitName.Submarine, -.25f));
+			outList.Add (new Tuple<UnitName, float> (UnitName.Corvette, .4f));
+		} else {
+			outList.Add (new Tuple<UnitName, float> (UnitName.Submarine, .25f));
+			outList.Add (new Tuple<UnitName, float> (UnitName.Corvette, -.25f));
+			outList.Add (new Tuple<UnitName, float> (UnitName.Destroyer, .25f));
 		}
 		return outList;
 	}
