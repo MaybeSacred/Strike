@@ -208,7 +208,7 @@ public class PlayerGUIView : MonoBehaviour
 	{
 		thisPlayer.side = Mathf.RoundToInt (newSide);
 		sideText.text = "Side: " + thisPlayer.side.ToString ();
-		
+		playerSideSlider.value = newSide;
 	}
 	/// <summary>
 	/// Sets the name of the player, if legal

@@ -39,6 +39,9 @@ public class AIPlayerMedium : AIPlayer
 				}
 			}
 		}
+	}
+	void Start ()
+	{
 		productionEngine = new ProductionEngine ();
 	}
 	UnitController GetSupportUnit (UnitController inUnit)

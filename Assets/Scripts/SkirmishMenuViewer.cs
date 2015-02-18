@@ -47,6 +47,7 @@ public class SkirmishMenuViewer : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
+		playerSelect.gameObject.SetActive (true);
 		settings = new GameSettings ();
 		generalNames = System.Enum.GetNames (typeof(Generals));
 		mapNameOuterPanel.gameObject.SetActive (false);
@@ -61,18 +62,14 @@ public class SkirmishMenuViewer : MonoBehaviour
 	/// <returns>The loading player.</returns>
 	IEnumerator FinishedLoadingPlayers ()
 	{
-		bool done = false;
-		while (!done) {
-			foreach (PlayerGUIView pg in players) {
-				if (!pg.started) {
-					yield return new WaitForSeconds (.01f);
-				}
+		foreach (PlayerGUIView pg in players) {
+			while (!pg.started) {
+				yield return new WaitForSeconds (.01f);
 			}
-			done = true;
 		}
 		SwitchToMapSelect ();
 		for (int i = 0; i < players.Length; i++) {
-			players [i].GetPlayer ().SetSide (i);
+			players [i].ChangeSide (i + 1);
 		}
 		mapNamesOpenButton.interactable = false;
 		setPlayersButton.interactable = false;

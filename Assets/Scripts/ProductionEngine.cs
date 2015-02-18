@@ -21,35 +21,6 @@ public class ProductionEngine
 		foreach (UnitName u in System.Enum.GetValues(typeof(UnitName))) {
 			frequencyList.Add (u, 0);
 		}
-		Instance instance = InGameController.CreateInstance (UnitName.Infantry, false);
-		// Add naval rules if there are shipyards
-		if (instance.neutralUnitCount [(int)UnitName.Shipyard] + instance.playerUnitCount [(int)UnitName.Shipyard] 
-			+ instance.enemyAverageUnitCount [(int)UnitName.Shipyard] > 0) {
-			NavalProduction np = new NavalProduction ();
-			foreach (ProductionRule r in np.GetRules()) {
-				rules.Add (r);
-			}
-		}
-		// Add air rules if there are airports
-		else if (instance.neutralUnitCount [(int)UnitName.Airport] + instance.playerUnitCount [(int)UnitName.Airport] 
-			+ instance.enemyAverageUnitCount [(int)UnitName.Airport] > 0) {
-			AirProduction ap = new AirProduction ();
-			foreach (ProductionRule r in ap.GetRules()) {
-				rules.Add (r);
-			}
-		}
-		// Add ground rules if its a ground-only map
-		else {
-			GroundProductionSpecific gps = new GroundProductionSpecific ();
-			foreach (ProductionRule r in gps.GetRules()) {
-				rules.Add (r);
-			}
-		}
-		// Initialize rules with some ground rules common to all maps
-		GroundProductionGeneral gpg = new GroundProductionGeneral ();
-		foreach (ProductionRule r in gpg.GetRules()) {
-			rules.Add (r);
-		}
 	}
 	/// <summary>
 	/// A rule for the production engine. Returns a list of possible units to make given the counts of enemy units
@@ -66,6 +37,34 @@ public class ProductionEngine
 		frequencyList = ZeroOut (frequencyList);
 		// Compile a game state instance
 		Instance instance = InGameController.CreateInstance (UnitName.Infantry, false);
+		// Load rules
+		rules = new List<ProductionRule> ();
+		// Add naval rules if there are shipyards
+		if (instance.playerUnitCount [(int)UnitName.Shipyard] > 0) {
+			NavalProduction np = new NavalProduction ();
+			foreach (ProductionRule r in np.GetRules()) {
+				rules.Add (r);
+			}
+		}
+		// Add air rules if there are airports
+		if (instance.playerUnitCount [(int)UnitName.Airport] > 0) {
+			AirProduction ap = new AirProduction ();
+			foreach (ProductionRule r in ap.GetRules()) {
+				rules.Add (r);
+			}
+		}
+		// Add ground rules if its a ground-only map
+		if (instance.playerUnitCount [(int)UnitName.Airport] == 0 && instance.playerUnitCount [(int)UnitName.Shipyard] == 0) {
+			GroundProductionSpecific gps = new GroundProductionSpecific ();
+			foreach (ProductionRule r in gps.GetRules()) {
+				rules.Add (r);
+			}
+		}
+		// Ground rules common to all maps
+		GroundProductionGeneral gpg = new GroundProductionGeneral ();
+		foreach (ProductionRule r in gpg.GetRules()) {
+			rules.Add (r);
+		}
 		// Apply rules
 		foreach (ProductionRule pr in rules) {
 			List<Tuple<UnitName, float>> temp = pr.Invoke (instance, player);
@@ -109,6 +108,9 @@ public class ProductionEngine
 			if (value > 0) {
 				sum += value;
 			}
+		}
+		if (sum <= 0) {
+			UnityEngine.Debug.Break ();
 		}
 		UnitName[] copy = new UnitName[dic.Count];
 		dic.Keys.CopyTo (copy, 0);

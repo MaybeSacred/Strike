@@ -101,15 +101,20 @@ class GroundProductionGeneral
 	List<Tuple<UnitName, float>> SniperGroundRule (Instance data, Player thisPlayer)
 	{
 		List<Tuple<UnitName, float>> outList = new List<Tuple<UnitName, float>> ();
-		if (data.enemyAverageUnitCount [(int)UnitName.Rockets] > 0 || data.enemyAverageUnitCount [(int)UnitName.Missiles] > 0 
-			|| data.enemyAverageUnitCount [(int)UnitName.MediumTank] > 0) {
+		float averageHighPricedUnits = data.enemyAverageUnitCount [(int)UnitName.Rockets] + data.enemyAverageUnitCount [(int)UnitName.MediumTank]
+			+ data.enemyAverageUnitCount [(int)UnitName.Missiles];
+		
+		if (averageHighPricedUnits > 0) {
 			if (data.playerUnitCount [(int)UnitName.Sniper] < 2) {
-				outList.Add (new Tuple<UnitName, float> (UnitName.Sniper, 1));
+				outList.Add (new Tuple<UnitName, float> (UnitName.Sniper, .75f));
 			}
-			// If theres alot of high-priced units, build more snipers
-			if (data.enemyAverageUnitCount [(int)UnitName.Rockets] + data.enemyAverageUnitCount [(int)UnitName.MediumTank]
-				+ data.enemyAverageUnitCount [(int)UnitName.Missiles] > 3) {
-				outList.Add (new Tuple<UnitName, float> (UnitName.Sniper, 1));
+			
+			// If theres a lot of high-priced units, build more snipers
+			if (averageHighPricedUnits > 3) {
+				outList.Add (new Tuple<UnitName, float> (UnitName.Sniper, .5f));
+				if (averageHighPricedUnits > 5) {
+					outList.Add (new Tuple<UnitName, float> (UnitName.Sniper, .33f));
+				}
 			}
 		}
 		return outList;
@@ -166,8 +171,6 @@ class GroundProductionGeneral
 			// Build stronger infantry if there are several strong artillery units
 			if (data.enemyAverageUnitCount [(int)UnitName.Rockets] + data.enemyAverageUnitCount [(int)UnitName.FieldArtillery] >= 1.5f) {
 				outList.Add (new Tuple<UnitName, float> (UnitName.Mortar, 1));
-			}
-			if (data.enemyAverageUnitCount [(int)UnitName.Rockets] + data.enemyAverageUnitCount [(int)UnitName.FieldArtillery] >= 1.5f) {
 				outList.Add (new Tuple<UnitName, float> (UnitName.Stinger, 1));
 			}
 				
@@ -178,13 +181,13 @@ class GroundProductionGeneral
 				data.playerUnitCount [(int)UnitName.City] + data.playerUnitCount [(int)UnitName.Airport] + 
 				data.playerUnitCount [(int)UnitName.Factory] + data.playerUnitCount [(int)UnitName.Shipyard])) {
 				if (data.playerUnitCount [(int)UnitName.Infantry] <= 4) {
-					outList.Add (new Tuple<UnitName, float> (UnitName.Infantry, 1));
+					outList.Add (new Tuple<UnitName, float> (UnitName.Infantry, .5f));
 				}
 				if (data.playerUnitCount [(int)UnitName.Stinger] <= 3) {
-					outList.Add (new Tuple<UnitName, float> (UnitName.Stinger, 1));
+					outList.Add (new Tuple<UnitName, float> (UnitName.Stinger, .6f));
 				}
 				if (data.playerUnitCount [(int)UnitName.Mortar] <= 3) {
-					outList.Add (new Tuple<UnitName, float> (UnitName.Mortar, 1));
+					outList.Add (new Tuple<UnitName, float> (UnitName.Mortar, .5f));
 				}
 			}
 		}
@@ -199,7 +202,7 @@ class GroundProductionGeneral
 	List<Tuple<UnitName, float>> LateGroundRule (Instance data, Player thisPlayer)
 	{
 		List<Tuple<UnitName, float>> outList = new List<Tuple<UnitName, float>> ();
-		// only activates between 2 and 10 turns in
+		// only activates after 6 turns in
 		if (InGameController.currentTurn > 6) {
 			if (thisPlayer.funds >= 10000) {
 				outList.Add (new Tuple<UnitName, float> (UnitName.Rockets, 1));
