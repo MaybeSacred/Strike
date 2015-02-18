@@ -162,7 +162,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 	public ParticleSystem moveIndicatorParticles { get; private set; }
 	public AttackableObject AITarget;
 	public TerrainBlock AITargetBlock;
-	public bool canReachTarget;
+	public bool canReachTarget{ get; set; }
 	public float AIDefensiveness;
 	public int comTowerEffect;
 	public ReinforcementInstance reinforcement;

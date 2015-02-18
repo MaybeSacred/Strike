@@ -20,7 +20,93 @@ class NavalProduction
 	public List<ProductionEngine.ProductionRule> GetRules ()
 	{
 		List<ProductionEngine.ProductionRule> rules = new List<ProductionEngine.ProductionRule> ();
+		rules.Add (CarrierRule);
+		rules.Add (SubmarineRule);
+		rules.Add (CorvetteRule);
 		return rules;
 	}
-	
+	/// <summary>
+	/// When to build a carrier
+	/// </summary>
+	/// <returns>The rule.</returns>
+	/// <param name="data">Data.</param>
+	/// <param name="thisPlayer">This player.</param>
+	List<Tuple<UnitName, float>> CarrierRule (Instance data, Player thisPlayer)
+	{
+		List<Tuple<UnitName, float>> outList = new List<Tuple<UnitName, float>> ();
+		if (thisPlayer.funds > 15000) {
+			if (data.playerUnitCount [(int)UnitName.Airport] > 0 || data.enemyAverageUnitCount [(int)UnitName.Airport] > 0) {
+				outList.Add (new Tuple<UnitName, float> (UnitName.Carrier, .5f));
+			}
+		}
+		// A blocking to save up for at least one carrier
+		if (data.playerUnitCount [(int)UnitName.CarpetBomber] + data.playerUnitCount [(int)UnitName.AttackCopter] + 
+			data.playerUnitCount [(int)UnitName.Interceptor] + data.playerUnitCount [(int)UnitName.TacticalFighter] > 1 &&
+			data.playerUnitCount [(int)UnitName.Carrier] < 1) {
+			outList.Add (new Tuple<UnitName, float> (UnitName.Carrier, 1.5f));
+		}
+		return outList;
+	}
+	/// <summary>
+	/// When to build submarines
+	/// </summary>
+	/// <returns>The rule.</returns>
+	/// <param name="data">Data.</param>
+	/// <param name="thisPlayer">This player.</param>
+	List<Tuple<UnitName, float>> SubmarineRule (Instance data, Player thisPlayer)
+	{
+		List<Tuple<UnitName, float>> outList = new List<Tuple<UnitName, float>> ();
+		// Build a submarine if theres an enemy carrier
+		if (data.enemyAverageUnitCount [(int)UnitName.Carrier] > 0) {
+			if (data.playerUnitCount [(int)UnitName.Submarine] < 1) {
+				outList.Add (new Tuple<UnitName, float> (UnitName.Submarine, 2));
+			} else {
+				outList.Add (new Tuple<UnitName, float> (UnitName.Submarine, .75f));
+			}
+		}
+		// Build a submarine if theres a lot of enemy ships
+		if (data.enemyAverageUnitCount [(int)UnitName.Corvette] + data.enemyAverageUnitCount [(int)UnitName.Destroyer] >= 1) {
+			if (data.playerUnitCount [(int)UnitName.Submarine] < 2) {
+				outList.Add (new Tuple<UnitName, float> (UnitName.Submarine, 1));
+				if (data.enemyAverageUnitCount [(int)UnitName.Corvette] + data.enemyAverageUnitCount [(int)UnitName.Destroyer] +
+					data.enemyAverageUnitCount [(int)UnitName.SupplyShip] >= 4) {
+					outList.Add (new Tuple<UnitName, float> (UnitName.Submarine, .5f));
+				}
+			} else {
+				outList.Add (new Tuple<UnitName, float> (UnitName.Submarine, .5f));
+			}
+		}
+		return outList;
+	}
+	/// <summary>
+	/// When to build a corvette ship
+	/// </summary>
+	/// <returns>The rule.</returns>
+	/// <param name="data">Data.</param>
+	/// <param name="thisPlayer">This player.</param>
+	List<Tuple<UnitName, float>> CorvetteRule (Instance data, Player thisPlayer)
+	{
+		List<Tuple<UnitName, float>> outList = new List<Tuple<UnitName, float>> ();
+		if (data.enemyAverageUnitCount [(int)UnitName.Submarine] > .5f) {
+			if (data.enemyAverageUnitCount [(int)UnitName.Submarine] > 1.5f && data.playerUnitCount [(int)UnitName.Corvette] <= 2f) {
+				outList.Add (new Tuple<UnitName, float> (UnitName.Corvette, 2f));
+			} else {
+				outList.Add (new Tuple<UnitName, float> (UnitName.Corvette, .75f));
+			}
+		}
+		// Build corvette if theres enemy air units
+		if (data.enemyAverageUnitCount [(int)UnitName.CarpetBomber] + data.enemyAverageUnitCount [(int)UnitName.AttackCopter] +
+			data.enemyAverageUnitCount [(int)UnitName.TacticalFighter] + data.enemyAverageUnitCount [(int)UnitName.Interceptor] >= 2) {
+			if (data.playerUnitCount [(int)UnitName.Corvette] <= 1f) {
+				outList.Add (new Tuple<UnitName, float> (UnitName.Corvette, 1f));
+			} else {
+				outList.Add (new Tuple<UnitName, float> (UnitName.Corvette, .5f));
+			}
+		}
+		// Lower priority build one anyways
+		if (data.playerUnitCount [(int)UnitName.Corvette] < 1) {
+			outList.Add (new Tuple<UnitName, float> (UnitName.Corvette, .5f));
+		}
+		return outList;
+	}
 }

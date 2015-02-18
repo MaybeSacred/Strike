@@ -11,7 +11,7 @@ public enum AILevel
 ;
 public class Player : MonoBehaviour
 {
-	public static int TotalUnitsAllowedPPlayer = 50;
+	public static readonly int TotalUnitsAllowedPPlayer = 50;
 	public int currentHue;
 	public General selectedGeneral;
 	public string playerName {

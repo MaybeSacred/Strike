@@ -75,6 +75,7 @@ public class ProductionEngine
 			}
 		}
 		frequencyList = Normalize (frequencyList);
+		Debug.Log (frequencyList);
 		UnitName one = SelectUnit (frequencyList);
 		return one;
 	}
@@ -105,12 +106,18 @@ public class ProductionEngine
 	{
 		float sum = 0;
 		foreach (float value in dic.Values) {
-			sum += value;
+			if (value > 0) {
+				sum += value;
+			}
 		}
 		UnitName[] copy = new UnitName[dic.Count];
 		dic.Keys.CopyTo (copy, 0);
 		for (int i = 0; i < dic.Count; i++) {
-			dic [copy [i]] /= sum;
+			if (dic [copy [i]] > 0) {
+				dic [copy [i]] /= sum;
+			} else {
+				dic [copy [i]] = 0;
+			}
 		}
 		return dic;
 	}

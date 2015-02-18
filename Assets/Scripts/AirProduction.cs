@@ -19,7 +19,13 @@ class AirProduction
 	public List<ProductionEngine.ProductionRule> GetRules ()
 	{
 		List<ProductionEngine.ProductionRule> rules = new List<ProductionEngine.ProductionRule> ();
+		rules.Add (BomberRule);
 		return rules;
+	}
+	List<Tuple<UnitName, float>> BomberRule (Instance data, Player thisPlayer)
+	{
+		List<Tuple<UnitName, float>> outList = new List<Tuple<UnitName, float>> ();
+		return outList;
 	}
 }
 
