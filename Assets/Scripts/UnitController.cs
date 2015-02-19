@@ -165,7 +165,6 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 	public bool canReachTarget{ get; set; }
 	public float AIDefensiveness;
 	public int comTowerEffect;
-	public ReinforcementInstance reinforcement;
 	[HideInInspector]
 	public TerrainBlock
 		AICachedCurrentBlock;
@@ -194,7 +193,6 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 		} catch {
 			
 		}
-		reinforcement = (ReinforcementInstance)InGameController.CreateInstance (unitClass, true);
 	}
 	void Start ()
 	{

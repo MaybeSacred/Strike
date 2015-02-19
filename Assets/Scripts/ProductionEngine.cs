@@ -74,7 +74,9 @@ public class ProductionEngine
 			}
 		}
 		frequencyList = Normalize (frequencyList);
-		Debug.Log (frequencyList);
+		foreach (var v in frequencyList) {
+			Debug.Log (v);
+		}
 		UnitName one = SelectUnit (frequencyList);
 		return one;
 	}
