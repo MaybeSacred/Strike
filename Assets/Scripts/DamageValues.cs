@@ -2,14 +2,26 @@ using UnityEngine;
 using System.Collections.Generic;
 using System;
 using System.IO;
+using System.Collections;
+using System.Runtime.Serialization.Formatters.Binary;
+
+
 public class DamageValues : MonoBehaviour
 {
 	public static readonly float DEFENSECONSTANT = 10;//How strong a unit of defense counts for
 	public static int[][] unitDamageArray;//values of -1 will be unable to attack that unit
-	
+	static DamageValues instance;
 	// Use this for initialization
 	void Awake ()
 	{
+		// Make sure theres only one instance of damageValues
+		if (instance == null) {
+			instance = this;
+			DontDestroyOnLoad (this);
+			StartCoroutine (LoadASyncValues ());
+		} else {
+			Destroy (this);
+		}
 		if (unitDamageArray == null) {
 			unitDamageArray = new int[Enum.GetValues (typeof(UnitName)).Length][];
 			for (int i = 0; i < unitDamageArray.Length; i++) {
@@ -18,18 +30,30 @@ public class DamageValues : MonoBehaviour
 					unitDamageArray [i] [j] = -1;
 				}
 			}
-			StreamReader reader = new StreamReader (File.OpenRead (Application.dataPath + @"\Maps\unitDamageValues.csv"));
-			var line = reader.ReadLine ();
-			var columnValues = line.Split (new char[]{',', ';'});
-			while (!reader.EndOfStream) {
-				line = reader.ReadLine ();
-				var values = line.Split (new char[]{',', ';'});
-				if (!values [0].Equals ("")) {
-					UnitName currentName = (UnitName)Enum.Parse (typeof(UnitName), values [0]);
-					for (int i = 1; i < values.Length; i++) {
-						if (!values [i].Equals ("")) {
-							unitDamageArray [(int)currentName] [(int)(UnitName)Enum.Parse (typeof(UnitName), columnValues [i])] = int.Parse (values [i]);
-						}
+		}
+	}
+	IEnumerator LoadASyncValues ()
+	{
+		#if UNITY_WEBPLAYER
+		var names = new WWW (SkirmishMenuViewer.ApplicationServerURL + @"/Maps/unitDamageValues.csv");
+		while (!names.isDone) {
+			yield return new WaitForSeconds (.001f);
+		}
+		MemoryStream ms = new MemoryStream (names.bytes);
+		StreamReader reader = new StreamReader (ms);
+#elif UNITY_STANDALONE
+		StreamReader reader = new StreamReader (File.OpenRead (Application.dataPath + @"\Maps\unitDamageValues.csv"));
+#endif
+		var line = reader.ReadLine ();
+		var columnValues = line.Split (new char[]{',', ';'});
+		while (!reader.EndOfStream) {
+			line = reader.ReadLine ();
+			var values = line.Split (new char[]{',', ';'});
+			if (!values [0].Equals ("")) {
+				UnitName currentName = (UnitName)Enum.Parse (typeof(UnitName), values [0]);
+				for (int i = 1; i < values.Length; i++) {
+					if (!values [i].Equals ("")) {
+						unitDamageArray [(int)currentName] [(int)(UnitName)Enum.Parse (typeof(UnitName), columnValues [i])] = int.Parse (values [i]);
 					}
 				}
 			}

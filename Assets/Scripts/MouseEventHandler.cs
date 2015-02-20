@@ -2,88 +2,88 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 
-public class MouseEventHandler : MonoBehaviour {
+public class MouseEventHandler : MonoBehaviour
+{
 	private List<Instance> instances;
 	private List<ReinforcementInstance> reinforcementInstances;
 	private ARFFDataHandler trainingArff, testingArff, trainingReinforcementArff, testingReinforcementArff;
 	private bool clearInstancesKeyDown;
 #if UNITY_STANDALONE
-	void Start () {
-		instances = new List<Instance>();
-		reinforcementInstances = new List<ReinforcementInstance>();
-		trainingArff = new ARFFDataHandler(LearnerUtilities.GetDataPath(), LearnerUtilities.dataFileName, true, true);
-		testingArff = new ARFFDataHandler(LearnerUtilities.GetDataPath(), LearnerUtilities.eventDataFileName, true, true);
-		testingArff.CreateARFFFile(new Instance(System.Enum.GetNames(typeof(UnitNames)).Length));
-		trainingReinforcementArff = new ARFFDataHandler(LearnerUtilities.GetDataPath(), LearnerUtilities.reinforcementDataFileName, true, true);
-		testingReinforcementArff = new ARFFDataHandler(LearnerUtilities.GetDataPath(), LearnerUtilities.reinforcementEventDataFileName, true, true);
-	}
-	void Update () {
-		if(Input.GetKeyDown("t"))
-		{
-			LearnerUtilities.TrainCurrentClassifier(LearnerUtilities.dataFileName);
-		}
-		if(Input.GetKeyDown("y"))
-		{
-			WriteInstances();
-		}
-	}
-	void OnGUI(){
-		if(Input.GetKeyDown("u"))
-		{
-			trainingArff.CreateARFFFile(new Instance(System.Enum.GetNames(typeof(UnitNames)).Length));
-			testingArff.CreateARFFFile(new Instance(System.Enum.GetNames(typeof(UnitNames)).Length));
-			trainingReinforcementArff.CreateARFFFile(new ReinforcementInstance(System.Enum.GetNames(typeof(UnitNames)).Length));
-			testingReinforcementArff.CreateARFFFile(new ReinforcementInstance(System.Enum.GetNames(typeof(UnitNames)).Length));
-		}
-	}
-	public void StartTestInstance(Instance instance)
+	void Start ()
 	{
-		testingArff.ClearInstances();
-		testingArff.WriteInstanceData(instance);
-		LearnerUtilities.BeginProductionClassification(LearnerUtilities.eventDataFileName);
+		instances = new List<Instance> ();
+		reinforcementInstances = new List<ReinforcementInstance> ();
+		trainingArff = new ARFFDataHandler (LearnerUtilities.GetDataPath (), LearnerUtilities.dataFileName, true, true);
+		testingArff = new ARFFDataHandler (LearnerUtilities.GetDataPath (), LearnerUtilities.eventDataFileName, true, true);
+		testingArff.CreateARFFFile (new Instance (System.Enum.GetNames (typeof(UnitName)).Length));
+		trainingReinforcementArff = new ARFFDataHandler (LearnerUtilities.GetDataPath (), LearnerUtilities.reinforcementDataFileName, true, true);
+		testingReinforcementArff = new ARFFDataHandler (LearnerUtilities.GetDataPath (), LearnerUtilities.reinforcementEventDataFileName, true, true);
 	}
-	public void StartTestInstanceReinforcement()
+	void Update ()
 	{
-		testingReinforcementArff.ClearInstances();
+		if (Input.GetKeyDown ("t")) {
+			LearnerUtilities.TrainCurrentClassifier (LearnerUtilities.dataFileName);
+		}
+		if (Input.GetKeyDown ("y")) {
+			WriteInstances ();
+		}
+	}
+	void OnGUI ()
+	{
+		if (Input.GetKeyDown ("u")) {
+			trainingArff.CreateARFFFile (new Instance (System.Enum.GetNames (typeof(UnitName)).Length));
+			testingArff.CreateARFFFile (new Instance (System.Enum.GetNames (typeof(UnitName)).Length));
+			trainingReinforcementArff.CreateARFFFile (new ReinforcementInstance (System.Enum.GetNames (typeof(UnitName)).Length));
+			testingReinforcementArff.CreateARFFFile (new ReinforcementInstance (System.Enum.GetNames (typeof(UnitName)).Length));
+		}
+	}
+	public void StartTestInstance (Instance instance)
+	{
+		testingArff.ClearInstances ();
+		testingArff.WriteInstanceData (instance);
+		LearnerUtilities.BeginProductionClassification (LearnerUtilities.eventDataFileName);
+	}
+	public void StartTestInstanceReinforcement ()
+	{
+		testingReinforcementArff.ClearInstances ();
 		ReinforcementInstance[] outInstances = new ReinforcementInstance[27];
-		Array names = System.Enum.GetValues(typeof(UnitNames));
-		for(int i = 0; i < outInstances.Length; i++)
-		{
-			outInstances[i] = (ReinforcementInstance)InGameController.CreateInstance((UnitNames)names.GetValue(i), true);
+		Array names = System.Enum.GetValues (typeof(UnitName));
+		for (int i = 0; i < outInstances.Length; i++) {
+			outInstances [i] = (ReinforcementInstance)InGameController.CreateInstance ((UnitName)names.GetValue (i), true);
 		}
-		testingReinforcementArff.WriteInstanceData(outInstances);
-		LearnerUtilities.BeginProductionClassification(LearnerUtilities.reinforcementEventDataFileName);
+		testingReinforcementArff.WriteInstanceData (outInstances);
+		LearnerUtilities.BeginProductionClassification (LearnerUtilities.reinforcementEventDataFileName);
 	}
-	public UnitNames CheckTestInstanceClassification()
+	public UnitName CheckTestInstanceClassification ()
 	{
-		return LearnerUtilities.CheckProductionClassification();
+		return LearnerUtilities.CheckProductionClassification ();
 	}
-	public List<UnitNames> CheckTestInstanceClassificationRanked()
+	public List<UnitName> CheckTestInstanceClassificationRanked ()
 	{
-		return LearnerUtilities.CheckProductionClassificationRanked();
-	}
-
-	public List<UnitNames> CheckTestInstanceClassificationReinforcement ()
-	{
-		return LearnerUtilities.CheckProductionClassificationReinforcement();
+		return LearnerUtilities.CheckProductionClassificationRanked ();
 	}
 
-	public void AddInstance(UnitNames classification)
+	public List<UnitName> CheckTestInstanceClassificationReinforcement ()
 	{
-		Instance instance = InGameController.CreateInstance(classification, false);
-		instances.Add(instance);
+		return LearnerUtilities.CheckProductionClassificationReinforcement ();
 	}
-	public void AddReinforcementInstance(ReinforcementInstance ri)
+
+	public void AddInstance (UnitName classification)
 	{
-		reinforcementInstances.Add(ri);
+		Instance instance = InGameController.CreateInstance (classification, false);
+		instances.Add (instance);
 	}
-	public void WriteInstances()
+	public void AddReinforcementInstance (ReinforcementInstance ri)
 	{
-		trainingArff.WriteInstanceData(instances.ToArray());
+		reinforcementInstances.Add (ri);
 	}
-	public void WriteReinforcementInstances()
+	public void WriteInstances ()
 	{
-		trainingReinforcementArff.WriteInstanceData(reinforcementInstances.ToArray());
+		trainingArff.WriteInstanceData (instances.ToArray ());
+	}
+	public void WriteReinforcementInstances ()
+	{
+		trainingReinforcementArff.WriteInstanceData (reinforcementInstances.ToArray ());
 	}
 #endif
 }

@@ -31,6 +31,8 @@ public class Health
 		rawHealth = i;
 		if (rawHealth > 100) {
 			rawHealth = 100;
+		} else if (rawHealth < 0) {
+			rawHealth = 0;
 		}
 	}
 
@@ -39,6 +41,8 @@ public class Health
 		rawHealth += change;
 		if (rawHealth > 100) {
 			rawHealth = 100;
+		} else if (rawHealth < 0) {
+			rawHealth = 0;
 		}
 	}
 	public Health Clone ()
@@ -118,5 +122,13 @@ public class Health
 	public static bool operator != (int a, Health b)
 	{
 		return a != b.rawHealth;
+	}
+	public override bool Equals (object obj)
+	{
+		return base.Equals (obj);
+	}
+	public override int GetHashCode ()
+	{
+		return base.GetHashCode ();
 	}
 }

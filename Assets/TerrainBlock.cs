@@ -137,7 +137,7 @@ public class TerrainBlock : MonoBehaviour, System.IComparable<TerrainBlock>
 			}
 		}
 	}
-	private void SeaCosts ()
+	void SeaCosts ()
 	{
 		terrainCosts [(int)MovementType.Air].cost = 1;
 		terrainCosts [(int)MovementType.Sea].cost = 1;
@@ -149,7 +149,7 @@ public class TerrainBlock : MonoBehaviour, System.IComparable<TerrainBlock>
 		terrainCosts [(int)MovementType.Sniper].cost = -1;
 		terrainCosts [(int)MovementType.Infantry].cost = -1;
 	}
-	private void RiverCosts ()
+	void RiverCosts ()
 	{
 		terrainCosts [(int)MovementType.Air].cost = 1;
 		terrainCosts [(int)MovementType.Sea].cost = -1;
@@ -217,21 +217,6 @@ public class TerrainBlock : MonoBehaviour, System.IComparable<TerrainBlock>
 			return true;
 		}
 		return false;
-	}
-	public void ShowTerrainBlockInfo ()
-	{
-		GUI.BeginGroup (new Rect (Screen.width - UnitController.infoBoxWidth, 0, UnitController.infoBoxWidth, UnitController.infoBoxHeight));
-		GUI.Box (new Rect (0, 0, UnitController.infoBoxWidth, UnitController.infoBoxHeight), "");
-		GUI.Label (new Rect (0, 0, UnitController.infoBoxWidth, 20), new GUIContent (prettyName));
-		GUI.Label (new Rect (0, 20, UnitController.infoBoxWidth, 20), new GUIContent ("Defense: " + defenseBoost, "Defense Boost"));
-		GUI.EndGroup ();
-	}
-	public void ShowDetailedInfo ()
-	{
-		GUI.BeginGroup (new Rect (Screen.width / 2 - UnitController.infoBoxWidth, Screen.height / 2 - UnitController.infoBoxHeight, 2 * UnitController.infoBoxWidth, 2 * UnitController.infoBoxHeight));
-		GUI.Box (new Rect (0, 0, 2 * UnitController.infoBoxWidth, 2 * UnitController.infoBoxHeight), "");
-		GUI.Label (new Rect (2, 2, 2 * UnitController.infoBoxWidth, 2 * UnitController.infoBoxHeight), description);
-		GUI.EndGroup ();
 	}
 	void OnMouseEnter ()
 	{
@@ -499,21 +484,10 @@ public class TerrainBlock : MonoBehaviour, System.IComparable<TerrainBlock>
 			}
 			adjacentBlocks [bestIndexSoFar].PokeOnMovementAttackGraphic (unit, moveRange, attackRange);
 		}
-		/*for(int i = 0; i < 4; i++)
-		{
-			if(adjacentBlocks[i] != null && !adjacentBlocks[i].showingMoveTile)
-			{
-				if(attackRange >= 0)
-				{
-					adjacentBlocks[i].PokeOnAttackGraphic(unit.moveClass, attackRange);
-				}
-			}
-		}*/
 	}
 	public void PokeOnAllAttackGraphic (UnitController unit, float moveRange, int attackRange)
 	{
 		if (!showingAttackTile) {
-			//DisplayAttackTile();
 			for (int i = 0; i < adjacentBlocks.Length; i++) {
 				if (adjacentBlocks [i].UnitMovementCost (unit.moveClass) > 0) {
 					if (moveRange - adjacentBlocks [i].UnitMovementCost (unit.moveClass) >= 0) {
@@ -522,16 +496,6 @@ public class TerrainBlock : MonoBehaviour, System.IComparable<TerrainBlock>
 				}
 			}
 		}
-		/*for(int i = 0; i < 4; i++)
-		{
-			if(adjacentBlocks[i] != null)
-			{
-				if(attackRange >= 0 && !adjacentBlocks[i].showingAttackTile)
-				{
-					adjacentBlocks[i].PokeOnAttackGraphic(unit.moveClass, attackRange);
-				}
-			}
-		}*/
 	}
 	public void PokeOffMovementAttackGraphic ()
 	{
@@ -543,11 +507,6 @@ public class TerrainBlock : MonoBehaviour, System.IComparable<TerrainBlock>
 				adjacentBlocks [i].PokeOffMovementAttackGraphic ();
 			}
 		}
-	}
-	// Update is called once per frame
-	void Update ()
-	{
-		
 	}
 	public int CompareTo (TerrainBlock other)
 	{
@@ -561,6 +520,6 @@ public class TerrainBlock : MonoBehaviour, System.IComparable<TerrainBlock>
 
 	public void SetTerrainView (TerrainGameView terrainView)
 	{
-		terrainView.SetValues (prettyName, defenseBoost.ToString ());
+		terrainView.SetValues (prettyName, defenseBoost.ToString (), (defenseBoost + (occupyingProperty == null ? 0 : occupyingProperty.DefenseBonus ())).ToString ());
 	}
 }

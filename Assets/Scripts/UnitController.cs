@@ -1375,7 +1375,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 	}
 	public int DefenseBonus ()
 	{
-		double outBoost = 0;
+		float outBoost = 0;
 		if (veteranStatus == UnitRanks.Elite) {
 			outBoost += 1.5f;
 		}
@@ -1387,7 +1387,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 		}
 		outBoost += awaitingOrdersBlock.defenseBoost;
 		outBoost += comTowerEffect;
-		return (int)(outBoost * DamageValues.DEFENSECONSTANT);
+		return Mathf.FloorToInt (outBoost * DamageValues.DEFENSECONSTANT);
 	}
 	public int OffenseBonus ()
 	{

@@ -722,30 +722,27 @@ public class AIPlayerMedium : AIPlayer
 	{
 		if (producingUnits) {
 			UnitName rankedName = productionEngine.Evaluate (this);
-			string unitsSelected = "";
-			if (rankedName != null) {
-				if (makeSupplyLand) {
-					rankedName = UnitName.SupplyTank;
-					makeSupplyLand = false;
-				} else if (makeSupplySea) {
-					rankedName = UnitName.SupplyShip;
-					makeSupplySea = false;
-				} else if (makeTransport) {
-					rankedName = transportToMake;
-					makeTransport = false;
-				}
-				if (((UnitController)Utilities.GetPrefabFromUnitName (rankedName)).baseCost <= funds) {
-					SortPropertiesByHQDistance (((UnitController)Utilities.GetPrefabFromUnitName (rankedName)).moveClass);
-					for (int i = 0; i < properties.Count; i++) {
-						if (properties [i].currentState == UnitState.UnMoved && !properties [i].GetOccupyingBlock ().IsOccupied () && properties [i].CanProduceUnit (rankedName)) {
-							properties [i].AIProduceUnit (rankedName);
-							break;
-						}
+			if (makeSupplyLand) {
+				rankedName = UnitName.SupplyTank;
+				makeSupplyLand = false;
+			} else if (makeSupplySea) {
+				rankedName = UnitName.SupplyShip;
+				makeSupplySea = false;
+			} else if (makeTransport) {
+				rankedName = transportToMake;
+				makeTransport = false;
+			}
+			if (((UnitController)Utilities.GetPrefabFromUnitName (rankedName)).baseCost <= funds) {
+				SortPropertiesByHQDistance (((UnitController)Utilities.GetPrefabFromUnitName (rankedName)).moveClass);
+				for (int i = 0; i < properties.Count; i++) {
+					if (properties [i].currentState == UnitState.UnMoved && !properties [i].GetOccupyingBlock ().IsOccupied () && properties [i].CanProduceUnit (rankedName)) {
+						properties [i].AIProduceUnit (rankedName);
+						break;
 					}
 				}
-				productionAttempts++;
-				producingUnits = false;
 			}
+			productionAttempts++;
+			producingUnits = false;
 		} else {
 			if (productionAttempts < producingProperties) {
 				producingUnits = true;
@@ -811,18 +808,33 @@ public class AIPlayerMedium : AIPlayer
 	void MediumAIUpdate ()
 	{
 		if (currentUnit != null) {
-			if (currentUnit.currentState == UnitState.UnMoved) {
-				currentUnit.AISelect ();
-			} else if (currentUnit.currentState == UnitState.Selected) {
-				TerrainBlock block = StateSearch (1, 3);
-				currentUnit.AIMoveTo (block);
-			} else if (currentUnit.currentState == UnitState.Moving) {
-				
-			} else if (currentUnit.currentState == UnitState.FinishedMove) {
-				currentUnit = null;
-			} else if (currentUnit.currentState == UnitState.AwaitingOrder) {
-				PositionEvaluation p = EvaluatePosition (currentUnit.awaitingOrdersBlock);
-				currentUnit.AIDoOrder (p, true);
+			switch (currentUnit.currentState) {
+			case UnitState.UnMoved:
+				{
+					currentUnit.AISelect ();
+					break;
+				} 
+			case UnitState.Selected:
+				{
+					TerrainBlock block = StateSearch (1, 3);
+					currentUnit.AIMoveTo (block);
+					break;
+				} 
+			case UnitState.Moving:
+				{
+					break;
+				} 
+			case UnitState.FinishedMove:
+				{
+					currentUnit = null;
+					break;
+				} 
+			case UnitState.AwaitingOrder:
+				{
+					PositionEvaluation p = EvaluatePosition (currentUnit.awaitingOrdersBlock);
+					currentUnit.AIDoOrder (p, true);
+					break;
+				}
 			}
 		} else {
 			if (unitsToMove.Count > 0) {
