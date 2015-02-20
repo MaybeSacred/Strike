@@ -15,10 +15,12 @@ public class DamageValues : MonoBehaviour
 	void Awake ()
 	{
 		// Make sure theres only one instance of damageValues
-		if (instance == null) {
+		if (instance == null || instance == this) {
+			if (instance == null) {
+				StartCoroutine (LoadASyncValues ());
+			}
 			instance = this;
 			DontDestroyOnLoad (this);
-			StartCoroutine (LoadASyncValues ());
 		} else {
 			Destroy (this);
 		}

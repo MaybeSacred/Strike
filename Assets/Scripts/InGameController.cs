@@ -27,10 +27,15 @@ public class InGameController : MonoBehaviour
 	// Use this for initialization
 	void Awake ()
 	{
-		instance = this;
-		currentTerrain = GameObject.FindObjectOfType<TerrainBuilder> ();
-		mouseOverParticles = Instantiate (mouseParticles) as ParticleSystem;
-		mouseOverParticles.particleSystem.Stop ();
+		if (instance == null || instance == this) {
+			instance = this;
+			DontDestroyOnLoad (this);
+			currentTerrain = GameObject.FindObjectOfType<TerrainBuilder> ();
+			mouseOverParticles = Instantiate (mouseParticles) as ParticleSystem;
+			mouseOverParticles.particleSystem.Stop ();
+		} else {
+			Destroy (this);
+		}
 	}
 	void Start ()
 	{
@@ -109,7 +114,7 @@ public class InGameController : MonoBehaviour
 			ps.gameObject.SetActive (false);
 		}
 	}
-	void MoveCameraToNextPlayerUnit ()
+	public void MoveCameraToNextPlayerUnit ()
 	{
 		currentUnitMousedOver++;
 		if (currentUnitMousedOver >= players [currentPlayer].units.Count) {

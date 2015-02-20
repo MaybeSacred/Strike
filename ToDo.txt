@@ -1,21 +1,16 @@
 playability
-turn graphic
 collect statistics about unit effectiveness
 com towrs need boost range visible
-transparent health bars - make bigger
 save feature
 better general power - should flash when ready
 remove second gui panel if same player
 puase menu - controls
 fix health bars
 adjust menu items for screen size - reduce text size
-adjust gui when actions are performed such as combat
 add graphic to visualize AI tile scores
-remove fp numbers from showing on gui
 more distinction between weather effects - add text for current weather
-add stealthed graphic
 nerf infantry but increase movement
 buff stinger infantry
-build gui for unit building
-add spacing on loaded maps names
-build gui for end screen
+round health up when joining units
+add 'next unit selection' button
+display turn

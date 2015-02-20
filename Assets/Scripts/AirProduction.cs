@@ -25,6 +25,49 @@ class AirProduction
 	List<Tuple<UnitName, float>> BomberRule (Instance data, Player thisPlayer)
 	{
 		List<Tuple<UnitName, float>> outList = new List<Tuple<UnitName, float>> ();
+		
+		return outList;
+	}
+	/// <summary>
+	/// Rule for the production of interceptors
+	/// </summary>
+	/// <returns>The rule.</returns>
+	/// <param name="data">Data.</param>
+	/// <param name="thisPlayer">This player.</param>
+	List<Tuple<UnitName, float>> InterceptorRule (Instance data, Player thisPlayer)
+	{
+		List<Tuple<UnitName, float>> outList = new List<Tuple<UnitName, float>> ();
+		if (data.enemyAverageUnitCount [(int)UnitName.CarpetBomber] >= 1.25f || 
+			data.enemyAverageUnitCount [(int)UnitName.Interceptor] >= .5f || 
+			data.enemyAverageUnitCount [(int)UnitName.TacticalFighter] >= 2f) {
+			// If theres more enemy interceptors by alot
+			if (data.enemyAverageUnitCount [(int)UnitName.Interceptor] > data.playerUnitCount [(int)UnitName.Interceptor] + 2) {
+				outList.Add (new Tuple<UnitName, float> (UnitName.Interceptor, .75f));
+			} else if (data.playerUnitCount [(int)UnitName.Interceptor] < 1) {
+				outList.Add (new Tuple<UnitName, float> (UnitName.Interceptor, 1));
+			} else {
+				outList.Add (new Tuple<UnitName, float> (UnitName.Interceptor, .33f));
+			}
+		}
+		return outList;
+	}
+	/// <summary>
+	/// Rules for producing tactical fighters
+	/// </summary>
+	/// <returns>The fighter rule.</returns>
+	/// <param name="data">Data.</param>
+	/// <param name="thisPlayer">This player.</param>
+	List<Tuple<UnitName, float>> TacticalFighterRule (Instance data, Player thisPlayer)
+	{
+		List<Tuple<UnitName, float>> outList = new List<Tuple<UnitName, float>> ();
+		// If theres alot of enemy interceptors, make interceptors instead
+		if (data.enemyAverageUnitCount [(int)UnitName.Interceptor] >= 1.6f * data.playerUnitCount [(int)UnitName.Interceptor]) {
+			outList.Add (new Tuple<UnitName, float> (UnitName.Interceptor, .33f));
+		} else if (data.playerUnitCount [(int)UnitName.TacticalFighter] < 2) {
+			outList.Add (new Tuple<UnitName, float> (UnitName.TacticalFighter, 1f));
+		} else if (data.playerUnitCount [(int)UnitName.TacticalFighter] < 5) {
+			outList.Add (new Tuple<UnitName, float> (UnitName.TacticalFighter, .33f));
+		}
 		return outList;
 	}
 }

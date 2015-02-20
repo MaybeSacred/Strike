@@ -36,6 +36,8 @@ public class InGameGUI : MonoBehaviour
 	
 	// Advance turn button
 	public UnityEngine.UI.Button advanceTurnButton;
+	// Move to next player unit
+	public UnityEngine.UI.Button nextUnitButton;
 	// Pause menu
 	public GameObject pauseMenu;
 	
@@ -57,7 +59,8 @@ public class InGameGUI : MonoBehaviour
 	/// </summary>
 	void SetupDisplayPanels ()
 	{
-		advanceTurnButton.onClick.AddListener (() => FindObjectOfType<InGameController> ().AdvanceTurn ());
+		advanceTurnButton.onClick.AddListener (() => InGameController.instance.AdvanceTurn ());
+		nextUnitButton.onClick.AddListener (() => InGameController.instance.MoveCameraToNextPlayerUnit ());
 		detailedTextBox.SetActive (false);
 		pauseMenu.SetActive (false);
 		unitSelectionDisplayer.gameObject.SetActive (false);
