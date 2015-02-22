@@ -273,7 +273,7 @@ public class MapDataExporter : Editor
 	void FillMap (string type)
 	{
 		switch (type) {
-		case "Plain":
+		case "Land":
 			{
 				foreach (GameObject go in terrainPrefabs) {
 					if (go.name.Contains ("Plain0")) {

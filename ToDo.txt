@@ -9,8 +9,4 @@ fix health bars
 adjust menu items for screen size - reduce text size
 add graphic to visualize AI tile scores
 more distinction between weather effects - add text for current weather
-nerf infantry but increase movement
-buff stinger infantry
-round health up when joining units
-add 'next unit selection' button
 display turn

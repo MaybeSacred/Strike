@@ -537,7 +537,9 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 			unitJustSelected = false;
 		}
 	}
-
+	/// <summary>
+	/// Checks a path for consistency, modifying it if it is not consistent
+	/// </summary>
 	void CheckPathConsistency ()
 	{
 		for (int i = 0; i < currentMoveBlocks.Count; i++) {
@@ -549,12 +551,18 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 			}
 		}
 	}
-
+	/// <summary>
+	/// Returns the current attack range of the unit
+	/// </summary>
+	/// <returns>The attack range.</returns>
 	public int EffectiveAttackRange ()
 	{
 		return modifier.ApplyModifiers (UnitPropertyModifier.PropertyModifiers.AttackRange, maxAttackRange);
 	}
-
+	/// <summary>
+	/// Returns the current movement range of the unit
+	/// </summary>
+	/// <returns>The move range.</returns>
 	public int EffectiveMoveRange ()
 	{
 		int owt = modifier.ApplyModifiers (UnitPropertyModifier.PropertyModifiers.MovementRange, movementRange);
@@ -842,16 +850,28 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 		targetedDamageOutline.text = damage + "%";
 		targetedDamageOutline.transform.rotation = Camera.main.transform.rotation;
 	}
+	/// <summary>
+	/// Sets the owner of the unit.
+	/// </summary>
+	/// <param name="newOwner">New owner.</param>
 	public void SetOwner (Player newOwner)
 	{
 		owner = newOwner;
 		moveIndicatorParticles.particleSystem.startColor = owner.mainPlayerColor;
 	}
+	/// <summary>
+	/// Gets the unit's owner
+	/// </summary>
+	/// <returns>The owner.</returns>
 	public Player GetOwner ()
 	{
 		return owner;
 	}
-	
+	/// <summary>
+	/// Heals the unit, and uses the owning player's funds if useFunds is specified
+	/// </summary>
+	/// <param name="attemptedHealAmount">Attempted heal amount.</param>
+	/// <param name="useFunds">If set to <c>true</c> use funds.</param>
 	public void Heal (int attemptedHealAmount, bool useFunds)
 	{
 		if (health < 100) {
@@ -868,6 +888,9 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 		}
 		InGameGUI.instance.SetCurrentUnitDisplay (this);
 	}
+	/// <summary>
+	/// Calculates the start-of-turn fuel usage of a unit.
+	/// </summary>
 	void CalculateFuelUsage ()
 	{
 		if (!isInUnit) {
@@ -897,6 +920,9 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 		}
 		InGameGUI.instance.SetCurrentUnitDisplay (this);
 	}
+	/// <summary>
+	/// Starts the turn.
+	/// </summary>
 	public void StartTurn ()
 	{
 		if (!isInUnit) {
@@ -936,6 +962,10 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 			ChangeState (UnitState.FinishedMove, UnitState.UnMoved);
 		}
 	}
+	/// <summary>
+	/// An internal turn ending.
+	/// Sets several variables in addition to EndTurn
+	/// </summary>
 	void InternalEndTurn ()
 	{
 		if (!isInUnit) {
@@ -957,6 +987,9 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 		}
 		EndTurn ();
 	}
+	/// <summary>
+	/// Ends the turn.
+	/// </summary>
 	public void EndTurn ()
 	{
 		hasUnitSelectedMutex = InGameController.ReleaseUnitSelectedMutex ();
@@ -968,6 +1001,9 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 		currentFuel -= CalculateFuelCost ();
 		currentPathDistance = 0;
 	}
+	/// <summary>
+	/// Shows the unit's attack range
+	/// </summary>
 	public void ShowAttackRange ()
 	{
 		showingAttackRange = true;
@@ -979,6 +1015,9 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 	{
 		return transform.position;
 	}
+	/// <summary>
+	/// Shows the next turn attack range, either the move area and attack range for direct units, or the distance attack range for indirect units.
+	/// </summary>
 	public void ShowNextTurnAttackRange ()
 	{
 		if (InGameController.currentTerrain.illuminatedMovementRangeBlocks.Count == 0) {
@@ -994,16 +1033,26 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 			}
 		}
 	}
+	/// <summary>
+	/// Activates the unit w.r.t fog-of-war
+	/// </summary>
+	/// <param name="activate">If set to <c>true</c> activate.</param>
 	public void SetActive (bool activate)
 	{
 		gameObject.SetActive (activate);
 		moveIndicatorParticles.gameObject.SetActive (activate);
 	}
+	/// <summary>
+	/// Hides the move range, if visible.
+	/// </summary>
 	public void HideMoveRange ()
 	{
 		InGameController.currentTerrain.ClearMoveBlocks ();
 		showingNextTurnAttackRange = false;
 	}
+	/// <summary>
+	/// Hides the attack range, if visible.
+	/// </summary>
 	public void HideAttackRange ()
 	{
 		InGameController.currentTerrain.ClearMoveBlocks ();
@@ -1041,12 +1090,12 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 			}
 		}
 	}
-	public void ShowDetailedInfo ()
-	{
-		GUI.BeginGroup (new Rect (Screen.width / 2 - infoBoxWidth, Screen.height / 2 - infoBoxHeight, 2 * infoBoxWidth, 2 * infoBoxHeight));
-		GUI.TextArea (new Rect (0, 0, 2 * infoBoxWidth, 2 * infoBoxHeight), description);
-		GUI.EndGroup ();
-	}
+	/// <summary>
+	/// Returns whether retaliator can retaliate (counter-attack) defender
+	/// </summary>
+	/// <returns><c>true</c> if can retaliate the specified retaliator defender; otherwise, <c>false</c>.</returns>
+	/// <param name="retaliator">Retaliator.</param>
+	/// <param name="defender">Defender.</param>
 	public static bool CanRetaliate (UnitAttackType retaliator, UnitAttackType defender)
 	{
 		if (defender == UnitAttackType.Indirect || retaliator == UnitAttackType.Indirect) {
@@ -1054,7 +1103,13 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 		}
 		return true;
 	}
-	public bool TakeDamage (int inDamage, bool leaveAlive)
+	/// <summary>
+	/// Takes the damage.
+	/// </summary>
+	/// <returns><c>true</c>, if damage was taken, <c>false</c> otherwise.</returns>
+	/// <param name="inDamage">In damage.</param>
+	/// <param name="leaveAlive">If set to <c>true</c> leave alive.</param>
+	public bool TakeDamage (int inDamage, bool leaveAlive = false)
 	{
 		health.AddRawHealth (-inDamage);
 		if (leaveAlive) {
@@ -1293,8 +1348,14 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 			}
 		}
 	}
+	/// <summary>
+	/// Joins the units, rounding their health up and returning funds if the health goes over 10.
+	/// </summary>
+	/// <param name="a">The alpha component.</param>
+	/// <param name="b">The blue component.</param>
 	void JoinUnits (UnitController a, UnitController b)
 	{
+		// 'a' will be the outgoing unit, if one is a general unit, make sure it is variable 'a'
 		if (owner.currentGeneralUnit == b) {
 			UnitController temp = b;
 			b = a;
@@ -1310,14 +1371,17 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 		if (a.primaryAmmoRemaining > a.primaryAmmo) {
 			a.primaryAmmoRemaining = a.primaryAmmo;
 		}
-		int remainderHealth = a.health.GetRawHealth () + b.health.GetRawHealth ();
-		a.health.AddRawHealth (b.health.GetRawHealth ());
-		if (remainderHealth > 100) {
-			owner.AddFunds (a.baseCost * Mathf.FloorToInt (((float)remainderHealth - 100) / 10f));
+		int remainderHealth = a.health.PrettyHealth () + b.health.PrettyHealth ();
+		a.health.SetRawHealth (remainderHealth * 10);
+		if (remainderHealth > 10) {
+			owner.AddFunds (a.baseCost * remainderHealth - 10);
 		}
 		owner.DeleteUnitFromGame (b);
 		a.InternalEndTurn ();
 	}
+	/// <summary>
+	/// Resupply this unit.
+	/// </summary>
 	public void Resupply ()
 	{
 		currentFuel = startFuel;
@@ -1329,6 +1393,11 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 		targetedDamageOutline.text = "!";
 		targetedDamageDisplay.transform.rotation = targetedDamageOutline.transform.rotation = Utilities.gameCamera.transform.rotation;
 	}
+	/// <summary>
+	/// Determines whether this unit can carry a unit.
+	/// </summary>
+	/// <returns><c>true</c> if this instance can carry the specified unitToCarry; otherwise, <c>false</c>.</returns>
+	/// <param name="unitToCarry">Unit to carry.</param>
 	public bool CanCarryUnit (UnitController unitToCarry)
 	{
 		if (carriedUnits.Count < transportCapacity) {
@@ -1353,6 +1422,9 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 		}
 		return false;
 	}
+	/// <summary>
+	/// Resets certain turn state variables
+	/// </summary>
 	public void ResetUnit ()
 	{
 		if (owner == InGameController.GetPlayer (InGameController.currentPlayer)) {
@@ -1369,7 +1441,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 			HideAttackRange ();
 		}
 	}
-	public float CalculateFuelCost ()
+	float CalculateFuelCost ()
 	{
 		return currentPathDistance;
 	}
@@ -1415,6 +1487,12 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 		}
 		return pathCost;
 	}
+	/// <summary>
+	/// Used by the AI to select an optimal attack target for this unit
+	/// </summary>
+	/// <returns>The select best attack object.</returns>
+	/// <param name="block">Block.</param>
+	/// <param name="ao">Ao.</param>
 	public float AISelectBestAttackObject (TerrainBlock block, out AttackableObject ao)
 	{
 		List<AttackableObject> possibleTargets = CalculatePossibleTargets (block);
@@ -1438,6 +1516,11 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 		}
 		return bestTargetedUnitDamage;
 	}
+	/// <summary>
+	/// Executes an order for the unit
+	/// </summary>
+	/// <param name="order">Order.</param>
+	/// <param name="trueOrder">If set to <c>true</c> true order.</param>
 	public void AIDoOrder (AIPlayerMedium.PositionEvaluation order, bool trueOrder)
 	{
 		switch (order.bestOrder) {
@@ -1558,6 +1641,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 			}
 		}
 	}
+	
 	void AIBuildBridge ()
 	{
 		List<TerrainBlock> potentialBridgeBlocks = new List<TerrainBlock> ();
@@ -1575,6 +1659,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 			prop.StartConstruction ();
 		}
 	}
+	
 	void AIUnload ()
 	{
 		int maxIterations = carriedUnits.Count;
@@ -1606,6 +1691,10 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 	{
 		ChangeState (UnitState.UnMoved, UnitState.Selected);
 	}
+	/// <summary>
+	/// Moves the unit to a block
+	/// </summary>
+	/// <param name="block">Block.</param>
 	public void AIMoveTo (TerrainBlock block)
 	{
 		GeneratePath (block);
@@ -1622,12 +1711,15 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 	{
 		return health;
 	}
-
+	
 	public UnitName GetUnitClass ()
 	{
 		return unitClass;
 	}
-
+	/// <summary>
+	/// Whether this unit needs resupplying
+	/// </summary>
+	/// <returns><c>true</c>, if resupply was needsed, <c>false</c> otherwise.</returns>
 	public bool NeedsResupply ()
 	{
 		if (GetNormalizedAmmo () < .25f || GetNormalizedFuel () < .25f) {
@@ -1636,6 +1728,12 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 			return false;
 		}
 	}
+	/// <summary>
+	/// Compares two units by a combination of ammo remaining and fuel remaining.
+	/// </summary>
+	/// <returns>The by supply score.</returns>
+	/// <param name="a">The alpha component.</param>
+	/// <param name="b">The blue component.</param>
 	public static int CompareBySupplyScore (UnitController a, UnitController b)
 	{
 		if (a.GetNormalizedAmmo () + a.GetNormalizedFuel () < b.GetNormalizedAmmo () + b.GetNormalizedFuel ()) {
@@ -1644,6 +1742,12 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 			return 1;
 		}
 	}
+	/// <summary>
+	/// Compares two units based on their move priority
+	/// </summary>
+	/// <returns>The by move priority.</returns>
+	/// <param name="a">The alpha component.</param>
+	/// <param name="b">The blue component.</param>
 	public static int CompareByMovePriority (UnitController a, UnitController b)
 	{
 		if (a.AIMovePriority < b.AIMovePriority) {
