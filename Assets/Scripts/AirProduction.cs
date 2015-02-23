@@ -20,12 +20,25 @@ class AirProduction
 	{
 		List<ProductionEngine.ProductionRule> rules = new List<ProductionEngine.ProductionRule> ();
 		rules.Add (BomberRule);
+		rules.Add (InterceptorRule);
+		rules.Add (TacticalFighterRule);
+		rules.Add (LiftCopterRule);
+		rules.Add (AttackCopterRule);
 		return rules;
 	}
 	List<Tuple<UnitName, float>> BomberRule (Instance data, Player thisPlayer)
 	{
 		List<Tuple<UnitName, float>> outList = new List<Tuple<UnitName, float>> ();
-		
+		if (data.enemyAverageUnitCount [(int)UnitName.Interceptor] < data.playerUnitCount [(int)UnitName.Interceptor]) {
+			outList.Add (new Tuple<UnitName, float> (UnitName.CarpetBomber, .16f));
+		}
+		if (data.playerUnitCount [(int)UnitName.TacticalFighter] + data.playerUnitCount [(int)UnitName.Interceptor] > 0) {
+			outList.Add (new Tuple<UnitName, float> (UnitName.CarpetBomber, .2f));
+		}
+		if (data.enemyAverageUnitCount [(int)UnitName.MediumTank] + data.enemyAverageUnitCount [(int)UnitName.Missiles]
+			+ data.enemyAverageUnitCount [(int)UnitName.Rockets] > 2) {
+			outList.Add (new Tuple<UnitName, float> (UnitName.CarpetBomber, .45f));
+		}
 		return outList;
 	}
 	/// <summary>
@@ -68,6 +81,39 @@ class AirProduction
 		} else if (data.playerUnitCount [(int)UnitName.TacticalFighter] < 5) {
 			outList.Add (new Tuple<UnitName, float> (UnitName.TacticalFighter, .33f));
 		}
+		return outList;
+	}
+	/// <summary>
+	/// Production rule for lift copters
+	/// </summary>
+	/// <returns>The fighter rule.</returns>
+	/// <param name="data">Data.</param>
+	/// <param name="thisPlayer">This player.</param>
+	List<Tuple<UnitName, float>> LiftCopterRule (Instance data, Player thisPlayer)
+	{
+		List<Tuple<UnitName, float>> outList = new List<Tuple<UnitName, float>> ();
+		if (InGameController.currentTurn < 5) {
+			if (data.playerUnitCount [(int)UnitName.LiftCopter] < 2) {
+				outList.Add (new Tuple<UnitName, float> (UnitName.LiftCopter, 1));
+			}
+		} else {
+			if (data.neutralUnitCount [(int)UnitName.City] + data.neutralUnitCount [(int)UnitName.Airport] + 
+				data.neutralUnitCount [(int)UnitName.Factory] + data.neutralUnitCount [(int)UnitName.Shipyard] > 4) {
+				outList.Add (new Tuple<UnitName, float> (UnitName.LiftCopter, .33f));
+			}
+		}
+		return outList;
+	}
+	/// <summary>
+	/// Attack copter production rule
+	/// </summary>
+	/// <returns>The copter rule.</returns>
+	/// <param name="data">Data.</param>
+	/// <param name="thisPlayer">This player.</param>
+	List<Tuple<UnitName, float>> AttackCopterRule (Instance data, Player thisPlayer)
+	{
+		List<Tuple<UnitName, float>> outList = new List<Tuple<UnitName, float>> ();
+		
 		return outList;
 	}
 }

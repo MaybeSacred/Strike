@@ -176,12 +176,12 @@ class GroundProductionGeneral
 				
 			// Build more infantry if theres a lot of buildings left to capture and move them out
 			if (data.mapData.cities + data.mapData.factories + data.mapData.airports + data.mapData.shipyards > 
-				.7f * (data.enemyAverageUnitCount [(int)UnitName.City] + data.enemyAverageUnitCount [(int)UnitName.Airport] + 
+				1.25f * (data.enemyAverageUnitCount [(int)UnitName.City] + data.enemyAverageUnitCount [(int)UnitName.Airport] + 
 				data.enemyAverageUnitCount [(int)UnitName.Factory] + data.enemyAverageUnitCount [(int)UnitName.Shipyard] + 
 				data.playerUnitCount [(int)UnitName.City] + data.playerUnitCount [(int)UnitName.Airport] + 
 				data.playerUnitCount [(int)UnitName.Factory] + data.playerUnitCount [(int)UnitName.Shipyard])) {
 				if (data.playerUnitCount [(int)UnitName.Infantry] <= 4) {
-					outList.Add (new Tuple<UnitName, float> (UnitName.Infantry, .5f));
+					outList.Add (new Tuple<UnitName, float> (UnitName.Infantry, .4f));
 				}
 				if (data.playerUnitCount [(int)UnitName.Stinger] <= 3) {
 					outList.Add (new Tuple<UnitName, float> (UnitName.Stinger, .6f));
