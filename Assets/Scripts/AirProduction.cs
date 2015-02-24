@@ -24,6 +24,8 @@ class AirProduction
 		rules.Add (TacticalFighterRule);
 		rules.Add (LiftCopterRule);
 		rules.Add (AttackCopterRule);
+		rules.Add (UAVRule);
+		rules.Add (AerialInteractionRule);
 		return rules;
 	}
 	List<Tuple<UnitName, float>> BomberRule (Instance data, Player thisPlayer)
@@ -113,7 +115,52 @@ class AirProduction
 	List<Tuple<UnitName, float>> AttackCopterRule (Instance data, Player thisPlayer)
 	{
 		List<Tuple<UnitName, float>> outList = new List<Tuple<UnitName, float>> ();
-		
+		if (data.playerUnitCount [(int)UnitName.AttackCopter] < 2) {
+			outList.Add (new Tuple<UnitName, float> (UnitName.AttackCopter, .5f));
+		}
+		return outList;
+	}
+	/// <summary>
+	/// Rule for production of UAV
+	/// </summary>
+	/// <returns>The rule.</returns>
+	/// <param name="data">Data.</param>
+	/// <param name="thisPlayer">This player.</param>
+	List<Tuple<UnitName, float>> UAVRule (Instance data, Player thisPlayer)
+	{
+		List<Tuple<UnitName, float>> outList = new List<Tuple<UnitName, float>> ();
+		if (Utilities.fogOfWarEnabled) {
+			if (data.playerUnitCount [(int)UnitName.UAV] < 2) {
+				outList.Add (new Tuple<UnitName, float> (UnitName.UAV, 1));
+			}
+		}
+		return outList;
+	}
+	/// <summary>
+	/// Defines interaction between aerial unit production
+	/// </summary>
+	/// <returns>The interaction rule.</returns>
+	/// <param name="data">Data.</param>
+	/// <param name="thisPlayer">This player.</param>
+	List<Tuple<UnitName, float>> AerialInteractionRule (Instance data, Player thisPlayer)
+	{
+		List<Tuple<UnitName, float>> outList = new List<Tuple<UnitName, float>> ();
+		float averageEnemyAAUnits = data.enemyAverageUnitCount [(int)UnitName.AATank] + data.enemyAverageUnitCount [(int)UnitName.Missiles];
+		if (averageEnemyAAUnits > 4) {
+			outList.Add (new Tuple<UnitName, float> (UnitName.TacticalFighter, .07f * averageEnemyAAUnits));
+			outList.Add (new Tuple<UnitName, float> (UnitName.CarpetBomber, -.03f * averageEnemyAAUnits));
+		}
+		float enemyInfantry = data.enemyAverageUnitCount [(int)UnitName.Infantry] + data.enemyAverageUnitCount [(int)UnitName.Mortar] +
+			data.enemyAverageUnitCount [(int)UnitName.Stinger] + data.enemyAverageUnitCount [(int)UnitName.Sniper];
+		float enemyVehicles = data.enemyAverageUnitCount [(int)UnitName.LightTank] + data.enemyAverageUnitCount [(int)UnitName.MediumTank] +
+			data.enemyAverageUnitCount [(int)UnitName.Rockets];
+		if (enemyInfantry > enemyVehicles + averageEnemyAAUnits + 5) {
+			outList.Add (new Tuple<UnitName, float> (UnitName.AttackCopter, .05f * (enemyInfantry - enemyVehicles - averageEnemyAAUnits)));
+			outList.Add (new Tuple<UnitName, float> (UnitName.TacticalFighter, -.05f * (enemyInfantry - enemyVehicles - averageEnemyAAUnits)));
+		} else if (enemyInfantry < enemyVehicles + averageEnemyAAUnits - 3) {
+			outList.Add (new Tuple<UnitName, float> (UnitName.AttackCopter, -.05f * (enemyInfantry - enemyVehicles - averageEnemyAAUnits)));
+			outList.Add (new Tuple<UnitName, float> (UnitName.TacticalFighter, .05f * (enemyInfantry - enemyVehicles - averageEnemyAAUnits)));
+		}
 		return outList;
 	}
 }
