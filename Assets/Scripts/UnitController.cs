@@ -361,7 +361,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 				for (int i = 0; i < block.adjacentBlocks.Length; i++) {
 					if (!block.adjacentBlocks [i].IsOccupied ()) {
 						foreach (UnitController uc in carriedUnits) {
-							if (block.UnitMovementCost (uc.moveClass) > 0 && awaitingOrdersBlock.adjacentBlocks [i].UnitMovementCost (uc.moveClass) > 0 && !possibleOrders.Contains (UnitOrderOptions.Unload)) {
+							if (block.UnitMovementCost (uc.moveClass) > 0 && block.adjacentBlocks [i].UnitMovementCost (uc.moveClass) > 0 && !possibleOrders.Contains (UnitOrderOptions.Unload)) {
 								possibleOrders.Add (UnitOrderOptions.Unload);
 								break;
 							}

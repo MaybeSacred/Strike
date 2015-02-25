@@ -19,10 +19,12 @@ public class AIPlayerMedium : AIPlayer
 	public bool produceRandom;
 	private Dictionary<UnitName, List<UnitController>> supportUnits;
 	ProductionEngine productionEngine;
-	
+	public GameObject graphicalValueBlock;
+	List<GameObject> blockList;
 	protected override void Awake ()
 	{
 		base.Awake ();
+		blockList = new List<GameObject> ();
 		targetedObjects = new List<AttackableObject> ();
 		if (produceRandom) {
 			productionType = (ProductionTest)System.Enum.GetValues (typeof(ProductionTest)).GetValue (UnityEngine.Random.Range (0, System.Enum.GetNames (typeof(ProductionTest)).Length));
@@ -369,14 +371,20 @@ public class AIPlayerMedium : AIPlayer
 			InGameController.currentTerrain.SetDistancesFromBlockIgnoreIllegalBlocks (currentUnit, currentUnit.AITargetBlock);
 		}
 		int totalPositionsEvaluated = 0;
+		blockList = new List<GameObject> ();
 		List<TerrainBlock> blocks = InGameController.currentTerrain.MoveableBlocks (currentUnit.currentBlock, currentUnit, currentUnit.EffectiveMoveRange ());
+		Debug.Log (blocks.Count);
 		foreach (TerrainBlock block in blocks) {
 			PositionEvaluation temp = RecursiveEvaluatePosition (block);
+			GameObject go = Instantiate (graphicalValueBlock, block.transform.position, Quaternion.identity) as GameObject;
+			go.transform.Translate (0, temp.value, 0);
+			blockList.Add (go);
 			if (temp.value > bestValueSoFar.value) {
 				bestValueSoFar = temp;
 				bestBlockSoFar = block;
 			}
 		}
+		Debug.Break ();
 		//Debug.Log(currentUnit.unitClass + " Positions evaluated: " + totalPositionsEvaluated);// + " / positions at depth 0: " + blocks.Count);
 		return bestBlockSoFar;
 	}
@@ -660,64 +668,6 @@ public class AIPlayerMedium : AIPlayer
 		MediumUnitProductionRandom ();
 	}
 	
-	/*void MediumUnitProductionReinforcement()
-	{
-		if(producingUnits)
-		{
-			List<UnitNames> rankedNames = GetComponent<MouseEventHandler>().CheckTestInstanceClassificationReinforcement();
-			string unitsSelected = "";
-			if(rankedNames != null)
-			{
-				for(int i = 0; i < rankedNames.Count; i++)
-				{
-					unitsSelected += rankedNames[i].ToString() + ", ";
-				}
-				//Debug.Log(unitsSelected);
-				for(int j = 0; j < 3; j++)
-				{
-					UnitNames rand = rankedNames[UnityEngine.Random.Range(0, rankedNames.Count)];
-					//Debug.Log(rand);
-					if(makeSupplyLand)
-					{
-						rand = UnitNames.SupplyTank;
-						makeSupplyLand = false;
-					}
-					else if(makeSupplySea)
-					{
-						rand = UnitNames.SupplyShip;
-						makeSupplySea = false;
-					}
-					else if(makeTransport)
-					{
-						rand = transportToMake;
-						makeTransport = false;
-					}
-					if(((UnitController)Utilities.GetPrefabFromUnitName(rand)).baseCost <= funds)
-					{
-						for(int i = 0; i < properties.Count; i++)
-						{
-							if(properties[i].currentState == UnitState.UnMoved && !properties[i].GetOccupyingBlock().IsOccupied() && properties[i].CanProduceUnit(rand))
-							{
-								properties[i].AIProduceUnit(rand);
-								break;
-							}
-						}
-						break;
-					}
-				}
-				productionAttempts++;
-				producingUnits = false;
-			}
-		}
-		else
-		{
-			if(productionAttempts < producingProperties)
-			{
-				GetComponent<MouseEventHandler>().StartTestInstanceReinforcement();
-				producingUnits = true;
-			}
-		}
-	}*/
 	void MediumUnitProductionRandom ()
 	{
 		if (producingUnits) {
@@ -749,6 +699,7 @@ public class AIPlayerMedium : AIPlayer
 			}
 		}
 	}
+	
 	void SortPropertiesByHQDistance (MovementType moveType)
 	{
 		for (int i = 0; i < properties.Count; i++) {
@@ -756,55 +707,7 @@ public class AIPlayerMedium : AIPlayer
 		}
 		properties.Sort (Property.CompareByDistanceFromEnemyHQ);
 	}
-	/*void MediumUnitProduction()
-	{
-		if(producingUnits)
-		{
-			/*UnitNames rand = GetComponent<MouseEventHandler>().CheckTestInstanceClassification();
-			if(rand != UnitNames.Headquarters)
-			{
-				if(((UnitController)Utilities.GetPrefabFromUnitName(rand)).baseCost <= funds)
-				{
-					for(int i = 0; i < properties.Count; i++)
-					{
-						if(properties[i].currentState == UnitState.UnMoved && !properties[i].GetOccupyingBlock().IsOccupied() && properties[i].CanProduceUnit(rand))
-						{
-							properties[i].AIProduceUnit(rand);
-							break;
-						}
-					}
-				}
-				productionAttempts++;
-				producingUnits = false;
-			}*/
-	/*List<UnitNames> rankedNames = GetComponent<MouseEventHandler>().CheckTestInstanceClassificationRanked();
-			if(rankedNames != null)
-			{
-				UnitNames rand = rankedNames[UnityEngine.Random.Range(0, rankedNames.Count-1)];
-				if(((UnitController)Utilities.GetPrefabFromUnitName(rand)).baseCost <= funds)
-				{
-					for(int i = 0; i < properties.Count; i++)
-					{
-						if(properties[i].currentState == UnitState.UnMoved && !properties[i].GetOccupyingBlock().IsOccupied() && properties[i].CanProduceUnit(rand))
-						{
-							properties[i].AIProduceUnit(rand);
-							break;
-						}
-					}
-				}
-				productionAttempts++;
-				producingUnits = false;
-			}
-		}
-		else
-		{
-			if(productionAttempts < producingProperties)
-			{
-				GetComponent<MouseEventHandler>().StartTestInstance(InGameController.CreateInstance(UnitNames.Infantry,  false));
-				producingUnits = true;
-			}
-		}
-	}*/
+	
 	void MediumAIUpdate ()
 	{
 		if (currentUnit != null) {
@@ -827,6 +730,10 @@ public class AIPlayerMedium : AIPlayer
 			case UnitState.FinishedMove:
 				{
 					currentUnit = null;
+					foreach (GameObject go in blockList) {
+						Destroy (go);
+					}
+					blockList.Clear ();
 					break;
 				} 
 			case UnitState.AwaitingOrder:

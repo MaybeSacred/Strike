@@ -413,7 +413,7 @@ public class TerrainBuilder : MonoBehaviour
 	/// <param name="maxDistance">Max distance.</param>
 	public List<TerrainBlock> MinDistanceToTiles (UnitController unit, TerrainBlock startTile, float maxDistance)
 	{
-		List<TerrainBlock> closedSet = new List<TerrainBlock> ();
+		HashSet<TerrainBlock> closedSet = new HashSet<TerrainBlock> ();
 		PriorityQueues.PriorityQueue<TerrainBlock> openSet = new PriorityQueues.PriorityQueue<TerrainBlock> ();
 		foreach (TerrainBlock block in terrain) {
 			block.gCost = block.fCost = float.PositiveInfinity;
@@ -422,7 +422,6 @@ public class TerrainBuilder : MonoBehaviour
 		startTile.gCost = 0;
 		openSet.Enqueue (startTile);
 		List<TerrainBlock> outList = new List<TerrainBlock> ();
-		outList.Add (startTile);
 		TerrainBlock current;
 		while (openSet.Count() > 0) {
 			current = openSet.Dequeue ();
@@ -439,14 +438,19 @@ public class TerrainBuilder : MonoBehaviour
 							current.adjacentBlocks [i].gCost = tempG;
 							if (!openSet.Contains (current.adjacentBlocks [i])) {
 								openSet.Enqueue (current.adjacentBlocks [i]);
-								outList.Add (current.adjacentBlocks [i]);
 							} else {
+								Debug.Log ("here");
 								openSet.Remove (current.adjacentBlocks [i]);
 								openSet.Enqueue (current.adjacentBlocks [i]);
 							}
 						}
 					}
 				}
+			}
+		}
+		foreach (TerrainBlock t in closedSet) {
+			if (t.gCost <= maxDistance) {
+				outList.Add (t);
 			}
 		}
 		return outList;

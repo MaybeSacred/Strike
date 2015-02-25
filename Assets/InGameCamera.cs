@@ -117,7 +117,7 @@ public class InGameCamera : MonoBehaviour
 		if (lookAtPoint.z < InGameController.currentTerrain.lowerZMapBound + cameraBoundsFactor * transform.position.y) {
 			lookAtPoint = new Vector3 (lookAtPoint.x, lookAtPoint.y, InGameController.currentTerrain.lowerZMapBound + cameraBoundsFactor * transform.position.y);
 		} else if (lookAtPoint.z > InGameController.currentTerrain.upperZMapBound + upperZExtraPadding - cameraBoundsFactor * transform.position.y) {
-			lookAtPoint = new Vector3 (lookAtPoint.x, lookAtPoint.y, InGameController.currentTerrain.upperZMapBound - cameraBoundsFactor * transform.position.y);
+			lookAtPoint = new Vector3 (lookAtPoint.x, lookAtPoint.y, InGameController.currentTerrain.upperZMapBound + upperZExtraPadding - cameraBoundsFactor * transform.position.y);
 		}
 	}
 }
