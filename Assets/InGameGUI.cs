@@ -49,6 +49,9 @@ public class InGameGUI : MonoBehaviour
 	
 	// Displays the current player's general power
 	public GeneralBarView generalBarView;
+	
+	// Displays a health bar
+	public HealthBarView healthBarView;
 	void Awake ()
 	{
 		instance = this;
@@ -139,9 +142,15 @@ public class InGameGUI : MonoBehaviour
 			Pause ();
 		} else {
 			if (unitMousedOver != null) {
-				ShowHealthDisplay (unitMousedOver.health.PrettyHealth (), unitMousedOver.transform.position);
+				healthBarView.gameObject.SetActive (true);
+				healthBarView.SetPosition (unitMousedOver.transform.position);
+				healthBarView.SetHealthDisplayed (unitMousedOver.health.PrettyHealth ());
 			} else if (propertyMousedOver != null) {
-				ShowHealthDisplay (propertyMousedOver.health.PrettyHealth (), propertyMousedOver.transform.position);
+				healthBarView.gameObject.SetActive (true);
+				healthBarView.SetPosition (propertyMousedOver.transform.position);
+				healthBarView.SetHealthDisplayed (propertyMousedOver.health.PrettyHealth ());
+			} else {
+				healthBarView.gameObject.SetActive (false);
 			}
 		}
 	}
@@ -216,22 +225,6 @@ public class InGameGUI : MonoBehaviour
 	public void ForceQuitSkirmish ()
 	{
 		InGameController.QuitSkirmish ();
-	}
-	/// <summary>
-	/// Shows the health display for a unit or property
-	/// </summary>
-	/// <param name="health">Health.</param>
-	/// <param name="placeToDraw">Place to draw.</param>
-	public void ShowHealthDisplay (int health, Vector3 placeToDraw)
-	{
-		int numberOfHP = health;
-		Vector3 unitPointOnScreen = Camera.main.WorldToScreenPoint (placeToDraw);
-		float imageWidth = Mathf.Round (48 / Mathf.Pow (unitPointOnScreen.z, .75f));
-		GUI.BeginGroup (new Rect (unitPointOnScreen.x - imageWidth * 5, Screen.height - unitPointOnScreen.y + imageWidth + 8, 10 * imageWidth, imageWidth * 2));
-		for (int i = 0; i < numberOfHP; i++) {
-			GUI.Label (new Rect (i * imageWidth, 0, imageWidth, imageWidth * 2), Utilities.healthPoint [i]);
-		}
-		GUI.EndGroup ();
 	}
 	/// <summary>
 	/// Displays the pause menu

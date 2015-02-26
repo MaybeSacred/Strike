@@ -116,7 +116,7 @@ class AirProduction
 	{
 		List<Tuple<UnitName, float>> outList = new List<Tuple<UnitName, float>> ();
 		if (data.playerUnitCount [(int)UnitName.AttackCopter] < 2) {
-			outList.Add (new Tuple<UnitName, float> (UnitName.AttackCopter, .5f));
+			outList.Add (new Tuple<UnitName, float> (UnitName.AttackCopter, 1f));
 		}
 		return outList;
 	}
