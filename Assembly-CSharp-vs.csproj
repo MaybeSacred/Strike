@@ -50,6 +50,7 @@
      <Compile Include="Assets\Editor Default Resources\MapDataDummy.cs" />
      <Compile Include="Assets\Fantasy Skybox FREE\Scripts\FSPlayer.cs" />
      <Compile Include="Assets\GeneralBarView.cs" />
+     <Compile Include="Assets\HealthBarView.cs" />
      <Compile Include="Assets\IStructuralComparable.cs" />
      <Compile Include="Assets\IStructuralEquatable.cs" />
      <Compile Include="Assets\InGameCamera.cs" />
