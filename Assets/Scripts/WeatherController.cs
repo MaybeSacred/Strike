@@ -24,10 +24,17 @@ public class WeatherController : MonoBehaviour
 	}
 	void Start ()
 	{
+		Vector3 sunEulerAngles = GameObject.Find ("Sun").transform.eulerAngles;
 		for (int i = 0; i < weatherParticles.Length; i++) {
 			weatherParticles [i] = Instantiate (weatherParticles [i]) as ParticleSystem;
 			weatherParticles [i].transform.localScale = new Vector3 ((InGameController.currentTerrain.upperXMapBound - InGameController.currentTerrain.lowerXMapBound) * autoScalingOversizeFactor, (InGameController.currentTerrain.upperZMapBound - InGameController.currentTerrain.lowerZMapBound) * autoScalingOversizeFactor, 1);
-			weatherParticles [i].transform.position = new Vector3 ((InGameController.currentTerrain.upperXMapBound - InGameController.currentTerrain.lowerXMapBound) / 2, 10, (InGameController.currentTerrain.upperZMapBound - InGameController.currentTerrain.lowerZMapBound) / 2);
+			// If clear skies system
+			if (i == 0) {
+				weatherParticles [i].transform.position = new Vector3 ((InGameController.currentTerrain.upperXMapBound - InGameController.currentTerrain.lowerXMapBound) / 2, 7, (InGameController.currentTerrain.upperZMapBound - InGameController.currentTerrain.lowerZMapBound) / 2);
+				weatherParticles [i].transform.eulerAngles = sunEulerAngles;
+			} else {
+				weatherParticles [i].transform.position = new Vector3 ((InGameController.currentTerrain.upperXMapBound - InGameController.currentTerrain.lowerXMapBound) / 2, 10, (InGameController.currentTerrain.upperZMapBound - InGameController.currentTerrain.lowerZMapBound) / 2);
+			}
 			weatherParticles [i].particleSystem.emissionRate *= (InGameController.currentTerrain.upperXMapBound - InGameController.currentTerrain.lowerXMapBound) * (InGameController.currentTerrain.upperZMapBound - InGameController.currentTerrain.lowerZMapBound);
 			weatherParticles [i].particleSystem.maxParticles = Mathf.RoundToInt (weatherParticles [i].particleSystem.emissionRate * weatherParticles [i].particleSystem.startLifetime);
 			weatherParticles [i].particleSystem.Stop ();
