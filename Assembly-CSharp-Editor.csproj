@@ -47,7 +47,10 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Editor\MapDataExporter.cs" />
+     <None Include="Assets\Plugins\Editor\Vexe\LICENSE.txt" />
+     <None Include="Assets\Plugins\Vexe\HISTORY.txt" />
      <None Include="Assets\Standard Assets\Particles\Sources\Shaders\Particle Alpha Blend (Queue +100).shader" />
+     <None Include="Assets\Plugins\Vexe\LICENSE.txt" />
      <None Include="Assets\Data\log.txt" />
      <None Include="Assets\Models\readme.txt" />
      <None Include="Assets\Models\Submarine\readme.txt" />
@@ -55,6 +58,7 @@
      <None Include="Assets\Models\Boomer\S_o_f\readme (instructions).txt" />
      <None Include="Assets\Materials\ausaf.txt" />
      <None Include="Assets\Fantasy Skybox FREE\Readme\Readme.txt" />
+     <None Include="Assets\Plugins\Vexe\DLLs\vRuntime\vRuntime.xml" />
      <None Include="Assets\Models\S_o_f\readme (instructions).txt" />
      <None Include="Assets\Models\Halo ODST\Readme.txt" />
      <None Include="Assets\Data\naughty.txt" />
@@ -67,6 +71,18 @@
  <Reference Include="UnityEditor.Graphs">
  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/Managed/UnityEditor.Graphs.dll</HintPath>
  </Reference>
+ <Reference Include="vRuntime">
+ <HintPath>C:/Users/Jon/Documents/GitHub/strike/Assets/Plugins/Vexe/DLLs/vRuntime/vRuntime.dll</HintPath>
+ </Reference>
+ <Reference Include="vEditor">
+ <HintPath>C:/Users/Jon/Documents/GitHub/strike/Assets/Plugins/Editor/Vexe/DLLs/vEditor/vEditor.dll</HintPath>
+ </Reference>
+ <Reference Include="Fasterflect">
+ <HintPath>C:/Users/Jon/Documents/GitHub/strike/Assets/Plugins/Vexe/DLLs/Fasterflect/Fasterflect.dll</HintPath>
+ </Reference>
+ <Reference Include="FullSerializer">
+ <HintPath>C:/Users/Jon/Documents/GitHub/strike/Assets/Plugins/Vexe/DLLs/FullSerializer/FullSerializer.dll</HintPath>
+ </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Assembly-CSharp-firstpass.csproj">
@@ -75,6 +91,8 @@
       <Project>{A44830D7-745F-44A4-E97C-4A83551EF7B4}</Project>      <Name>Assembly-UnityScript-firstpass</Name>    </ProjectReference>
     <ProjectReference Include="Assembly-CSharp.csproj">
       <Project>{20BE7854-1BB8-151F-963C-41833E97108E}</Project>      <Name>Assembly-CSharp</Name>    </ProjectReference>
+    <ProjectReference Include="Assembly-CSharp-Editor-firstpass.csproj">
+      <Project>{74AD908D-BF43-8645-499E-150C74046E5A}</Project>      <Name>Assembly-CSharp-Editor-firstpass</Name>    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

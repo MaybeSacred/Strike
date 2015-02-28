@@ -95,6 +95,7 @@
      <Compile Include="Assets\Scripts\SkirmishEndMenu.cs" />
      <Compile Include="Assets\Scripts\SkirmishMenuViewer.cs" />
      <Compile Include="Assets\Scripts\TextureScale.cs" />
+     <Compile Include="Assets\Scripts\TooltipData.cs" />
      <Compile Include="Assets\Scripts\Tuple.cs" />
      <Compile Include="Assets\Scripts\UnitController.cs" />
      <Compile Include="Assets\Scripts\UnitPropertyModifier.cs" />
@@ -107,9 +108,13 @@
      <Compile Include="Assets\TerrainBuilder.cs" />
      <Compile Include="Assets\TerrainGameView.cs" />
      <Compile Include="Assets\Tooltip.cs" />
+     <Compile Include="Assets\TooltipDisplayer.cs" />
      <Compile Include="Assets\UnitGameView.cs" />
      <Compile Include="Assets\WeatherToggle.cs" />
+     <None Include="Assets\Plugins\Editor\Vexe\LICENSE.txt" />
+     <None Include="Assets\Plugins\Vexe\HISTORY.txt" />
      <None Include="Assets\Standard Assets\Particles\Sources\Shaders\Particle Alpha Blend (Queue +100).shader" />
+     <None Include="Assets\Plugins\Vexe\LICENSE.txt" />
      <None Include="Assets\Data\log.txt" />
      <None Include="Assets\Models\readme.txt" />
      <None Include="Assets\Models\Submarine\readme.txt" />
@@ -117,6 +122,7 @@
      <None Include="Assets\Models\Boomer\S_o_f\readme (instructions).txt" />
      <None Include="Assets\Materials\ausaf.txt" />
      <None Include="Assets\Fantasy Skybox FREE\Readme\Readme.txt" />
+     <None Include="Assets\Plugins\Vexe\DLLs\vRuntime\vRuntime.xml" />
      <None Include="Assets\Models\S_o_f\readme (instructions).txt" />
      <None Include="Assets\Models\Halo ODST\Readme.txt" />
      <None Include="Assets\Data\naughty.txt" />
@@ -125,6 +131,15 @@
  </Reference>
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/4.6.1/UnityEngine.UI.dll</HintPath>
+ </Reference>
+ <Reference Include="vRuntime">
+ <HintPath>C:/Users/Jon/Documents/GitHub/strike/Assets/Plugins/Vexe/DLLs/vRuntime/vRuntime.dll</HintPath>
+ </Reference>
+ <Reference Include="Fasterflect">
+ <HintPath>C:/Users/Jon/Documents/GitHub/strike/Assets/Plugins/Vexe/DLLs/Fasterflect/Fasterflect.dll</HintPath>
+ </Reference>
+ <Reference Include="FullSerializer">
+ <HintPath>C:/Users/Jon/Documents/GitHub/strike/Assets/Plugins/Vexe/DLLs/FullSerializer/FullSerializer.dll</HintPath>
  </Reference>
   </ItemGroup>
   <ItemGroup>
