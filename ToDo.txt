@@ -3,10 +3,7 @@ collect statistics about unit effectiveness
 com towrs need boost range visible
 save feature
 better general power - should flash when ready
-remove second gui panel if same player
-puase menu - controls
-fix health bars
 adjust menu items for screen size - reduce text size
-add graphic to visualize AI tile scores
-more distinction between weather effects - add text for current weather
 display turn
+display keys for play - create buttons for mobile-friendly - remove right-click interactions
+add tooltip display for gui elements

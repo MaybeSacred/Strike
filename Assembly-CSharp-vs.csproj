@@ -106,6 +106,7 @@
      <Compile Include="Assets\TerrainBlock.cs" />
      <Compile Include="Assets\TerrainBuilder.cs" />
      <Compile Include="Assets\TerrainGameView.cs" />
+     <Compile Include="Assets\Tooltip.cs" />
      <Compile Include="Assets\UnitGameView.cs" />
      <Compile Include="Assets\WeatherToggle.cs" />
      <None Include="Assets\Standard Assets\Particles\Sources\Shaders\Particle Alpha Blend (Queue +100).shader" />
