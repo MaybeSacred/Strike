@@ -71,12 +71,6 @@
  <Reference Include="UnityEditor.UI">
  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/4.6.1/Editor/UnityEditor.UI.dll</HintPath>
  </Reference>
- <Reference Include="UnityEditor.Graphs">
- <HintPath>C:/Program Files (x86)/Unity/Editor/Data/Managed/UnityEditor.Graphs.dll</HintPath>
- </Reference>
- <Reference Include="vRuntime">
- <HintPath>C:/Users/Jon/Documents/GitHub/strike/Assets/Plugins/Vexe/DLLs/vRuntime/vRuntime.dll</HintPath>
- </Reference>
  <Reference Include="vEditor">
  <HintPath>C:/Users/Jon/Documents/GitHub/strike/Assets/Plugins/Editor/Vexe/DLLs/vEditor/vEditor.dll</HintPath>
  </Reference>
@@ -85,6 +79,12 @@
  </Reference>
  <Reference Include="FullSerializer">
  <HintPath>C:/Users/Jon/Documents/GitHub/strike/Assets/Plugins/Vexe/DLLs/FullSerializer/FullSerializer.dll</HintPath>
+ </Reference>
+ <Reference Include="vRuntime">
+ <HintPath>C:/Users/Jon/Documents/GitHub/strike/Assets/Plugins/Vexe/DLLs/vRuntime/vRuntime.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEditor.Graphs">
+ <HintPath>C:/Program Files (x86)/Unity/Editor/Data/Managed/UnityEditor.Graphs.dll</HintPath>
  </Reference>
   </ItemGroup>
   <ItemGroup>

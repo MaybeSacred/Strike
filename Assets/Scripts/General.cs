@@ -24,16 +24,6 @@ public class General : MonoBehaviour
 	public Player owner { get; private set; }
 	private bool isActive;
 	public Texture2D powerGraphic;
-	//public GeneralPower power;
-	/*void OnGUI()
-	{
-		if(isActive && InGameController.GetCurrentPlayer() == owner)
-		{
-			GUI.BeginGroup(new Rect(Screen.width/2 - powerGraphic.width/2, 0, powerGraphic.width*(((float)currentStoredPower)/damageNeededForPower), powerGraphic.height));
-			GUI.Label(new Rect(0, 0, powerGraphic.width, powerGraphic.height), powerGraphic);
-			GUI.EndGroup();
-		}
-	}*/
 	void Awake ()
 	{
 		zoneBlocks = new List<ParticleSystem> (GetBlockCount (zoneSize + zoneSizeBoost));
@@ -41,14 +31,6 @@ public class General : MonoBehaviour
 			zoneBlocks.Add (Instantiate (prototype) as ParticleSystem);
 			zoneBlocks [i].gameObject.SetActive (false);
 		}
-	}
-	void Start ()
-	{
-		
-	}
-	void Update ()
-	{
-		
 	}
 	public void ShowZone (TerrainBlock centerBlock)
 	{
