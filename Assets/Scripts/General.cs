@@ -23,7 +23,7 @@ public class General : MonoBehaviour
 	public ParticleSystem prototype;
 	public Player owner { get; private set; }
 	private bool isActive;
-	public Texture2D powerGraphic;
+	public string description;
 	void Awake ()
 	{
 		zoneBlocks = new List<ParticleSystem> (GetBlockCount (zoneSize + zoneSizeBoost));

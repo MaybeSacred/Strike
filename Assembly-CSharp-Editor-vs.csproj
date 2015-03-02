@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Editor\MapDataExporter.cs" />
+     <Compile Include="Assets\Editor\MapSaveAssetModificationProcessor.cs" />
      <None Include="Assets\Plugins\Editor\Vexe\LICENSE.txt" />
      <None Include="Assets\Plugins\Vexe\HISTORY.txt" />
      <None Include="Assets\Standard Assets\Particles\Sources\Shaders\Particle Alpha Blend (Queue +100).shader" />

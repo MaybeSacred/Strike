@@ -11,7 +11,7 @@ public class TerrainBuilder : MonoBehaviour
 	public List<TerrainBlock>
 		illuminatedMovementRangeBlocks;
 	private List<TerrainBlock> illuminatedMovementRangeBackup;
-	public MapData data;
+	public MapData data{ get; protected set; }
 	// Use this for initialization
 	void Start ()
 	{
@@ -439,7 +439,6 @@ public class TerrainBuilder : MonoBehaviour
 							if (!openSet.Contains (current.adjacentBlocks [i])) {
 								openSet.Enqueue (current.adjacentBlocks [i]);
 							} else {
-								Debug.Log ("here");
 								openSet.Remove (current.adjacentBlocks [i]);
 								openSet.Enqueue (current.adjacentBlocks [i]);
 							}
@@ -722,7 +721,7 @@ public class TerrainBuilder : MonoBehaviour
 				largestZ = blocks [i].transform.position.z;
 			}
 		}
-		MapData outgoingData = new MapData (mapName, Mathf.RoundToInt (largestX) + 1, Mathf.RoundToInt (largestZ) + 1);
+		MapData outgoingData = new MapData (mapName, Mathf.RoundToInt (largestX) + 1, Mathf.RoundToInt (largestZ) + 1, GameObject.Find ("Terrain").GetComponent<TooltipData> ().mouseOverText);
 		List<Vector3Serializer> HQLocations = new List<Vector3Serializer> ();
 		List<Property> properties = new List<Property> ();
 		List<TerrainObject> units = new List<TerrainObject> ();

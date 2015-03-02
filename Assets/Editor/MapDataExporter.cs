@@ -491,7 +491,7 @@ public class MapDataExporter : Editor
 		current.transform.parent = terrain.transform;
 		return current;
 	}
-	public void ExportMapDataToFile ()
+	public static void ExportMapDataToFile ()
 	{
 		GameObject terrain = GameObject.Find ("Terrain");
 		TerrainBlock[] blocks = terrain.GetComponentsInChildren<TerrainBlock> ();
@@ -508,7 +508,7 @@ public class MapDataExporter : Editor
 		sw.Close ();
 		ExportMapNames ();
 	}
-	public void ExportMapNames ()
+	public static void ExportMapNames ()
 	{
 		string[] temp = Directory.GetFiles (Application.dataPath + @"\Maps\", "*.unity");
 		Stream sw = File.Create (Application.dataPath + @"\Maps\MapNames.bin");

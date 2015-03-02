@@ -19,12 +19,12 @@ public class MapData
 	public TerrainObject[][] mapData;
 	public TerrainObject[] properties;
 	public TerrainObject[] units;
-	public string mapName;
+	public string mapName, mapDescription;
 	public float[] blockStatistics;
-	
-	public MapData (string name, int mapX, int mapY)
+	public MapData (string name, int mapX, int mapY, string description)
 	{
 		mapName = name;
+		mapDescription = description;
 		blockStatistics = new float[System.Enum.GetValues (typeof(TERRAINTYPE)).Length];
 		mapData = new TerrainObject[mapX][];
 		for (int i = 0; i < mapData.Length; i++) {
