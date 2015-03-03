@@ -37,7 +37,7 @@ class GroundProductionGeneral
 	{
 		List<Tuple<UnitName, float>> outList = new List<Tuple<UnitName, float>> ();
 		// only activates if turn is less than 4
-		if (InGameController.currentTurn <= 4) {
+		if (InGameController.instance.currentTurn <= 4) {
 			// If we have decent amount of money, build some light vehicles
 			if (thisPlayer.funds >= (Utilities.GetPrefabFromUnitName (UnitName.Stryker) as UnitController).baseCost + 
 				(Utilities.GetPrefabFromUnitName (UnitName.Infantry) as UnitController).baseCost) {
@@ -69,7 +69,7 @@ class GroundProductionGeneral
 	List<Tuple<UnitName, float>> TankGroundRule (Instance data, Player thisPlayer)
 	{
 		List<Tuple<UnitName, float>> outList = new List<Tuple<UnitName, float>> ();
-		if (InGameController.currentTurn >= 5) {
+		if (InGameController.instance.currentTurn >= 5) {
 			// If we're close to building a tank
 			if (thisPlayer.funds >= (Utilities.GetPrefabFromUnitName (UnitName.LightTank) as UnitController).baseCost * .75f) {
 				if (data.enemyAverageUnitCount [(int)UnitName.Infantry] > 3 || data.enemyAverageUnitCount [(int)UnitName.Mortar] > 2 ||
@@ -143,7 +143,7 @@ class GroundProductionGeneral
 	{
 		List<Tuple<UnitName, float>> outList = new List<Tuple<UnitName, float>> ();
 		if (Utilities.fogOfWarEnabled) {
-			if (InGameController.currentTurn > 2 && thisPlayer.units.Count / 8 >= 
+			if (InGameController.instance.currentTurn > 2 && thisPlayer.units.Count / 8 >= 
 				data.playerUnitCount [(int)UnitName.MobileRadar]) {
 				outList.Add (new Tuple<UnitName, float> (UnitName.MobileRadar, 1));
 			}
@@ -160,7 +160,7 @@ class GroundProductionGeneral
 	{
 		List<Tuple<UnitName, float>> outList = new List<Tuple<UnitName, float>> ();
 		// only activates between 2 and 10 turns in
-		if (InGameController.currentTurn > 2 && InGameController.currentTurn < 10) {
+		if (InGameController.instance.currentTurn > 2 && InGameController.instance.currentTurn < 10) {
 			if (thisPlayer.funds >= (Utilities.GetPrefabFromUnitName (UnitName.LightTank) as UnitController).baseCost) {
 				outList.Add (new Tuple<UnitName, float> (UnitName.LightTank, 1));
 			}
@@ -200,7 +200,7 @@ class GroundProductionGeneral
 	{
 		List<Tuple<UnitName, float>> outList = new List<Tuple<UnitName, float>> ();
 		// only activates after 6 turns in
-		if (InGameController.currentTurn > 6) {
+		if (InGameController.instance.currentTurn > 6) {
 			if (thisPlayer.funds >= 10000) {
 				outList.Add (new Tuple<UnitName, float> (UnitName.Rockets, 1));
 				outList.Add (new Tuple<UnitName, float> (UnitName.MediumTank, 1));

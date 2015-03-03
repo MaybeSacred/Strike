@@ -57,11 +57,11 @@ public class TerrainBuilder : MonoBehaviour
 	}
 	public void BuildAIHQDistances ()
 	{
-		for (int i = 1; i < InGameController.NumberOfActivePlayers(); i++) {
+		for (int i = 1; i < InGameController.instance.NumberOfActivePlayers(); i++) {
 			foreach (MovementType k in System.Enum.GetValues(typeof(MovementType))) {
-				MinDistanceToTiles (k, InGameController.GetPlayer (i).hQBlock, 50000);
+				MinDistanceToTiles (k, InGameController.instance.GetPlayer (i).hQBlock, 50000);
 				foreach (TerrainBlock t in terrain) {
-					t.SetDistanceToHQ (InGameController.GetPlayer (i), k);
+					t.SetDistanceToHQ (InGameController.instance.GetPlayer (i), k);
 				}
 			}
 		}

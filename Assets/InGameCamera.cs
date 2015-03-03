@@ -39,12 +39,12 @@ public class InGameCamera : MonoBehaviour
 	
 	void Update ()
 	{
-		if (InGameController.isPaused) {
+		if (InGameController.instance.isPaused) {
 			lookAtPointFollower = transform.position - (attemptedZoomPosition) * (transform.rotation * -Vector3.forward);
 			lookAtPoint = lookAtPointFollower;
 		} else {
 			if (!otherMenuActive) {
-				if (Input.GetMouseButton (0) && !InGameController.UnitSelected ()) {
+				if (Input.GetMouseButton (0) && !InGameController.instance.UnitSelected ()) {
 					scrolling = true;
 					float moveSpeed = (cameraSpeed + 1.5f * transform.position.y) * Time.deltaTime * rightClickMovementSpeed;
 					lookAtPoint -= new Vector3 (Mathf.Sin (eulerAngles.y * Mathf.Deg2Rad), 0, Mathf.Cos (-eulerAngles.y * Mathf.Deg2Rad)) * (Input.mousePosition.y - lastMousePosition.y) * moveSpeed;
@@ -109,15 +109,15 @@ public class InGameCamera : MonoBehaviour
 	
 	private void LookingBoundsCheck ()
 	{
-		if (lookAtPoint.x < InGameController.currentTerrain.lowerXMapBound + cameraBoundsFactor * transform.position.y) {
-			lookAtPoint = new Vector3 (InGameController.currentTerrain.lowerXMapBound + cameraBoundsFactor * transform.position.y, lookAtPoint.y, lookAtPoint.z);
-		} else if (lookAtPoint.x > InGameController.currentTerrain.upperXMapBound - cameraBoundsFactor * transform.position.y) {
-			lookAtPoint = new Vector3 (InGameController.currentTerrain.upperXMapBound - cameraBoundsFactor * transform.position.y, lookAtPoint.y, lookAtPoint.z);
+		if (lookAtPoint.x < InGameController.instance.currentTerrain.lowerXMapBound + cameraBoundsFactor * transform.position.y) {
+			lookAtPoint = new Vector3 (InGameController.instance.currentTerrain.lowerXMapBound + cameraBoundsFactor * transform.position.y, lookAtPoint.y, lookAtPoint.z);
+		} else if (lookAtPoint.x > InGameController.instance.currentTerrain.upperXMapBound - cameraBoundsFactor * transform.position.y) {
+			lookAtPoint = new Vector3 (InGameController.instance.currentTerrain.upperXMapBound - cameraBoundsFactor * transform.position.y, lookAtPoint.y, lookAtPoint.z);
 		}
-		if (lookAtPoint.z < InGameController.currentTerrain.lowerZMapBound + cameraBoundsFactor * transform.position.y) {
-			lookAtPoint = new Vector3 (lookAtPoint.x, lookAtPoint.y, InGameController.currentTerrain.lowerZMapBound + cameraBoundsFactor * transform.position.y);
-		} else if (lookAtPoint.z > InGameController.currentTerrain.upperZMapBound + upperZExtraPadding - cameraBoundsFactor * transform.position.y) {
-			lookAtPoint = new Vector3 (lookAtPoint.x, lookAtPoint.y, InGameController.currentTerrain.upperZMapBound + upperZExtraPadding - cameraBoundsFactor * transform.position.y);
+		if (lookAtPoint.z < InGameController.instance.currentTerrain.lowerZMapBound + cameraBoundsFactor * transform.position.y) {
+			lookAtPoint = new Vector3 (lookAtPoint.x, lookAtPoint.y, InGameController.instance.currentTerrain.lowerZMapBound + cameraBoundsFactor * transform.position.y);
+		} else if (lookAtPoint.z > InGameController.instance.currentTerrain.upperZMapBound + upperZExtraPadding - cameraBoundsFactor * transform.position.y) {
+			lookAtPoint = new Vector3 (lookAtPoint.x, lookAtPoint.y, InGameController.instance.currentTerrain.upperZMapBound + upperZExtraPadding - cameraBoundsFactor * transform.position.y);
 		}
 	}
 }

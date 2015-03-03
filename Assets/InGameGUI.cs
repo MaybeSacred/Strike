@@ -38,6 +38,8 @@ public class InGameGUI : MonoBehaviour
 	public UnityEngine.UI.Button advanceTurnButton;
 	// Move to next player unit
 	public UnityEngine.UI.Button nextUnitButton;
+	// Adds right-click functionality for mobile builds
+	public UnityEngine.UI.Button undoButton;
 	// Pause menu
 	public GameObject pauseMenu;
 	
@@ -64,6 +66,9 @@ public class InGameGUI : MonoBehaviour
 	{
 		advanceTurnButton.onClick.AddListener (() => InGameController.instance.AdvanceTurn ());
 		nextUnitButton.onClick.AddListener (() => InGameController.instance.MoveCameraToNextPlayerUnit ());
+		undoButton.onClick.AddListener (() => {
+			InGameController.instance.SimulateRightClick ();
+		});
 		detailedTextBox.SetActive (false);
 		pauseMenu.SetActive (false);
 		unitSelectionDisplayer.gameObject.SetActive (false);
@@ -138,7 +143,7 @@ public class InGameGUI : MonoBehaviour
 	}
 	void OnGUI ()
 	{
-		if (InGameController.isPaused) {
+		if (InGameController.instance.isPaused) {
 			Pause ();
 		} else {
 			if (unitMousedOver != null) {
@@ -169,7 +174,7 @@ public class InGameGUI : MonoBehaviour
 	/// <param name="hoveredPlayer">Hovered player.</param>
 	public void SetHoveredPlayerDisplay (Player hoveredPlayer)
 	{
-		if (hoveredPlayer != InGameController.GetCurrentPlayer ()) {
+		if (hoveredPlayer != InGameController.instance.GetCurrentPlayer ()) {
 			hoveredPlayerView.gameObject.SetActive (true);
 			hoveredPlayer.SetPlayerGUIView (hoveredPlayerView);
 		}
@@ -181,7 +186,7 @@ public class InGameGUI : MonoBehaviour
 	public void SetPlayerDisplay (Player player)
 	{
 		// Set current player display
-		if (player == InGameController.GetCurrentPlayer ()) {
+		if (player == InGameController.instance.GetCurrentPlayer ()) {
 			SetCurrentPlayerDisplay (player);
 		}// Else check if player is equal to unitMousedOver player
 		else if (unitMousedOver != null) {
@@ -224,14 +229,14 @@ public class InGameGUI : MonoBehaviour
 	/// </summary>
 	public void ForceQuitSkirmish ()
 	{
-		InGameController.QuitSkirmish ();
+		InGameController.instance.QuitSkirmish ();
 	}
 	/// <summary>
 	/// Displays the pause menu
 	/// </summary>
 	public void Pause ()
 	{
-		pauseMenu.SetActive (InGameController.isPaused);
+		pauseMenu.SetActive (InGameController.instance.isPaused);
 	}
 	/// <summary>
 	/// Starts the turn change animation.
@@ -266,7 +271,7 @@ public class InGameGUI : MonoBehaviour
 	/// <param name="level">Level.</param>
 	public void ShowGeneralPower (float level, Player callingPlayer)
 	{
-		if (callingPlayer == InGameController.GetCurrentPlayer ()) {
+		if (callingPlayer == InGameController.instance.GetCurrentPlayer ()) {
 			generalBarView.SetPowerLevel (level);
 		}
 	}

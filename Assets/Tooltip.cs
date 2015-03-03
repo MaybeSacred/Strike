@@ -53,4 +53,14 @@ public class Tooltip : MonoBehaviour
 		}
 		thisRectTransform.SetSizeWithCurrentAnchors (RectTransform.Axis.Vertical, tooltipText.preferredHeight + innerVerticalMargin * 2);
 	}
+	/// <summary>
+	/// Factory method for new tooltip
+	/// </summary>
+	/// <returns>The new tooltip.</returns>
+	/// <param name="tooltipText">Tooltip text.</param>
+	public static GameObject AddNewTooltip (GameObject objectToExtend, string tooltipText)
+	{
+		objectToExtend.AddComponent<TooltipData> ().mouseOverText = tooltipText;
+		return objectToExtend;
+	}
 }

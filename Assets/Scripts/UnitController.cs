@@ -189,7 +189,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 		}
 		modifier = new UnitPropertyModifier ();
 		try {
-			AICachedCurrentBlock = currentBlock = awaitingOrdersBlock = InGameController.currentTerrain.GetBlockAtPos (transform.position);
+			AICachedCurrentBlock = currentBlock = awaitingOrdersBlock = InGameController.instance.currentTerrain.GetBlockAtPos (transform.position);
 		} catch {
 			
 		}
@@ -211,7 +211,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 		targetedDamageOutline.gameObject.SetActive (true);
 		targetedDamageDisplay.text = "";
 		targetedDamageOutline.text = "";
-		InGameController.weather.ApplyCurrentWeatherEffect (this);
+		InGameController.instance.weather.ApplyCurrentWeatherEffect (this);
 		moveIndicatorParticles.transform.position = transform.position + .5f * Vector3.down;
 		moveIndicatorParticles.particleSystem.startColor = owner.mainPlayerColor;
 		moveIndicatorParticles.transform.parent = transform;
@@ -245,7 +245,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 	}
 	public void OnMouseEnterExtra ()
 	{
-		if (currentState == UnitState.UnMoved || !InGameController.GetCurrentPlayer ().Equals (owner) && gameObject.activeSelf) {
+		if (currentState == UnitState.UnMoved || !InGameController.instance.GetCurrentPlayer ().Equals (owner) && gameObject.activeSelf) {
 			
 		}
 	}
@@ -262,7 +262,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 	}
 	public void OnMouseExitExtra ()
 	{
-		InGameController.mouseOverParticles.gameObject.SetActive (false);
+		InGameController.instance.mouseOverParticles.gameObject.SetActive (false);
 	}
 	void OnMouseUp ()
 	{
@@ -270,9 +270,10 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 	}
 	public void OnMouseUpExtra ()
 	{
-		if (InGameController.GetCurrentPlayer () == owner && !InGameController.isPaused && currentState != UnitState.FinishedMove) {
+		//if (InGameController.instance.LeftClick && !InGameController.instance.RightClick) {
+		if (InGameController.instance.GetCurrentPlayer () == owner && !InGameController.instance.isPaused && currentState != UnitState.FinishedMove) {
 			if (!hasUnitSelectedMutex) {
-				hasUnitSelectedMutex = InGameController.AcquireUnitSelectedMutex (this);
+				hasUnitSelectedMutex = InGameController.instance.AcquireUnitSelectedMutex (this);
 			}
 			if (hasUnitSelectedMutex) {
 				switch (currentState) {
@@ -293,6 +294,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 				}
 			}
 		}
+		
 	}
 	public List<UnitOrderOptions> CalculateAwaitingOrderOptions (TerrainBlock block)
 	{
@@ -348,7 +350,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 				for (int i = 0; i < block.adjacentBlocks.Length; i++) {
 					if (!block.adjacentBlocks [i].IsOccupied () && !block.adjacentBlocks [i].HasProperty ()) {
 						if (block.adjacentBlocks [i].typeOfTerrain == TERRAINTYPE.River && owner.CanProduceProperty (UnitName.Bridge)) {
-							TerrainBlock acrossTheRiverBlock = InGameController.currentTerrain.GetBlockAtPos ((block.adjacentBlocks [i].transform.position - block.transform.position) + block.adjacentBlocks [i].transform.position);
+							TerrainBlock acrossTheRiverBlock = InGameController.instance.currentTerrain.GetBlockAtPos ((block.adjacentBlocks [i].transform.position - block.transform.position) + block.adjacentBlocks [i].transform.position);
 							if (acrossTheRiverBlock != null && acrossTheRiverBlock.typeOfTerrain != TERRAINTYPE.River && acrossTheRiverBlock.typeOfTerrain != TERRAINTYPE.Sea) {
 								possibleOrders.Add (UnitOrderOptions.BuildBridge);
 								break;
@@ -383,7 +385,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 	public List<AttackableObject> CalculatePossibleTargets (TerrainBlock block)
 	{
 		List<AttackableObject> list = new List<AttackableObject> ();
-		List<AttackableObject> allUnitsInRange = InGameController.currentTerrain.ObjectsWithinRange (block, minAttackRange, modifier.ApplyModifiers (UnitPropertyModifier.PropertyModifiers.AttackRange, maxAttackRange), this);
+		List<AttackableObject> allUnitsInRange = InGameController.instance.currentTerrain.ObjectsWithinRange (block, minAttackRange, modifier.ApplyModifiers (UnitPropertyModifier.PropertyModifiers.AttackRange, maxAttackRange), this);
 		foreach (AttackableObject ao in allUnitsInRange) {
 			if (ao is UnitController && ((UnitController)ao) != this) {
 				if (!((UnitController)ao).GetOwner ().IsSameSide (owner) && DamageValues.CanAttackUnit (this, (UnitController)ao) && ((UnitController)ao).gameObject.activeSelf) {
@@ -406,11 +408,11 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 				targetedDamageDisplay.text = "";
 				targetedDamageOutline.text = "";
 			}
-			if (showingNextTurnAttackRange && Input.GetMouseButtonUp (1)) {
+			if (showingNextTurnAttackRange && InGameController.instance.RightClick) {
 				HideMoveRange ();
 			}
 		} else if (currentState == UnitState.UnMoved) {
-			if (showingNextTurnAttackRange && Input.GetMouseButtonUp (1)) {
+			if (showingNextTurnAttackRange && InGameController.instance.RightClick) {
 				HideMoveRange ();
 			}
 		} else if (currentState == UnitState.Selected) {
@@ -419,14 +421,14 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 			if (Physics.Raycast (ray, out hit, float.PositiveInfinity, 1)) {
 				TerrainBlock block = hit.collider.GetComponent<TerrainBlock> ();
 				GeneratePath (block);
-				if (Input.GetMouseButtonDown (0)) {
+				if (InGameController.instance.LeftClick && !InGameController.instance.RightClick) {
 					if (!block.IsOccupied () || (((block.occupyingUnit.GetOwner ().IsSameSide (owner) || block.occupyingUnit.GetOwner ().IsNeutralSide ()) && block.occupyingUnit.CanCarryUnit (this))
 						|| (!block.occupyingUnit.gameObject.activeSelf) || block.occupyingUnit.GetOwner () == owner && block.occupyingUnit.health.PrettyHealth () < 10 && block.occupyingUnit.unitClass == unitClass && block.occupyingUnit.carriedUnits.Count < 1 && carriedUnits.Count < 1 && block.occupyingUnit != this)) {
 						ChangeState (UnitState.Selected, UnitState.Moving);
 					}
 				}
 			}
-			if (Input.GetMouseButtonDown (1)) {
+			if (InGameController.instance.RightClick) {
 				ChangeState (UnitState.Selected, UnitState.UnMoved);
 			}
 		} else if (currentState == UnitState.BuildingBridge) {
@@ -437,7 +439,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 					if (awaitingOrdersBlock.adjacentBlocks [i] == hit.collider.GetComponent<TerrainBlock> ()) {
 						if (!awaitingOrdersBlock.adjacentBlocks [i].IsOccupied () && awaitingOrdersBlock.adjacentBlocks [i].typeOfTerrain == TERRAINTYPE.River) {
 							awaitingOrdersBlock.adjacentBlocks [i].DisplaySupportTile ();
-							if (Input.GetMouseButtonDown (0)) {
+							if (InGameController.instance.LeftClick && !InGameController.instance.RightClick) {
 								Property prop = owner.ProduceProperty (UnitName.Bridge, awaitingOrdersBlock.adjacentBlocks [i].transform.position + Vector3.up * .5f, (Mathf.RoundToInt (awaitingOrdersBlock.adjacentBlocks [i].transform.position.x) != Mathf.RoundToInt (awaitingOrdersBlock.transform.position.x) ? Quaternion.AngleAxis (90, Vector3.up) : Quaternion.identity));
 								prop.StartConstruction ();
 								ChangeState (UnitState.BuildingBridge, UnitState.FinishedMove);
@@ -449,7 +451,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 					}
 				}
 			}
-			if (Input.GetMouseButtonDown (1)) {
+			if (InGameController.instance.RightClick) {
 				ChangeState (UnitState.BuildingBridge, UnitState.AwaitingOrder);
 			}
 		} else if (currentState == UnitState.Unloading) {
@@ -461,7 +463,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 						if (currentlyUnloadingUnit != null && !awaitingOrdersBlock.adjacentBlocks [i].IsOccupied () && awaitingOrdersBlock.adjacentBlocks [i].UnitMovementCost (currentlyUnloadingUnit.moveClass) > 0) {
 							currentlyUnloadingUnit.transform.position = awaitingOrdersBlock.adjacentBlocks [i].transform.position + .5f * Vector3.up;
 							currentlyUnloadingUnit.gameObject.SetActive (true);
-							if (Input.GetMouseButtonDown (0)) {
+							if (InGameController.instance.LeftClick && !InGameController.instance.RightClick) {
 								partiallyUnloadedUnits.Add (currentlyUnloadingUnit);
 								currentlyUnloadingUnit.currentBlock = currentlyUnloadingUnit.awaitingOrdersBlock = awaitingOrdersBlock.adjacentBlocks [i];
 								currentlyUnloadingUnit.isInUnit = false;
@@ -476,7 +478,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 					}
 				}
 			}
-			if (Input.GetMouseButtonDown (1)) {
+			if (InGameController.instance.RightClick) {
 				if (partiallyUnloadedUnits.Count == 0) {
 					foreach (UnitController uc in carriedUnits) {
 						uc.gameObject.SetActive (false);
@@ -508,7 +510,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 					UnitController other = hit.collider.GetComponent<TerrainBlock> ().occupyingUnit;
 					if (possibleTargets.Contains (other)) {
 						other.DisplayTargetDamage (DamageValues.CalculateDamage (this, other));
-						if (Input.GetMouseButtonDown (0)) {
+						if (InGameController.instance.LeftClick && !InGameController.instance.RightClick) {
 							ExchangeFire (other);
 							ChangeState (UnitState.TargetingUnit, UnitState.FinishedMove);
 						}
@@ -517,18 +519,18 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 					Property other = hit.collider.GetComponent<TerrainBlock> ().occupyingProperty;
 					if (possibleTargets.Contains (other)) {
 						other.DisplayTargetDamage (DamageValues.CalculateDamage (this, other));
-						if (Input.GetMouseButtonDown (0)) {
+						if (InGameController.instance.LeftClick && !InGameController.instance.RightClick) {
 							ExchangeFire (other);
 							ChangeState (UnitState.TargetingUnit, UnitState.FinishedMove);
 						}
 					}
 				}
 			}
-			if (Input.GetMouseButtonDown (1)) {
+			if (InGameController.instance.RightClick) {
 				ChangeState (UnitState.TargetingUnit, UnitState.AwaitingOrder);
 			}
 		} else if (currentState == UnitState.AwaitingOrder) {
-			if (Input.GetMouseButtonDown (1)) {
+			if (InGameController.instance.RightClick) {
 				ChangeState (UnitState.AwaitingOrder, UnitState.Selected);
 			}
 		}
@@ -575,7 +577,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 				
 			} else {
 				float pathDistance;
-				List<TerrainBlock> possiblePath = InGameController.currentTerrain.PathBetweenTiles (this, currentMoveBlocks [currentMoveBlocks.Count - 1], block, EffectiveMoveRange (), moveClass, out pathDistance);
+				List<TerrainBlock> possiblePath = InGameController.instance.currentTerrain.PathBetweenTiles (this, currentMoveBlocks [currentMoveBlocks.Count - 1], block, EffectiveMoveRange (), moveClass, out pathDistance);
 				if (possiblePath != null && pathDistance + currentPathDistance <= EffectiveMoveRange ()) {
 					TerrainBlock.HideMovementPath (currentMoveBlocks);
 					for (int i = 1; i < possiblePath.Count; i++) {
@@ -585,7 +587,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 					currentPathDistance = RecalculatePathCost ();
 					currentMoveBlocks [0].DisplayMovementPath (currentMoveBlocks);
 				} else {
-					possiblePath = InGameController.currentTerrain.PathBetweenTiles (this, currentBlock, block, EffectiveMoveRange (), moveClass, out pathDistance);
+					possiblePath = InGameController.instance.currentTerrain.PathBetweenTiles (this, currentBlock, block, EffectiveMoveRange (), moveClass, out pathDistance);
 					if (possiblePath != null) {
 						TerrainBlock.HideMovementPath (currentMoveBlocks);
 						currentMoveBlocks = possiblePath;
@@ -622,9 +624,9 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 							owner.selectedGeneral.ShowZone (currentBlock);
 						}
 						if (canMoveAndAttack) {
-							InGameController.currentTerrain.IlluminatePossibleMovementBlocks (currentBlock, this, EffectiveMoveRange (), (primaryAmmoRemaining > 0 ? EffectiveAttackRange () : 0));
+							InGameController.instance.currentTerrain.IlluminatePossibleMovementBlocks (currentBlock, this, EffectiveMoveRange (), (primaryAmmoRemaining > 0 ? EffectiveAttackRange () : 0));
 						} else {
-							InGameController.currentTerrain.IlluminatePossibleMovementBlocks (currentBlock, this, EffectiveMoveRange (), 0);
+							InGameController.instance.currentTerrain.IlluminatePossibleMovementBlocks (currentBlock, this, EffectiveMoveRange (), 0);
 						}
 						break;
 					}
@@ -640,7 +642,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 					}
 				case UnitState.TargetingUnit:
 					{
-						InGameController.DisplayPossibleTargetParticles (possibleTargets);
+						InGameController.instance.DisplayPossibleTargetParticles (possibleTargets);
 						currentState = UnitState.TargetingUnit;
 						break;
 					}
@@ -693,7 +695,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 							}
 						}
 						if (!isInUnit) {
-							InGameController.currentTerrain.ClearFog (currentBlock, modifier.ApplyModifiers (UnitPropertyModifier.PropertyModifiers.VisionRange, fogOfWarRange), unitClass == UnitName.UAV ? true : false);
+							InGameController.instance.currentTerrain.ClearFog (currentBlock, modifier.ApplyModifiers (UnitPropertyModifier.PropertyModifiers.VisionRange, fogOfWarRange), unitClass == UnitName.UAV ? true : false);
 						}
 						break;
 					}
@@ -771,7 +773,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 						currentPathDistance = 0;
 						HideMoveRange ();
 						moveIndicatorParticles.gameObject.SetActive (true);
-						hasUnitSelectedMutex = InGameController.ReleaseUnitSelectedMutex ();
+						hasUnitSelectedMutex = InGameController.instance.ReleaseUnitSelectedMutex ();
 						currentState = UnitState.UnMoved;
 						break;
 					}
@@ -783,7 +785,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 				switch (next) {
 				case UnitState.FinishedMove:
 					{
-						InGameController.HidePossibleTargetParticles ();
+						InGameController.instance.HidePossibleTargetParticles ();
 						if (health > 0) {
 							InternalEndTurn ();
 						} else {
@@ -794,7 +796,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 				case UnitState.AwaitingOrder:
 					{
 						currentState = UnitState.AwaitingOrder;
-						InGameController.HidePossibleTargetParticles ();
+						InGameController.instance.HidePossibleTargetParticles ();
 						break;
 					}
 				}
@@ -810,9 +812,9 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 						movingCounter = 0;
 						moveIndicatorParticles.gameObject.SetActive (false);
 						if (canMoveAndAttack) {
-							InGameController.currentTerrain.IlluminatePossibleMovementBlocks (currentBlock, this, EffectiveMoveRange (), (primaryAmmoRemaining > 0 ? modifier.ApplyModifiers (UnitPropertyModifier.PropertyModifiers.AttackRange, maxAttackRange) : 0));
+							InGameController.instance.currentTerrain.IlluminatePossibleMovementBlocks (currentBlock, this, EffectiveMoveRange (), (primaryAmmoRemaining > 0 ? modifier.ApplyModifiers (UnitPropertyModifier.PropertyModifiers.AttackRange, maxAttackRange) : 0));
 						} else {
-							InGameController.currentTerrain.IlluminatePossibleMovementBlocks (currentBlock, this, EffectiveMoveRange (), 0);
+							InGameController.instance.currentTerrain.IlluminatePossibleMovementBlocks (currentBlock, this, EffectiveMoveRange (), 0);
 						}
 						break;
 					}
@@ -932,7 +934,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 			Heal (1, false);
 		}
 		if (currentBlock == null) {
-			currentBlock = InGameController.currentTerrain.GetBlockAtPos (transform.position);
+			currentBlock = InGameController.instance.currentTerrain.GetBlockAtPos (transform.position);
 		}
 		CalculateFuelUsage ();
 		if (currentBlock.HasProperty ()) {
@@ -979,7 +981,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 					tb.occupyingUnit.SetActive (true);
 				}
 			}
-			InGameController.currentTerrain.ClearFog (currentBlock, modifier.ApplyModifiers (UnitPropertyModifier.PropertyModifiers.VisionRange, fogOfWarRange), unitClass == UnitName.UAV ? true : false);
+			InGameController.instance.currentTerrain.ClearFog (currentBlock, modifier.ApplyModifiers (UnitPropertyModifier.PropertyModifiers.VisionRange, fogOfWarRange), unitClass == UnitName.UAV ? true : false);
 			if (owner.currentGeneralUnit == this) {
 				owner.selectedGeneral.ShowZone (awaitingOrdersBlock);
 			}
@@ -992,7 +994,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 	/// </summary>
 	public void EndTurn ()
 	{
-		hasUnitSelectedMutex = InGameController.ReleaseUnitSelectedMutex ();
+		hasUnitSelectedMutex = InGameController.instance.ReleaseUnitSelectedMutex ();
 		if (!isInUnit) {
 			comTowerEffect = owner.ComTowersInRange (this, currentBlock);
 		}
@@ -1008,7 +1010,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 	{
 		showingAttackRange = true;
 		if ((canMoveAndAttack || didNotMoveThisTurn) && primaryAmmoRemaining > 0) {
-			InGameController.currentTerrain.IlluminatePossibleAttackBlocksRange (awaitingOrdersBlock, minAttackRange, (primaryAmmoRemaining > 0 ? modifier.ApplyModifiers (UnitPropertyModifier.PropertyModifiers.AttackRange, maxAttackRange) : 0));
+			InGameController.instance.currentTerrain.IlluminatePossibleAttackBlocksRange (awaitingOrdersBlock, minAttackRange, (primaryAmmoRemaining > 0 ? modifier.ApplyModifiers (UnitPropertyModifier.PropertyModifiers.AttackRange, maxAttackRange) : 0));
 		}
 	}
 	public Vector3 GetPosition ()
@@ -1020,16 +1022,16 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 	/// </summary>
 	public void ShowNextTurnAttackRange ()
 	{
-		if (InGameController.currentTerrain.illuminatedMovementRangeBlocks.Count == 0) {
+		if (InGameController.instance.currentTerrain.illuminatedMovementRangeBlocks.Count == 0) {
 			showingNextTurnAttackRange = true;
 			if (primaryAmmoRemaining > 0) {
 				if (canMoveAndAttack) {
-					InGameController.currentTerrain.IlluminatePossibleAttackBlocks (currentBlock, this, EffectiveMoveRange (), (primaryAmmoRemaining > 0 ? modifier.ApplyModifiers (UnitPropertyModifier.PropertyModifiers.AttackRange, maxAttackRange) : 0));
+					InGameController.instance.currentTerrain.IlluminatePossibleAttackBlocks (currentBlock, this, EffectiveMoveRange (), (primaryAmmoRemaining > 0 ? modifier.ApplyModifiers (UnitPropertyModifier.PropertyModifiers.AttackRange, maxAttackRange) : 0));
 				} else {
-					InGameController.currentTerrain.IlluminatePossibleAttackBlocksRange (currentBlock, minAttackRange, (primaryAmmoRemaining > 0 ? modifier.ApplyModifiers (UnitPropertyModifier.PropertyModifiers.AttackRange, maxAttackRange) : 0));
+					InGameController.instance.currentTerrain.IlluminatePossibleAttackBlocksRange (currentBlock, minAttackRange, (primaryAmmoRemaining > 0 ? modifier.ApplyModifiers (UnitPropertyModifier.PropertyModifiers.AttackRange, maxAttackRange) : 0));
 				}
 			} else {
-				InGameController.currentTerrain.IlluminatePossibleSupportBlocks (currentBlock, this, EffectiveMoveRange ());
+				InGameController.instance.currentTerrain.IlluminatePossibleSupportBlocks (currentBlock, this, EffectiveMoveRange ());
 			}
 		}
 	}
@@ -1047,7 +1049,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 	/// </summary>
 	public void HideMoveRange ()
 	{
-		InGameController.currentTerrain.ClearMoveBlocks ();
+		InGameController.instance.currentTerrain.ClearMoveBlocks ();
 		showingNextTurnAttackRange = false;
 	}
 	/// <summary>
@@ -1055,7 +1057,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 	/// </summary>
 	public void HideAttackRange ()
 	{
-		InGameController.currentTerrain.ClearMoveBlocks ();
+		InGameController.instance.currentTerrain.ClearMoveBlocks ();
 		showingAttackRange = false;
 	}
 	public void OnGUI ()
@@ -1138,7 +1140,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 				carriedUnit.KillUnit ();
 			}
 			other.owner.RemoveUnitFromPlayer (other);
-			InGameController.GetPlayer (0).AddUnit (other);
+			InGameController.instance.GetPlayer (0).AddUnit (other);
 		}
 	}
 	public void ExchangeFire (UnitController other)
@@ -1223,11 +1225,11 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 		} else if (awaitingOrdersBlock != null && awaitingOrdersBlock.occupyingUnit == this) {
 			awaitingOrdersBlock.UnOccupy (this);
 		}
-		InGameController.HidePossibleTargetParticles ();
+		InGameController.instance.HidePossibleTargetParticles ();
 		EndTurn ();
 		/*if(owner.aiLevel != AILevel.Human)
 		{
-			reinforcement.accruedReward = InGameController.TotalValueRelativeToPlayer(owner) - reinforcement.accruedReward;
+			reinforcement.accruedReward = InGameController.instance.TotalValueRelativeToPlayer(owner) - reinforcement.accruedReward;
 			owner.GetComponent<MouseEventHandler>().AddReinforcementInstance(reinforcement);
 		}*/
 		health.SetRawHealth (-1);
@@ -1268,7 +1270,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 			}
 		case UnitOrderOptions.Board:
 			{
-				InGameController.GetPlayer (0).DeleteUnitFromGame (awaitingOrdersBlock.occupyingUnit);
+				InGameController.instance.GetPlayer (0).DeleteUnitFromGame (awaitingOrdersBlock.occupyingUnit);
 				owner.AddUnit (awaitingOrdersBlock.occupyingUnit);
 				owner.DeleteUnitFromGame (this);
 				break;
@@ -1427,13 +1429,13 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 	/// </summary>
 	public void ResetUnit ()
 	{
-		if (owner == InGameController.GetPlayer (InGameController.currentPlayer)) {
+		if (owner == InGameController.instance.GetPlayer (InGameController.instance.currentPlayer)) {
 			didNotMoveThisTurn = true;
 			TerrainBlock.HideMovementPath (currentMoveBlocks);
 			currentPathDistance = 0;
-			InGameController.currentTerrain.ClearMoveBlocks ();
+			InGameController.instance.currentTerrain.ClearMoveBlocks ();
 			HideAttackRange ();
-			hasUnitSelectedMutex = InGameController.ReleaseUnitSelectedMutex ();
+			hasUnitSelectedMutex = InGameController.instance.ReleaseUnitSelectedMutex ();
 			awaitingOrdersBlock = currentBlock;
 			transform.position = new Vector3 (currentBlock.transform.position.x, transform.position.y, currentBlock.transform.position.z);
 			currentState = UnitState.UnMoved;
@@ -1503,7 +1505,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 			damageToUnit = damageToUnit > possibleTargets [i].GetHealth ().GetRawHealth () ? possibleTargets [i].GetHealth ().GetRawHealth () : damageToUnit;
 			if (possibleTargets [i].GetOwner ().IsNeutralSide ()) {
 				if (possibleTargets [i] is Property) {
-					damageToUnit *= Mathf.Pow ((100 - InGameController.ClosestEnemyHQ (block, moveClass, owner)) / 145f, 5) * .5f;
+					damageToUnit *= Mathf.Pow ((100 - InGameController.instance.ClosestEnemyHQ (block, moveClass, owner)) / 145f, 5) * .5f;
 				}
 			}
 			if (possibleTargets [i].GetOccupyingBlock ().HasProperty () && !possibleTargets [i].GetOccupyingBlock ().occupyingProperty.GetOwner ().IsSameSide (owner)) {
@@ -1567,7 +1569,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 			}
 		case UnitOrderOptions.Board:
 			{
-				InGameController.GetPlayer (0).DeleteUnitFromGame (awaitingOrdersBlock.occupyingUnit);
+				InGameController.instance.GetPlayer (0).DeleteUnitFromGame (awaitingOrdersBlock.occupyingUnit);
 				owner.AddUnit (awaitingOrdersBlock.occupyingUnit);
 				owner.DeleteUnitFromGame (this);
 				break;
@@ -1647,7 +1649,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 		List<TerrainBlock> potentialBridgeBlocks = new List<TerrainBlock> ();
 		foreach (TerrainBlock t in awaitingOrdersBlock.adjacentBlocks) {
 			if (!t.IsOccupied () && !t.HasProperty () && t.typeOfTerrain == TERRAINTYPE.River) {
-				TerrainBlock acrossTheRiverBlock = InGameController.currentTerrain.GetBlockAtPos ((t.transform.position - awaitingOrdersBlock.transform.position) + t.transform.position);
+				TerrainBlock acrossTheRiverBlock = InGameController.instance.currentTerrain.GetBlockAtPos ((t.transform.position - awaitingOrdersBlock.transform.position) + t.transform.position);
 				if (acrossTheRiverBlock != null && acrossTheRiverBlock.typeOfTerrain != TERRAINTYPE.River && acrossTheRiverBlock.typeOfTerrain != TERRAINTYPE.Sea) {
 					potentialBridgeBlocks.Add (t);
 				}

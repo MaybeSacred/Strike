@@ -120,7 +120,7 @@ public class AIPlayerMedium : AIPlayer
 			pigs.unitsLost++;
 		}
 		if (units.Count == 0) {
-			InGameController.RemovePlayer (this);
+			InGameController.instance.RemovePlayer (this);
 		}
 	}
 	public override void StartTurn ()
@@ -131,22 +131,22 @@ public class AIPlayerMedium : AIPlayer
 	}
 	Property GetNextClosestUncapturedProperty (UnitController unit)
 	{
-		List<Property> enemyProperties = InGameController.GetAllEnemyProperties (this);
+		List<Property> enemyProperties = InGameController.instance.GetAllEnemyProperties (this);
 		float closestDistance = float.PositiveInfinity;
 		Property closestProperty = null;
 		float currentPropDistance = 0;
 		foreach (Property prop in enemyProperties) {
 			if (prop.propertyClass.capturable) {
 				if (unit.currentBlock.CanReachBlock (unit, prop.GetOccupyingBlock ())) {
-					currentPropDistance = InGameController.currentTerrain.MinDistanceToTile (unit.currentBlock, prop.GetOccupyingBlock (), unit);
+					currentPropDistance = InGameController.instance.currentTerrain.MinDistanceToTile (unit.currentBlock, prop.GetOccupyingBlock (), unit);
 					if (currentPropDistance == float.PositiveInfinity) {
 						Debug.Log ("Positive infinity returned, probably error with canreachblock functions");
 					}
 				} else {
-					currentPropDistance = InGameController.currentTerrain.MinDistanceToTileThroughUnMovableBlocks (unit.currentBlock, prop.GetOccupyingBlock (), unit, 5);
+					currentPropDistance = InGameController.instance.currentTerrain.MinDistanceToTileThroughUnMovableBlocks (unit.currentBlock, prop.GetOccupyingBlock (), unit, 5);
 				}
-				float enemyHQDistance = InGameController.ClosestEnemyHQ (prop.GetOccupyingBlock (), unit.moveClass, this);
-				float playerHQDistance = InGameController.currentTerrain.MinDistanceToTileThroughUnMovableBlocks (unit.currentBlock, hQBlock, unit, 5);
+				float enemyHQDistance = InGameController.instance.ClosestEnemyHQ (prop.GetOccupyingBlock (), unit.moveClass, this);
+				float playerHQDistance = InGameController.instance.currentTerrain.MinDistanceToTileThroughUnMovableBlocks (unit.currentBlock, hQBlock, unit, 5);
 				enemyHQDistance = enemyHQDistance > 0 ? enemyHQDistance : 1;
 				playerHQDistance = playerHQDistance > 0 ? playerHQDistance : 1;
 				currentPropDistance *= (playerHQDistance / enemyHQDistance);
@@ -181,7 +181,7 @@ public class AIPlayerMedium : AIPlayer
 		List<UnitController> targetedUnitsNeedingSupply = new List<UnitController> ();
 		List<UnitController> assignedUnits = new List<UnitController> ();
 		//list of clusters of clustered enemy units
-		List<List<AttackableObject>> lists = clusterer.Estimate (InGameController.GetAllEnemyUnits (this));
+		List<List<AttackableObject>> lists = clusterer.Estimate (InGameController.instance.GetAllEnemyUnits (this));
 		//assign infantry to buildings if possible - easy first step
 		for (int i = 0; i < units.Count; i++) {
 			//although able to capture, snipers are better used in combat
@@ -267,7 +267,7 @@ public class AIPlayerMedium : AIPlayer
 			//finds a block that the inUnit can reach and attack, or attempts to obtain a taxiing unit to get to the target
 			//it sets the inUnit targetblock to either the first, or the occupying block of the target
 			if (inUnit.AITarget is UnitController) {
-				foreach (TerrainBlock tb in InGameController.currentTerrain.BlocksWithinRange(inUnit.AITarget.GetOccupyingBlock(), inUnit.minAttackRange, inUnit.EffectiveAttackRange(), inUnit)) {
+				foreach (TerrainBlock tb in InGameController.instance.currentTerrain.BlocksWithinRange(inUnit.AITarget.GetOccupyingBlock(), inUnit.minAttackRange, inUnit.EffectiveAttackRange(), inUnit)) {
 					if (tb.CanReachBlock (inUnit, inUnit.currentBlock)) {
 						canReach = true;
 						reachableBlock = tb;
@@ -297,7 +297,7 @@ public class AIPlayerMedium : AIPlayer
 			}
 		} else {
 			Debug.Log ("No Target");
-			InGameController.ClosestEnemyHQ (inUnit.currentBlock, inUnit.moveClass, this, out inUnit.AITargetBlock);
+			InGameController.instance.ClosestEnemyHQ (inUnit.currentBlock, inUnit.moveClass, this, out inUnit.AITargetBlock);
 			if (inUnit.AITargetBlock.CanReachBlock (inUnit, inUnit.currentBlock)) {
 				inUnit.canReachTarget = true;
 			} else {
@@ -348,7 +348,7 @@ public class AIPlayerMedium : AIPlayer
 	}
 	void Update ()
 	{
-		if (canIssueOrders && !InGameController.endingGame) {
+		if (canIssueOrders && !InGameController.instance.endingGame) {
 			MediumAIUpdate ();
 		}
 	}
@@ -358,21 +358,21 @@ public class AIPlayerMedium : AIPlayer
 		TerrainBlock bestBlockSoFar = null;
 		PositionEvaluation bestValueSoFar = new PositionEvaluation (float.NegativeInfinity);
 		if (currentUnit.canReachTarget && currentUnit.AITarget != null) {
-			InGameController.currentTerrain.SetDistancesFromBlock (currentUnit, currentUnit.AITargetBlock);
+			InGameController.instance.currentTerrain.SetDistancesFromBlock (currentUnit, currentUnit.AITargetBlock);
 		} else if (currentUnit.AITarget != null) {
 			Debug.Log ("cant reach target, has one");
 			if (currentUnit.AITarget is UnitController) {
-				InGameController.currentTerrain.SetDistancesFromBlockSharedMoveableBlock (currentUnit, currentUnit.AITargetBlock, currentUnit.AITarget);
+				InGameController.instance.currentTerrain.SetDistancesFromBlockSharedMoveableBlock (currentUnit, currentUnit.AITargetBlock, currentUnit.AITarget);
 			} else {
-				InGameController.currentTerrain.SetDistancesFromBlockIgnoreIllegalBlocks (currentUnit, currentUnit.AITargetBlock);
+				InGameController.instance.currentTerrain.SetDistancesFromBlockIgnoreIllegalBlocks (currentUnit, currentUnit.AITargetBlock);
 			}
 		} else {
 			Debug.Log ("Has no target");
-			InGameController.currentTerrain.SetDistancesFromBlockIgnoreIllegalBlocks (currentUnit, currentUnit.AITargetBlock);
+			InGameController.instance.currentTerrain.SetDistancesFromBlockIgnoreIllegalBlocks (currentUnit, currentUnit.AITargetBlock);
 		}
 		int totalPositionsEvaluated = 0;
 		blockList = new List<GameObject> ();
-		List<TerrainBlock> blocks = InGameController.currentTerrain.MoveableBlocks (currentUnit.currentBlock, currentUnit, currentUnit.EffectiveMoveRange ());
+		List<TerrainBlock> blocks = InGameController.instance.currentTerrain.MoveableBlocks (currentUnit.currentBlock, currentUnit, currentUnit.EffectiveMoveRange ());
 		Debug.Log (blocks.Count);
 		foreach (TerrainBlock block in blocks) {
 			PositionEvaluation temp = RecursiveEvaluatePosition (block);
@@ -392,7 +392,7 @@ public class AIPlayerMedium : AIPlayer
 	protected PositionEvaluation RecursiveEvaluatePosition (TerrainBlock block)
 	{
 		PositionEvaluation bestValueSoFar = new PositionEvaluation (float.NegativeInfinity);
-		List<TerrainBlock> blocks = InGameController.currentTerrain.MoveableBlocks (block, currentUnit, currentUnit.EffectiveMoveRange ());
+		List<TerrainBlock> blocks = InGameController.instance.currentTerrain.MoveableBlocks (block, currentUnit, currentUnit.EffectiveMoveRange ());
 		for (int i = 0; i < blocks.Count; i++) {
 			PositionEvaluation temp = EvaluatePosition (blocks [i]);
 			if (temp.value > bestValueSoFar.value) {
@@ -411,7 +411,7 @@ public class AIPlayerMedium : AIPlayer
 		if(depth < maxDepth)
 		{
 			PositionEvaluation bestValueSoFar = new PositionEvaluation(float.NegativeInfinity);
-			List<TerrainBlock> blocks = InGameController.currentTerrain.MoveableBlocks(block, currentUnit, currentUnit.EffectiveMoveRange());
+			List<TerrainBlock> blocks = InGameController.instance.currentTerrain.MoveableBlocks(block, currentUnit, currentUnit.EffectiveMoveRange());
 			SortedList<PositionEvaluation, TerrainBlock> rankings = new SortedList<PositionEvaluation, TerrainBlock>(blocks.Count, new PositionEvaluationComparer());
 			foreach(TerrainBlock b in blocks)
 			{
@@ -631,11 +631,11 @@ public class AIPlayerMedium : AIPlayer
 	}
 	float EnemyDangerAtBlock (TerrainBlock block)
 	{
-		List<AttackableObject> otherUnits = InGameController.currentTerrain.ObjectsWithinRange (block, 1, 12, currentUnit);
+		List<AttackableObject> otherUnits = InGameController.instance.currentTerrain.ObjectsWithinRange (block, 1, 12, currentUnit);
 		float alliedUnits = 1;
 		float totalEnemyDamage = 0;
 		UnitController other = null;
-		InGameController.currentTerrain.SaveIlluminatedBlocks ();
+		InGameController.instance.currentTerrain.SaveIlluminatedBlocks ();
 		foreach (AttackableObject temp in otherUnits) {
 			if (temp is UnitController) {
 				other = (UnitController)temp;
@@ -644,7 +644,7 @@ public class AIPlayerMedium : AIPlayer
 				} else if (!other.GetOwner ().IsSameSide (currentUnit.GetOwner ()) && !other.GetOwner ().IsNeutralSide () && other.EffectiveMoveRange () + other.EffectiveAttackRange () >= TerrainBuilder.ManhattanDistance (other.currentBlock, block) && other.gameObject.activeSelf) {
 					float distance = 0;
 					if (other.canMoveAndAttack && other.minAttackRange > 0) {
-						List<TerrainBlock> otherBlocks = InGameController.currentTerrain.MoveableBlocks (other.currentBlock, other, other.EffectiveMoveRange ());
+						List<TerrainBlock> otherBlocks = InGameController.instance.currentTerrain.MoveableBlocks (other.currentBlock, other, other.EffectiveMoveRange ());
 						float otherMaxAttackRange = other.EffectiveAttackRange ();
 						foreach (TerrainBlock t in otherBlocks) {
 							if (TerrainBuilder.ManhattanDistance (t, block) <= otherMaxAttackRange) {
@@ -658,7 +658,7 @@ public class AIPlayerMedium : AIPlayer
 				}
 			}
 		}
-		InGameController.currentTerrain.LoadIlluminatedBlocks ();
+		InGameController.instance.currentTerrain.LoadIlluminatedBlocks ();
 		return (totalEnemyDamage * currentUnit.AIDefensiveness) / (alliedUnits * 15000f);
 	}
 	
@@ -703,7 +703,7 @@ public class AIPlayerMedium : AIPlayer
 	void SortPropertiesByHQDistance (MovementType moveType)
 	{
 		for (int i = 0; i < properties.Count; i++) {
-			properties [i].cachedDistanceFromEnemyHQ = InGameController.ClosestEnemyHQ (properties [i].GetOccupyingBlock (), moveType, this);
+			properties [i].cachedDistanceFromEnemyHQ = InGameController.instance.ClosestEnemyHQ (properties [i].GetOccupyingBlock (), moveType, this);
 		}
 		properties.Sort (Property.CompareByDistanceFromEnemyHQ);
 	}

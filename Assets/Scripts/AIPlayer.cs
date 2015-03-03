@@ -81,7 +81,7 @@ public abstract class AIPlayer : Player
 			pigs.unitsLost++;
 		}
 		if (units.Count == 0) {
-			InGameController.RemovePlayer (this);
+			InGameController.instance.RemovePlayer (this);
 		}
 	}
 	public override void AddProperty (Property inUnit)
@@ -106,7 +106,7 @@ public abstract class AIPlayer : Player
 				producingProperties--;
 			}
 			if (inUnit.propertyType == UnitName.Headquarters) {
-				InGameController.RemovePlayer (this);
+				InGameController.instance.RemovePlayer (this);
 			}
 			properties.Remove (inUnit);
 		}
@@ -116,7 +116,7 @@ public abstract class AIPlayer : Player
 	protected abstract float EvaluatePosition (TerrainBlock position, out UnitOrderOptions order);
 	public float MoveTowardsEnemyHQ (TerrainBlock block)
 	{
-		float closest = InGameController.ClosestEnemyHQ (block, currentUnit.moveClass, currentUnit.GetOwner ());
+		float closest = InGameController.instance.ClosestEnemyHQ (block, currentUnit.moveClass, currentUnit.GetOwner ());
 		if (closest < 1 && !currentUnit.canCapture) {
 			return -10;
 		}

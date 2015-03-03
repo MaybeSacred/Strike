@@ -94,7 +94,7 @@ class AirProduction
 	List<Tuple<UnitName, float>> LiftCopterRule (Instance data, Player thisPlayer)
 	{
 		List<Tuple<UnitName, float>> outList = new List<Tuple<UnitName, float>> ();
-		if (InGameController.currentTurn < 5) {
+		if (InGameController.instance.currentTurn < 5) {
 			if (data.playerUnitCount [(int)UnitName.LiftCopter] < 2) {
 				outList.Add (new Tuple<UnitName, float> (UnitName.LiftCopter, 1));
 			}

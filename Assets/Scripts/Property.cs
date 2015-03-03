@@ -94,7 +94,7 @@ public class Property : MonoBehaviour, AttackableObject
 	}
 	void Start ()
 	{
-		SetOwner (InGameController.GetPlayer (startingOwner));
+		SetOwner (InGameController.instance.GetPlayer (startingOwner));
 		if (staticFireParticles == null) {
 			staticFireParticles = Resources.Load<ParticleSystem> ("BuildingFire");
 		}
@@ -166,13 +166,13 @@ public class Property : MonoBehaviour, AttackableObject
 		} else {
 			HealBase (1);
 		}
-		InGameController.currentTerrain.ClearFog (currentBlock, 1, false);
+		InGameController.instance.currentTerrain.ClearFog (currentBlock, 1, false);
 		currentState = UnitState.UnMoved;
 	}
 
 	public void EndTurn ()
 	{
-		hasUnitSelectedMutex = InGameController.ReleaseUnitSelectedMutex ();
+		hasUnitSelectedMutex = InGameController.instance.ReleaseUnitSelectedMutex ();
 		Utilities.gameCamera.otherMenuActive = false;
 		currentState = UnitState.FinishedMove;
 	}
@@ -187,9 +187,9 @@ public class Property : MonoBehaviour, AttackableObject
 			}
 		}
 		if (currentState == UnitState.AwaitingOrder) {
-			if (Input.GetMouseButtonDown (1)) {
+			if (InGameController.instance.RightClick) {
 				currentState = UnitState.UnMoved;
-				hasUnitSelectedMutex = InGameController.ReleaseUnitSelectedMutex ();
+				hasUnitSelectedMutex = InGameController.instance.ReleaseUnitSelectedMutex ();
 				Utilities.gameCamera.otherMenuActive = false;
 				InGameGUI.instance.HideUnitSelectionDisplay ();
 			}
@@ -204,13 +204,13 @@ public class Property : MonoBehaviour, AttackableObject
 	{
 		if (propertyType == UnitName.Headquarters) {
 			propertyType = UnitName.City;
-			InGameController.RemovePlayer (currentOwner);
+			InGameController.instance.RemovePlayer (currentOwner);
 		} else {
 			currentOwner.RemoveProperty (this);
 		}
 		health.SetRawHealth (-59);
-		if (InGameController.GetPlayer (0) != null) {	
-			SetOwner (InGameController.GetPlayer (0));
+		if (InGameController.instance.GetPlayer (0) != null) {	
+			SetOwner (InGameController.instance.GetPlayer (0));
 		}
 		if (propertyType == UnitName.Bridge) {
 			currentBlock.DetachProperty (this, false);
@@ -221,8 +221,8 @@ public class Property : MonoBehaviour, AttackableObject
 	{
 		propertyType = UnitName.City;
 		health.SetRawHealth (-59);
-		if (InGameController.GetPlayer (0) != null) {
-			SetOwner (InGameController.GetPlayer (0));
+		if (InGameController.instance.GetPlayer (0) != null) {
+			SetOwner (InGameController.instance.GetPlayer (0));
 		}
 	}
 	public void OnMouseOverExtra ()
@@ -235,9 +235,9 @@ public class Property : MonoBehaviour, AttackableObject
 	}
 	public void OnMouseUpExtra ()
 	{
-		if (InGameController.GetCurrentPlayer () == currentOwner && propertyClass.producableUnits.Length > 0 && !InGameController.isPaused) {
+		if (InGameController.instance.GetCurrentPlayer () == currentOwner && propertyClass.producableUnits.Length > 0 && !InGameController.instance.isPaused) {
 			if (!hasUnitSelectedMutex) {
-				hasUnitSelectedMutex = InGameController.AcquireUnitSelectedMutex (this);
+				hasUnitSelectedMutex = InGameController.instance.AcquireUnitSelectedMutex (this);
 			}
 			if (hasUnitSelectedMutex) {
 				Utilities.gameCamera.otherMenuActive = true;
@@ -266,7 +266,7 @@ public class Property : MonoBehaviour, AttackableObject
 	public void OnUnSelect ()
 	{
 		currentState = UnitState.UnMoved;
-		hasUnitSelectedMutex = InGameController.ReleaseUnitSelectedMutex ();
+		hasUnitSelectedMutex = InGameController.instance.ReleaseUnitSelectedMutex ();
 		Utilities.gameCamera.otherMenuActive = false;
 	}
 	public void OnMouseExitExtra ()
@@ -305,7 +305,7 @@ public class Property : MonoBehaviour, AttackableObject
 		if (captureCount <= 0) {
 			if (propertyType == UnitName.Headquarters) {
 				propertyType = UnitName.City;
-				InGameController.RemovePlayer (currentOwner);
+				InGameController.instance.RemovePlayer (currentOwner);
 			}
 			captureCount = 20;
 			if (unit.AITarget == this) {
@@ -420,7 +420,7 @@ public class Property : MonoBehaviour, AttackableObject
 	}
 	public void ResetUnit ()
 	{
-		hasUnitSelectedMutex = InGameController.ReleaseUnitSelectedMutex ();
+		hasUnitSelectedMutex = InGameController.instance.ReleaseUnitSelectedMutex ();
 		if (currentState != UnitState.FinishedMove) {
 			currentState = UnitState.UnMoved;
 		}

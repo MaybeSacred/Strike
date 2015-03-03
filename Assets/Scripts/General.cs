@@ -41,8 +41,8 @@ public class General : MonoBehaviour
 			int blocksUsedInZoneBlocks = 0;
 			for (int i = 0; i < 2*(zoneSize + zoneSizeBoost) + 1; i++) {
 				for (int k = 0; k < blocksInZDirection; k++) {
-					if (InGameController.currentTerrain.GetBlockAtPos (i + startPointX, startPointZ - k) != null) {
-						zoneBlocks [blocksUsedInZoneBlocks].transform.position = InGameController.currentTerrain.GetBlockAtPos (i + startPointX, startPointZ - k).transform.position + Vector3.up * .51f;
+					if (InGameController.instance.currentTerrain.GetBlockAtPos (i + startPointX, startPointZ - k) != null) {
+						zoneBlocks [blocksUsedInZoneBlocks].transform.position = InGameController.instance.currentTerrain.GetBlockAtPos (i + startPointX, startPointZ - k).transform.position + Vector3.up * .51f;
 						zoneBlocks [blocksUsedInZoneBlocks].gameObject.SetActive (true);
 						blocksUsedInZoneBlocks++;
 					}
@@ -91,10 +91,10 @@ public class General : MonoBehaviour
 			currentStoredPower += inDamage;
 			if (currentStoredPower >= damageNeededForPower) {
 				zoneSizeBoost = 2;
-				ShowZone (InGameController.currentTerrain.GetBlockAtPos (transform.position));
+				ShowZone (InGameController.instance.currentTerrain.GetBlockAtPos (transform.position));
 			} else if (currentStoredPower >= damageNeededForPower / 2) {
 				zoneSizeBoost = 1;
-				ShowZone (InGameController.currentTerrain.GetBlockAtPos (transform.position));
+				ShowZone (InGameController.instance.currentTerrain.GetBlockAtPos (transform.position));
 			}
 			InGameGUI.instance.ShowGeneralPower (((float)currentStoredPower / (float)damageNeededForPower), owner);
 		}

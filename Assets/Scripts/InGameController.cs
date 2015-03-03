@@ -6,24 +6,39 @@ public class InGameController : MonoBehaviour
 	// Exposed instance
 	public static InGameController instance;
 	
-	private static List<Player> players;
-	private static List<PlayerInGameStatistics> collectedStatistics;
-	public static ParticleSystem mouseOverParticles;
+	List<Player> players;
+	List<PlayerInGameStatistics> collectedStatistics;
+	public ParticleSystem mouseOverParticles;
 	public ParticleSystem mouseParticles;
 	public ParticleSystem possibleTargetParticlePrototypeEditor;
-	public static ParticleSystem possibleTargetParticlePrototype;
-	public static int currentPlayer;
-	public static bool isPaused;
-	public static TerrainBuilder currentTerrain;
-	private static bool unitSelectedMutex, infoBoxMutex;
-	private static Object selectedUnit;
-	private static int currentUnitMousedOver;
-	private static List<ParticleSystem> possibleTargetParticles;
-	public static WeatherController weather;
-	public static int currentTurn = 0;
-	public static bool endingGame;
-	private static int turnState;
-	
+	public ParticleSystem possibleTargetParticlePrototype;
+	public int currentPlayer;
+	public bool isPaused;
+	public TerrainBuilder currentTerrain;
+	bool unitSelectedMutex, infoBoxMutex;
+	Object selectedUnit;
+	int currentUnitMousedOver;
+	List<ParticleSystem> possibleTargetParticles;
+	public WeatherController weather;
+	public int currentTurn = 0;
+	public bool endingGame;
+	int turnState;
+	private bool leftClick, rightClick;
+	public bool LeftClick {
+		get { return leftClick; }
+		protected set {
+			leftClick = value;
+			simulatedLeftClick = false;
+		}
+	}
+	public bool RightClick {
+		get { return rightClick; }
+		protected set {
+			rightClick = value;
+			simulatedRightClick = false;
+		}
+	}
+	bool simulatedLeftClick, simulatedRightClick;
 	// Use this for initialization
 	void Awake ()
 	{
@@ -85,15 +100,33 @@ public class InGameController : MonoBehaviour
 				MoveCameraToNextPlayerUnit ();
 			}
 		}
+		if (Input.GetMouseButtonUp (0) || simulatedLeftClick) {
+			LeftClick = true;
+		} else {
+			LeftClick = false;
+		}
+		if (Input.GetMouseButtonUp (1) || simulatedRightClick) {
+			RightClick = true;
+		} else {
+			RightClick = false;
+		}
 	}
-	public static int NumberOfActivePlayers ()
+	public void SimulateLeftClick ()
+	{
+		simulatedLeftClick = true;
+	}
+	public void SimulateRightClick ()
+	{
+		simulatedRightClick = true;
+	}
+	public int NumberOfActivePlayers ()
 	{
 		if (players != null) {
 			return players.Count;
 		}
 		return 0;
 	}
-	public static void DisplayPossibleTargetParticles (List<AttackableObject> possibleTargets)
+	public void DisplayPossibleTargetParticles (List<AttackableObject> possibleTargets)
 	{
 		int i;
 		if (possibleTargets.Count > possibleTargetParticles.Count) {
@@ -108,7 +141,7 @@ public class InGameController : MonoBehaviour
 			possibleTargetParticles [i].gameObject.SetActive (true);
 		}
 	}
-	public static void HidePossibleTargetParticles ()
+	public void HidePossibleTargetParticles ()
 	{
 		foreach (ParticleSystem ps in possibleTargetParticles) {
 			ps.gameObject.SetActive (false);
@@ -134,7 +167,7 @@ public class InGameController : MonoBehaviour
 		}
 	}
 
-	public static bool AcquireUnitSelectedMutex (Object mutexAttempter)
+	public bool AcquireUnitSelectedMutex (Object mutexAttempter)
 	{
 		if (unitSelectedMutex == true) {
 			return false;
@@ -144,17 +177,17 @@ public class InGameController : MonoBehaviour
 		}
 		return true;
 	}
-	public static bool ReleaseUnitSelectedMutex ()
+	public bool ReleaseUnitSelectedMutex ()
 	{
 		unitSelectedMutex = false;
 		selectedUnit = null;
 		return false;
 	}
-	public static bool UnitSelected ()
+	public bool UnitSelected ()
 	{
 		return unitSelectedMutex;
 	}
-	public static void Setup (Player[] play)
+	public void Setup (Player[] play)
 	{
 		players = new List<Player> (play);
 		for (int i = 0; i < players.Count; i++) {
@@ -190,7 +223,7 @@ public class InGameController : MonoBehaviour
 	/// <summary>
 	/// Removes all players, ending the current skirmish
 	/// </summary>
-	public static void QuitSkirmish ()
+	public void QuitSkirmish ()
 	{
 		for (int i = players.Count - 1; i >= 1; i--) {
 			if (players != null) {
@@ -204,7 +237,7 @@ public class InGameController : MonoBehaviour
 	/// Removes the player.
 	/// </summary>
 	/// <param name="toRemove">To remove.</param>
-	public static void RemovePlayer (Player toRemove)
+	public void RemovePlayer (Player toRemove)
 	{
 		collectedStatistics.Add (toRemove.RemovePlayer (false));
 		players.Remove (toRemove);
@@ -228,14 +261,14 @@ public class InGameController : MonoBehaviour
 			players [currentPlayer].StartTurn ();
 		}
 	}
-	public static Player GetCurrentPlayer ()
+	public Player GetCurrentPlayer ()
 	{
 		if (players.Count > 0 && currentPlayer < players.Count) {
 			return players [currentPlayer];
 		}
 		return null;
 	}
-	public static Player GetPlayer (int playerNum)
+	public Player GetPlayer (int playerNum)
 	{
 		if (players.Count > 0 && playerNum < players.Count) {
 			return players [playerNum];
@@ -243,7 +276,7 @@ public class InGameController : MonoBehaviour
 		return null;
 	}
 
-	public static List<AttackableObject> GetAllEnemyUnits (Player inPlayer)
+	public List<AttackableObject> GetAllEnemyUnits (Player inPlayer)
 	{
 		List<AttackableObject> outList = new List<AttackableObject> (inPlayer.units.Count);
 		for (int i = 0; i < players.Count; i++) {
@@ -258,7 +291,7 @@ public class InGameController : MonoBehaviour
 		return outList;
 	}
 
-	public static List<Property> GetAllEnemyProperties (Player inPlayer)
+	public List<Property> GetAllEnemyProperties (Player inPlayer)
 	{
 		List<Property> outList = new List<Property> (inPlayer.properties.Count);
 		for (int i = 0; i < players.Count; i++) {
@@ -269,7 +302,7 @@ public class InGameController : MonoBehaviour
 		return outList;
 	}
 
-	public static Player GetTargetablePlayer (Player owner)
+	public Player GetTargetablePlayer (Player owner)
 	{
 		int startNum;
 		int i = Random.Range (1, players.Count);
@@ -290,7 +323,7 @@ public class InGameController : MonoBehaviour
 		}
 		throw new UnityException ("No Valid Players");
 	}
-	public static float ClosestEnemyHQ (TerrainBlock block, MovementType moveType, Player querier, out TerrainBlock hqBlock)
+	public float ClosestEnemyHQ (TerrainBlock block, MovementType moveType, Player querier, out TerrainBlock hqBlock)
 	{
 		float bestSoFar = float.MaxValue;
 		hqBlock = null;
@@ -305,7 +338,7 @@ public class InGameController : MonoBehaviour
 		return bestSoFar;
 	}
 	
-	public static float ClosestEnemyHQ (TerrainBlock block, MovementType moveType, Player querier)
+	public float ClosestEnemyHQ (TerrainBlock block, MovementType moveType, Player querier)
 	{
 		float bestSoFar = float.MaxValue;
 		for (int i = 1; i < players.Count; i++) {
@@ -317,7 +350,7 @@ public class InGameController : MonoBehaviour
 		}
 		return bestSoFar;
 	}
-	public static int TotalValueRelativeToPlayer (Player relative)
+	public int TotalValueRelativeToPlayer (Player relative)
 	{
 		int totalEnemyValue = 0;
 		int totalEnemies = 0;
@@ -329,12 +362,12 @@ public class InGameController : MonoBehaviour
 		}
 		return relative.TotalRelativeValue () - (totalEnemies > 0 ? totalEnemyValue / totalEnemies : 0);
 	}
-	public static Instance CreateInstance (UnitName unitMade, bool reinforcement)
+	public Instance CreateInstance (UnitName unitMade, bool reinforcement)
 	{
 		Instance outInstance;
 		if (reinforcement) {
 			outInstance = new ReinforcementInstance (System.Enum.GetNames (typeof(UnitName)).Length);
-			((ReinforcementInstance)outInstance).accruedReward = InGameController.TotalValueRelativeToPlayer (players [currentPlayer]);
+			((ReinforcementInstance)outInstance).accruedReward = InGameController.instance.TotalValueRelativeToPlayer (players [currentPlayer]);
 		} else {
 			outInstance = new Instance (System.Enum.GetNames (typeof(UnitName)).Length);
 		}

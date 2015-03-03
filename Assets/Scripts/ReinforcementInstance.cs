@@ -7,54 +7,49 @@ using System;
 public class ReinforcementInstance : Instance
 {
 	public float accruedReward;
-	public ReinforcementInstance(int numUnits) : base(numUnits)
+	public ReinforcementInstance (int numUnits) : base(numUnits)
 	{
-		prettyName = "Instance " + Instance.currentNumber++ + " " + InGameController.currentTurn;
+		prettyName = "Instance " + Instance.currentNumber++ + " " + InGameController.instance.currentTurn;
 	}
-	public override string CreateARFFDataString(bool moreReadable)
+	public override string CreateARFFDataString (bool moreReadable)
 	{
-		StringBuilder instanceString = new StringBuilder();
+		StringBuilder instanceString = new StringBuilder ();
 		#if EXPORT_INSTANCE_COMMENTS
-		instanceString.Append("%" + this.prettyName + "\n");
+		instanceString.Append ("%" + this.prettyName + "\n");
 		#endif
-		instanceString.Append(mapData.InstanceData());
-		instanceString.Append(currentTurn + ",");
-		instanceString.Append(funds + ",");
-		for(int i = 0; i < playerUnitCount.Length; i++)
-		{
-			instanceString.Append(playerUnitCount[i] + ",");
+		instanceString.Append (mapData.InstanceData ());
+		instanceString.Append (currentTurn + ",");
+		instanceString.Append (funds + ",");
+		for (int i = 0; i < playerUnitCount.Length; i++) {
+			instanceString.Append (playerUnitCount [i] + ",");
 		}
-		for(int i = 0; i < enemyAverageUnitCount.Length; i++)
-		{
-			instanceString.Append(enemyAverageUnitCount[i] + ",");
+		for (int i = 0; i < enemyAverageUnitCount.Length; i++) {
+			instanceString.Append (enemyAverageUnitCount [i] + ",");
 		}
-		instanceString.Append(this.classification.ToString() + ",");
-		instanceString.Append(accruedReward);
-		instanceString.Append("\n");
-		return instanceString.ToString();
+		instanceString.Append (this.classification.ToString () + ",");
+		instanceString.Append (accruedReward);
+		instanceString.Append ("\n");
+		return instanceString.ToString ();
 	}
-	public override string AttributeString()
+	public override string AttributeString ()
 	{
-		StringBuilder sb = new StringBuilder();
-		sb.Append(MapData.AttributeString());
-		sb.Append("@attribute 'Turn' numeric\n");
-		sb.Append("@attribute 'Funds' numeric\n");
-		foreach(string value in Enum.GetNames(typeof(UnitName)))
-		{
-			sb.Append("@attribute 'Player " + value + "' real\n");
+		StringBuilder sb = new StringBuilder ();
+		sb.Append (MapData.AttributeString ());
+		sb.Append ("@attribute 'Turn' numeric\n");
+		sb.Append ("@attribute 'Funds' numeric\n");
+		foreach (string value in Enum.GetNames(typeof(UnitName))) {
+			sb.Append ("@attribute 'Player " + value + "' real\n");
 		}
-		foreach(string value in Enum.GetNames(typeof(UnitName)))
-		{
-			sb.Append("@attribute 'EnemyAverage " + value + "' real\n");
+		foreach (string value in Enum.GetNames(typeof(UnitName))) {
+			sb.Append ("@attribute 'EnemyAverage " + value + "' real\n");
 		}
-		sb.Append("@attribute 'class' {");
-		foreach(string strokeS in Enum.GetNames(typeof(UnitName)))
-		{
-			sb.Append(strokeS+",");
+		sb.Append ("@attribute 'class' {");
+		foreach (string strokeS in Enum.GetNames(typeof(UnitName))) {
+			sb.Append (strokeS + ",");
 		}
-		sb.Remove(sb.Length-1, 1);
-		sb.Append("}\n");
-		sb.Append("@attribute 'Reward' numeric\n");
-		return sb.ToString();
+		sb.Remove (sb.Length - 1, 1);
+		sb.Append ("}\n");
+		sb.Append ("@attribute 'Reward' numeric\n");
+		return sb.ToString ();
 	}
 }

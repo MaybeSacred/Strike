@@ -177,7 +177,7 @@ public class Player : MonoBehaviour
 	{
 		if (properties.Contains (inUnit)) {
 			if (inUnit.propertyType == UnitName.Headquarters) {
-				InGameController.RemovePlayer (this);
+				InGameController.instance.RemovePlayer (this);
 			} else if (inUnit.propertyType == UnitName.ComTower) {
 				comTowers.Remove (inUnit);
 				foreach (UnitController u in inUnit.UnitsInRange()) {
@@ -250,7 +250,7 @@ public class Player : MonoBehaviour
 			pigs.unitsLost++;
 		}
 		if (units.Count == 0) {
-			InGameController.RemovePlayer (this);
+			InGameController.instance.RemovePlayer (this);
 		}
 	}
 	/// <summary>
@@ -270,7 +270,7 @@ public class Player : MonoBehaviour
 			pigs.unitsLost++;
 		}
 		if (units.Count == 0) {
-			InGameController.RemovePlayer (this);
+			InGameController.instance.RemovePlayer (this);
 		}
 	}
 	/// <summary>

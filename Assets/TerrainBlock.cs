@@ -69,7 +69,7 @@ public class TerrainBlock : MonoBehaviour, System.IComparable<TerrainBlock>
 	// Use this for initialization
 	void Start ()
 	{
-		distancesToPlayerHQ = new float[InGameController.NumberOfActivePlayers (), System.Enum.GetValues (typeof(MovementType)).Length];
+		distancesToPlayerHQ = new float[InGameController.instance.NumberOfActivePlayers (), System.Enum.GetValues (typeof(MovementType)).Length];
 		minDistanceSoFar = int.MaxValue;
 		beginningMoveSection.gameObject.SetActive (false);
 		lastMoveSection.gameObject.SetActive (false);
@@ -194,7 +194,7 @@ public class TerrainBlock : MonoBehaviour, System.IComparable<TerrainBlock>
 	{
 		for (int i = 0; i < reachability.Length; i++) {
 			Stack<TerrainBlock> stack = new Stack<TerrainBlock> ();
-			InGameController.currentTerrain.ClearDiscovered ();
+			InGameController.instance.currentTerrain.ClearDiscovered ();
 			stack.Push (this);
 			TerrainBlock current = null;
 			while (stack.Count > 0) {
@@ -300,7 +300,7 @@ public class TerrainBlock : MonoBehaviour, System.IComparable<TerrainBlock>
 	public void DisplayAttackTile ()
 	{
 		showingAttackTile = true;
-		InGameController.currentTerrain.illuminatedMovementRangeBlocks.Add (this);
+		InGameController.instance.currentTerrain.illuminatedMovementRangeBlocks.Add (this);
 		graphicOverlayMaterial.color = attackTileColor;
 	}
 	public void DisplaySupportTile ()
@@ -462,7 +462,7 @@ public class TerrainBlock : MonoBehaviour, System.IComparable<TerrainBlock>
 	{
 		if (!showingMoveTile && TerrainBuilder.ManhattanDistance (transform.position, unit.transform.position) <= moveRange) {
 			showingMoveTile = true;
-			InGameController.currentTerrain.illuminatedMovementRangeBlocks.Add (this);
+			InGameController.instance.currentTerrain.illuminatedMovementRangeBlocks.Add (this);
 			for (int i = 0; i < adjacentBlocks.Length; i++) {
 				if (adjacentBlocks [i].UnitMovementCost (unit.moveClass) > 0) {
 					if (adjacentBlocks [i].UnitMovementCost (unit.moveClass) + minDistanceSoFar < adjacentBlocks [i].minDistanceSoFar) {

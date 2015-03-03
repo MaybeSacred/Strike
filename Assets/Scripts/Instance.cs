@@ -18,7 +18,7 @@ public class Instance
 		playerUnitCount = new float[numUnits];
 		enemyAverageUnitCount = new float[numUnits];
 		neutralUnitCount = new float[numUnits];
-		prettyName = "Instance " + Instance.currentNumber++ + " " + InGameController.currentTurn;
+		prettyName = "Instance " + Instance.currentNumber++ + " " + InGameController.instance.currentTurn;
 	}
 	public virtual string CreateARFFDataString (bool moreReadable)
 	{

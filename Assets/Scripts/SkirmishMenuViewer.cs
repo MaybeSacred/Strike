@@ -90,7 +90,7 @@ public class SkirmishMenuViewer : MonoBehaviour
 			RectTransform t = InstantiateUIPrefab (mapNameLoadButton, mapNamePanel);
 			t.GetComponentsInChildren<UnityEngine.UI.Text> (true) [0].text = MapData.FormatMapName (mapNames [i]);
 			mapButtons.Add (t);
-			mapButtons [i].gameObject.AddComponent<TooltipData> ().mouseOverText = "Players: " + maps [i].maxPlayers + "\n" + maps [i].mapDescription;
+			Tooltip.AddNewTooltip (mapButtons [i].gameObject, "Players: " + maps [i].maxPlayers + "\n" + maps [i].mapDescription);
 			string captured = mapNames [i].ToString ();
 			//add our delegate to the onClick handler, with appropriate indexing
 			Encapsulator (t, captured);

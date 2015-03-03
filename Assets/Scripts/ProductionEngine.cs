@@ -36,7 +36,7 @@ public class ProductionEngine
 	{
 		frequencyList = ZeroOut (frequencyList);
 		// Compile a game state instance
-		Instance instance = InGameController.CreateInstance (UnitName.Infantry, false);
+		Instance instance = InGameController.instance.CreateInstance (UnitName.Infantry, false);
 		// Load rules
 		rules = new List<ProductionRule> ();
 		// Add naval rules if there are shipyards

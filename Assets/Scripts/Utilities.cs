@@ -113,7 +113,7 @@ public class Utilities : MonoBehaviour
 					playersToAdd [i] = temp;
 				}
 			}
-			InGameController.Setup (playersToAdd);
+			InGameController.instance.Setup (playersToAdd);
 			fogOfWarEnabled = gameSettings.fogOfWarEnabled;
 			if (gameSettings.startingFunds > 0) {
 				for (int i = 0; i < playersToAdd.Length; i++) {
@@ -137,7 +137,7 @@ public class Utilities : MonoBehaviour
 	void Update ()
 	{
 		if (Input.GetKeyDown ("g")) {
-			InGameController.RemovePlayer (InGameController.GetCurrentPlayer ());
+			InGameController.instance.RemovePlayer (InGameController.instance.GetCurrentPlayer ());
 		}
 	}
 

@@ -16,6 +16,6 @@ public class TerrainGameView : GameView
 		nameText.text = name;
 		defenseText.text = defense;
 		totalDefenseText.text = totalDefense;
-		currentWeather.text = InGameController.weather.currentWeather.ToString ();
+		currentWeather.text = InGameController.instance.weather.currentWeather.ToString ();
 	}
 }
