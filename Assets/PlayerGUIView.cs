@@ -76,6 +76,8 @@ public class PlayerGUIView : MonoBehaviour
 			RectTransform t = SkirmishMenuViewer.InstantiateUIPrefab (buttonPrototype, generalSelectDropdown.GetComponent<RectTransform> ());
 			t.GetComponentsInChildren<UnityEngine.UI.Text> (true) [0].text = name.ToString ();
 			generalDropdownButtons.Add (t);
+			generalDropdownButtons [generalDropdownButtons.Count - 1].gameObject.AddComponent<TooltipData> ().mouseOverText 
+			= Utilities.GetGeneral (name).GetComponent<TooltipData> ().mouseOverText;
 			Generals captured = name;
 			// add our delegate to the onClick handler, with appropriate indexing
 			t.GetComponent<UnityEngine.UI.Button> ().onClick.AddListener (() => {

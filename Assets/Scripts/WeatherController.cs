@@ -102,7 +102,7 @@ public class WeatherController : MonoBehaviour
 			foreach (Player p in players) {
 				foreach (UnitController uc in p.units) {
 					if (uc.moveClass == MovementType.Air) {
-						uc.modifier.AddModifier (UnitPropertyModifier.PropertyModifiers.VisionRange, UnitPropertyModifier.ModifierTypes.Weather, -2);
+						uc.modifier.AddModifier (UnitPropertyModifier.PropertyModifiers.VisionRange, UnitPropertyModifier.ModifierTypes.Weather, -1);
 					}
 				}
 			}
@@ -124,7 +124,7 @@ public class WeatherController : MonoBehaviour
 	{
 		if (currentWeather == WeatherType.Dusty) {
 			if (inUnit.moveClass == MovementType.Air) {
-				inUnit.modifier.AddModifier (UnitPropertyModifier.PropertyModifiers.VisionRange, UnitPropertyModifier.ModifierTypes.Weather, -2);
+				inUnit.modifier.AddModifier (UnitPropertyModifier.PropertyModifiers.VisionRange, UnitPropertyModifier.ModifierTypes.Weather, -1);
 			}
 		} else if (currentWeather == WeatherType.Snowing) {
 			inUnit.modifier.AddModifier (UnitPropertyModifier.PropertyModifiers.MovementRange, UnitPropertyModifier.ModifierTypes.Weather, -1);
