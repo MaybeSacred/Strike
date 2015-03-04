@@ -34,9 +34,11 @@ public class Utilities : MonoBehaviour
 	void Awake ()
 	{
 		bindings = new KeyBindings ();
-		bindings.clearButton = KeyCode.G;
+#if UNITY_WEBPLAYER || UNITY_STANDALONE
+		bindings.clearButton = KeyCode.C;
 		bindings.infoButton = KeyCode.I;
-		bindings.moveToNextUnit = KeyCode.Q;
+		bindings.moveToNextUnit = KeyCode.M;
+#endif
 #if UNITY_STANDALONE
 		LearnerUtilities.SetJREPath();
 #endif

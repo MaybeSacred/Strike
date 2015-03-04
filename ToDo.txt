@@ -1,9 +1,7 @@
 playability
 collect statistics about unit effectiveness
-com towrs need boost range visible
+com towers need boost range visible
 save feature
 better general power - should flash when ready
 adjust menu items for screen size - reduce text size
-display turn
 display keys for play - create buttons for mobile-friendly - remove right-click interactions
-add tooltip display for gui elements
