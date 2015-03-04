@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\CameraSpinner.cs" />
+     <Compile Include="Assets\DetailedInfoBoxViewer.cs" />
      <Compile Include="Assets\Editor Default Resources\MapDataDummy.cs" />
      <Compile Include="Assets\Fantasy Skybox FREE\Scripts\FSPlayer.cs" />
      <Compile Include="Assets\GeneralBarView.cs" />

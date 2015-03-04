@@ -1785,4 +1785,14 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 		                   UnitGameView.FormatSlashedString ((Mathf.FloorToInt (currentFuel)).ToString (), startFuel.ToString ()),
 		                   veteranStatus, carriedUnits.Count, isStealthed);
 	}
+	/// <summary>
+	/// Populates the input detail box with appropriate data
+	/// </summary>
+	/// <param name="detailedTextBox">Detailed text box.</param>
+	public void SetDetailedInfo (DetailedInfoBoxViewer detailedTextBox)
+	{
+		List<UnitName> bestAgainst = DamageValues.TopStrongestAgainst (unitClass);
+		List<UnitName> weakestAgainst = DamageValues.TopDamagingUnits (unitClass);
+		detailedTextBox.SetBoxInfo (unitClass.ToString (), description, bestAgainst, weakestAgainst);
+	}
 }

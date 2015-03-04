@@ -30,9 +30,8 @@ public class InGameGUI : MonoBehaviour
 	// A displayer for high-level unit details
 	public UnitGameView unitView;
 	
-	// Components for displaying detailed unit info
-	public GameObject detailedTextBox;
-	public UnityEngine.UI.Text detailedInfoText;
+	// Component for displaying detailed unit info
+	public DetailedInfoBoxViewer detailedTextBox;
 	
 	// Advance turn button
 	public UnityEngine.UI.Button advanceTurnButton;
@@ -69,7 +68,7 @@ public class InGameGUI : MonoBehaviour
 		undoButton.onClick.AddListener (() => {
 			InGameController.instance.SimulateRightClick ();
 		});
-		detailedTextBox.SetActive (false);
+		detailedTextBox.gameObject.SetActive (false);
 		pauseMenu.SetActive (false);
 		unitSelectionDisplayer.gameObject.SetActive (false);
 		generalBarView.gameObject.SetActive (false);
@@ -131,14 +130,14 @@ public class InGameGUI : MonoBehaviour
 		}
 		// If "info" key, display detailed information about what is hovered over
 		if (Input.GetKeyDown ("i")) {
-			detailedTextBox.SetActive (!detailedTextBox.activeSelf);
+			detailedTextBox.gameObject.SetActive (!detailedTextBox.gameObject.activeSelf);
 			if (unitMousedOver != null) {
-				detailedInfoText.text = unitMousedOver.description;
+				unitMousedOver.SetDetailedInfo (detailedTextBox);
 			} else if (propertyMousedOver != null) {
-				detailedInfoText.text = propertyMousedOver.description;
-			} else if (blockMousedOver != null) {
+				propertyMousedOver.SetDetailedInfo (detailedTextBox);
+			}/* else if (blockMousedOver != null) {
 				detailedInfoText.text = blockMousedOver.description;
-			}
+			}*/
 		}
 	}
 	void OnGUI ()
@@ -256,7 +255,6 @@ public class InGameGUI : MonoBehaviour
 	public void ShowUnitSelectionDisplay (UnitName[] producableUnits, int maxFunds, Action<UnitName> productionCallback, Action unselectedCallback)
 	{
 		unitSelectionDisplayer.DisplayUnitList (producableUnits, maxFunds, productionCallback, unselectedCallback);
-		
 	}
 	/// <summary>
 	/// Hides the unit selection display.

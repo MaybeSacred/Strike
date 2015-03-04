@@ -464,5 +464,11 @@ public class Property : MonoBehaviour, AttackableObject
 		propertyView.SetValues (prettyName, UnitGameView.FormatSlashedString (health.ToString (), "10"), 
 							   DefenseBonus ().ToString (), UnitGameView.FormatSlashedString (captureCount.ToString (), "20"));
 	}
+
+	public void SetDetailedInfo (DetailedInfoBoxViewer detailedTextBox)
+	{
+		
+	}
+
 }
 

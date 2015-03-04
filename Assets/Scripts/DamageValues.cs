@@ -9,8 +9,9 @@ using System.Runtime.Serialization.Formatters.Binary;
 public class DamageValues : MonoBehaviour
 {
 	public static readonly float DEFENSECONSTANT = 10;//How strong a unit of defense counts for
-	public static int[][] unitDamageArray;//values of -1 will be unable to attack that unit
+	static int[][] unitDamageArray;//values of -1 will be unable to attack that unit
 	static DamageValues instance;
+	static int minDamageThreshold = 40;
 	// Use this for initialization
 	void Awake ()
 	{
@@ -90,5 +91,61 @@ public class DamageValues : MonoBehaviour
 		output /= (90f + defender.DefenseBonus () + 2 * (defender.GetHealth ().PrettyHealth ()));
 		output /= 10f;
 		return Mathf.RoundToInt (output);
+	}
+	/// <summary>
+	/// Returns a list of units the input unit is strongest against
+	/// </summary>
+	/// <returns>The strongest against.</returns>
+	/// <param name="root">Root.</param>
+	public static List<UnitName> TopStrongestAgainst (UnitName root)
+	{
+		List<Tuple<UnitName, int>> temp = new List<Tuple<UnitName, int>> ();
+		for (int i = 0; i < unitDamageArray[(int)root].Length; i++) {
+			if (unitDamageArray [(int)root] [i] >= minDamageThreshold) {
+				temp.Add (new Tuple<UnitName, int> ((UnitName)Enum.GetValues (typeof(UnitName)).GetValue (i), unitDamageArray [(int)root] [i]));
+			}
+		}
+		temp.Sort ((Tuple<UnitName, int> a, Tuple<UnitName, int> b) => {
+			if (a.Item2 > b.Item2) {
+				return -1;
+			} else if (a.Item2 < b.Item2) {
+				return 1;
+			} else {
+				return 0;
+			}
+		});
+		List<UnitName> outgoing = new List<UnitName> ();
+		for (int i = 0; i < temp.Count && i < 5; i++) {
+			outgoing.Add (temp [i].Item1);
+		}
+		return outgoing;
+	}
+	/// <summary>
+	/// Returns a list of units the input unit takes the most damage from
+	/// </summary>
+	/// <returns>The damaging units.</returns>
+	/// <param name="root">Root.</param>
+	public static List<UnitName> TopDamagingUnits (UnitName root)
+	{
+		List<Tuple<UnitName, int>> temp = new List<Tuple<UnitName, int>> ();
+		for (int i = 0; i < unitDamageArray[(int)root].Length; i++) {
+			if (unitDamageArray [i] [(int)root] >= minDamageThreshold) {
+				temp.Add (new Tuple<UnitName, int> ((UnitName)Enum.GetValues (typeof(UnitName)).GetValue (i), unitDamageArray [i] [(int)root]));
+			}
+		}
+		temp.Sort ((Tuple<UnitName, int> a, Tuple<UnitName, int> b) => {
+			if (a.Item2 > b.Item2) {
+				return -1;
+			} else if (a.Item2 < b.Item2) {
+				return 1;
+			} else {
+				return 0;
+			}
+		});
+		List<UnitName> outgoing = new List<UnitName> ();
+		for (int i = 0; i < temp.Count && i < 5; i++) {
+			outgoing.Add (temp [i].Item1);
+		}
+		return outgoing;
 	}
 }

@@ -42,8 +42,7 @@ public class TooltipDisplayer : MonoBehaviour
 			if (mouseOverTimer > mouseOverStartTime && !tooltipWasDisplayed) {
 				tooltipWasDisplayed = true;
 				tooltip.gameObject.SetActive (true);
-				tooltip.SetText (lastObjectMouseWasOver.GetComponent<TooltipData> ().mouseOverText);
-				tooltip.SetPosition (pe.position);
+				tooltip.SetPositionAndText (pe.position, lastObjectMouseWasOver.GetComponent<TooltipData> ().mouseOverText);
 			}
 		} else {
 			lastObjectMouseWasOver = null;

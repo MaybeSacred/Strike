@@ -13,7 +13,7 @@ using System.IO;
 using UnityEngine;
 
 
-public class MapSaveModificationProcessor : AssetModificationProcessor
+public class MapSaveModificationProcessor : UnityEditor.AssetModificationProcessor
 {
 	public static string[] OnWillSaveAssets (string[] paths)
 	{
