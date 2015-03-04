@@ -1,18 +1,19 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class OptionsMenu : MonoBehaviour {
+public class OptionsMenu : MonoBehaviour
+{
 
 	// Use this for initialization
-	void Start () {
+	void Start ()
+	{
 	
 	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
-	public void OnReturnToMenu(){
-		Application.LoadLevel("Splash");
+	/// <summary>
+	/// Returns to the splash menu
+	/// </summary>
+	public void OnReturnToMenu ()
+	{
+		Application.LoadLevel ("Splash");
 	}
 }

@@ -20,8 +20,8 @@ public class InGameController : MonoBehaviour
 	int currentUnitMousedOver;
 	List<ParticleSystem> possibleTargetParticles;
 	public WeatherController weather;
-	public int currentTurn = 0;
-	public bool endingGame;
+	public int currentTurn { get; set; }
+	public bool endingGame { get; set; }
 	int turnState;
 	private bool leftClick, rightClick;
 	public bool LeftClick {
@@ -44,6 +44,7 @@ public class InGameController : MonoBehaviour
 	{
 		if (instance == null || instance == this) {
 			instance = this;
+			currentTurn++;
 			DontDestroyOnLoad (this);
 			currentTerrain = GameObject.FindObjectOfType<TerrainBuilder> ();
 			mouseOverParticles = Instantiate (mouseParticles) as ParticleSystem;
@@ -96,7 +97,7 @@ public class InGameController : MonoBehaviour
 				isPaused = true;
 				InGameGUI.instance.Pause ();
 			}
-			if (Input.GetKeyDown ("q")) {
+			if (Input.GetKeyDown (Utilities.bindings.moveToNextUnit)) {
 				MoveCameraToNextPlayerUnit ();
 			}
 		}

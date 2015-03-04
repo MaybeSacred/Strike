@@ -3,7 +3,7 @@ using System.Collections;
 
 public class TerrainGameView : GameView
 {
-	public UnityEngine.UI.Text nameText, defenseText, totalDefenseText, currentWeather;
+	public UnityEngine.UI.Text nameText, defenseText, totalDefenseText, currentWeather, turnField;
 	/// <summary>
 	/// Sets the values of the Gui box
 	/// </summary>
@@ -17,5 +17,6 @@ public class TerrainGameView : GameView
 		defenseText.text = defense;
 		totalDefenseText.text = totalDefense;
 		currentWeather.text = InGameController.instance.weather.currentWeather.ToString ();
+		turnField.text = InGameController.instance.currentTurn.ToString ();
 	}
 }

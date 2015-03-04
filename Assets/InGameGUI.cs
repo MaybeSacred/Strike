@@ -129,7 +129,7 @@ public class InGameGUI : MonoBehaviour
 			hoveredPlayerView.gameObject.SetActive (false);
 		}
 		// If "info" key, display detailed information about what is hovered over
-		if (Input.GetKeyDown ("i")) {
+		if (Input.GetKeyDown (Utilities.bindings.infoButton)) {
 			detailedTextBox.gameObject.SetActive (!detailedTextBox.gameObject.activeSelf);
 			if (unitMousedOver != null) {
 				unitMousedOver.SetDetailedInfo (detailedTextBox);

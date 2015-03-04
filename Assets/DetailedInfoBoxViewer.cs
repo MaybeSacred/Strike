@@ -32,27 +32,27 @@ public class DetailedInfoBoxViewer : MonoBehaviour
 	{
 		nameField.text = name;
 		descriptionField.text = description;
-		if (strongAgainst.Count == 0) {
+		if (strongAgainst == null || strongAgainst.Count == 0) {
 			strongAgainstField.text = "--";
 		} else {
 			string temp = "";
 			for (int i = 0; i < strongAgainst.Count - 1; i++) {
-				temp += strongAgainst [i].ToString () + ", ";
+				temp += MapData.FormatMapName (strongAgainst [i].ToString ()) + ", ";
 			}
 			if (strongAgainst.Count > 1) {
-				temp += strongAgainst [strongAgainst.Count - 1].ToString ();
+				temp += MapData.FormatMapName (strongAgainst [strongAgainst.Count - 1].ToString ());
 			}
 			strongAgainstField.text = temp;
 		}
-		if (weakAgainst.Count == 0) {
+		if (weakAgainst == null || weakAgainst.Count == 0) {
 			weakAgainstField.text = "--";
 		} else {
 			string temp = "";
 			for (int i = 0; i < weakAgainst.Count - 1; i++) {
-				temp += weakAgainst [i].ToString () + ", ";
+				temp += MapData.FormatMapName (weakAgainst [i].ToString ()) + ", ";
 			}
 			if (weakAgainst.Count > 1) {
-				temp += weakAgainst [weakAgainst.Count - 1].ToString ();
+				temp += MapData.FormatMapName (weakAgainst [weakAgainst.Count - 1].ToString ());
 			}
 			weakAgainstField.text = temp;
 		}

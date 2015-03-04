@@ -30,8 +30,13 @@ public class Utilities : MonoBehaviour
 	public static InGameCamera gameCamera;
 	public AIPlayer easyAIPrototype, mediumAIPrototype, hardAIPrototype;
 	private static List<PlayerInGameStatistics> statistics;
+	public static KeyBindings bindings;
 	void Awake ()
 	{
+		bindings = new KeyBindings ();
+		bindings.clearButton = KeyCode.G;
+		bindings.infoButton = KeyCode.I;
+		bindings.moveToNextUnit = KeyCode.Q;
 #if UNITY_STANDALONE
 		LearnerUtilities.SetJREPath();
 #endif
@@ -136,7 +141,7 @@ public class Utilities : MonoBehaviour
 	}
 	void Update ()
 	{
-		if (Input.GetKeyDown ("g")) {
+		if (Input.GetKeyDown (bindings.clearButton)) {
 			InGameController.instance.RemovePlayer (InGameController.instance.GetCurrentPlayer ());
 		}
 	}
@@ -178,4 +183,10 @@ public class Utilities : MonoBehaviour
 		}
 		return outString;
 	}
+}
+public struct KeyBindings
+{
+	public KeyCode clearButton;
+	public KeyCode infoButton;
+	public KeyCode moveToNextUnit;
 }

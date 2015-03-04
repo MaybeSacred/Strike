@@ -467,7 +467,8 @@ public class Property : MonoBehaviour, AttackableObject
 
 	public void SetDetailedInfo (DetailedInfoBoxViewer detailedTextBox)
 	{
-		
+		List<UnitName> weakestAgainst = DamageValues.TopDamagingUnits (propertyType);
+		detailedTextBox.SetBoxInfo (propertyType.ToString (), description, null, weakestAgainst);
 	}
 
 }
