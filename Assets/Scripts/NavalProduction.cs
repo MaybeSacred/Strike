@@ -157,6 +157,19 @@ class NavalProduction
 		}
 		return outList;
 	}
+	List<Tuple<UnitName, float>> SupplyShipRule (Instance data, Player thisPlayer)
+	{
+		List<Tuple<UnitName, float>> outList = new List<Tuple<UnitName, float>> ();
+		// build a boomer if we have high income or monies
+		if (data.playerUnitCount [(int)UnitName.SupplyShip] < 1) {
+			outList.Add (new Tuple<UnitName, float> (UnitName.SupplyShip, 1));
+		} else if (data.playerUnitCount [(int)UnitName.SupplyShip] < 2) {
+			outList.Add (new Tuple<UnitName, float> (UnitName.SupplyShip, .5f));
+		} else if (data.playerUnitCount [(int)UnitName.SupplyShip] < 4) {
+			outList.Add (new Tuple<UnitName, float> (UnitName.SupplyShip, .25f));
+		}
+		return outList;
+	}
 	/// <summary>
 	/// Some general conditions and how different naval units should balance
 	/// </summary>
