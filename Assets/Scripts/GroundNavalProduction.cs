@@ -44,4 +44,3 @@ public class GroundNavalProduction
 		return outList;
 	}
 }
-
