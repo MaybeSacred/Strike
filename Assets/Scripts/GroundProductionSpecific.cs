@@ -24,7 +24,7 @@ class GroundProductionSpecific
 	/// <param name="thisPlayer">This player.</param>
 	List<Tuple<UnitName, float>> TankGroundRule (Instance data, Player thisPlayer)
 	{
-		List<Tuple<UnitName, float>> outList = new List<Tuple<UnitName, float>> ();
+		var outList = new List<Tuple<UnitName, float>> ();
 		if (InGameController.instance.currentTurn >= 5) {
 			// If we're close to building a tank
 			if (thisPlayer.funds >= (Utilities.GetPrefabFromUnitName (UnitName.LightTank) as UnitController).baseCost * .75f) {

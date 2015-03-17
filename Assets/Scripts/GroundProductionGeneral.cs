@@ -26,6 +26,7 @@ class GroundProductionGeneral
 		rules.Add (ResupplyTankRule);
 		rules.Add (SniperGroundRule);
 		rules.Add (FOWRadarRule);
+		rules.Add (AntiAirRule);
 		return rules;
 	}
 	/// <summary>
@@ -188,6 +189,25 @@ class GroundProductionGeneral
 				outList.Add (new Tuple<UnitName, float> (UnitName.LightTank, .66f));
 				outList.Add (new Tuple<UnitName, float> (UnitName.MediumTank, .25f));
 			}
+		}
+		return outList;
+	}
+	/// <summary>
+	/// Rule for production of antiair ground units
+	/// </summary>
+	/// <returns>The air rule.</returns>
+	/// <param name="data">Data.</param>
+	/// <param name="thisPlayer">This player.</param>
+	List<Tuple<UnitName, float>> AntiAirRule (Instance data, Player thisPlayer)
+	{
+		var outList = new List<Tuple<UnitName, float>> ();
+		var totalEnemyAirUnits = data.enemyAverageUnitCount [(int)UnitName.AttackCopter] + 
+			data.enemyAverageUnitCount [(int)UnitName.CarpetBomber] + 
+			data.enemyAverageUnitCount [(int)UnitName.Interceptor] + 
+			data.enemyAverageUnitCount [(int)UnitName.TacticalFighter];
+		if (totalEnemyAirUnits > 0) {
+			outList.Add (new Tuple<UnitName, float> (UnitName.AATank, .2f * (.5f + totalEnemyAirUnits - data.playerUnitCount [(int)UnitName.AATank])));
+			outList.Add (new Tuple<UnitName, float> (UnitName.Missiles, .07f * (.25f + totalEnemyAirUnits - data.playerUnitCount [(int)UnitName.Missiles])));
 		}
 		return outList;
 	}

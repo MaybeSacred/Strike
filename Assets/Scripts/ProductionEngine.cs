@@ -42,34 +42,40 @@ public class ProductionEngine
 		// Add naval rules if there are shipyards
 		if (instance.playerUnitCount [(int)UnitName.Shipyard] > 0) {
 			NavalProduction np = new NavalProduction ();
-			foreach (ProductionRule r in np.GetRules()) {
-				rules.Add (r);
+			rules.AddRange (np.GetRules ());
+			// Add rules for ground-naval only
+			if (instance.playerUnitCount [(int)UnitName.Airport] == 0) {
+				GroundNavalProduction gnp = new GroundNavalProduction ();
+				rules.AddRange (gnp.GetRules ());
+			} else {
+				// Add rules when all three combat styles are present
+				CombinedForcesProduction cfp = new CombinedForcesProduction ();
+				rules.AddRange (cfp.GetRules ());
 			}
 		}
 		// Add air rules if there are airports
 		if (instance.playerUnitCount [(int)UnitName.Airport] > 0) {
 			AirProduction ap = new AirProduction ();
-			foreach (ProductionRule r in ap.GetRules()) {
-				rules.Add (r);
+			rules.AddRange (ap.GetRules ());
+			// Add rules for ground-aerial only
+			if (instance.playerUnitCount [(int)UnitName.Shipyard] == 0) {
+				var gnp = new GroundAerialProduction ();
+				rules.AddRange (gnp.GetRules ());
 			}
 		}
 		// Add ground rules if its a ground-only map
 		if (instance.playerUnitCount [(int)UnitName.Airport] == 0 && instance.playerUnitCount [(int)UnitName.Shipyard] == 0) {
 			GroundProductionSpecific gps = new GroundProductionSpecific ();
-			foreach (ProductionRule r in gps.GetRules()) {
-				rules.Add (r);
-			}
+			rules.AddRange (gps.GetRules ());
 		}
 		// Ground rules common to all maps
 		GroundProductionGeneral gpg = new GroundProductionGeneral ();
-		foreach (ProductionRule r in gpg.GetRules()) {
-			rules.Add (r);
-		}
+		rules.AddRange (gpg.GetRules ());
 		// Apply rules
 		foreach (ProductionRule pr in rules) {
-			List<Tuple<UnitName, float>> temp = pr.Invoke (instance, player);
+			var temp = pr.Invoke (instance, player);
 			// Increase returned units in frequency list
-			foreach (Tuple<UnitName, float> u in temp) {
+			foreach (var u in temp) {
 				frequencyList [u.Item1] += u.Item2;
 			}
 		}

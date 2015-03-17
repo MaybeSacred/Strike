@@ -23,6 +23,7 @@ public class GroundNavalProduction
 	{
 		List<ProductionEngine.ProductionRule> rules = new List<ProductionEngine.ProductionRule> ();
 		rules.Add (SupplyShipRule);
+		rules.Add (OverallForceRule);
 		return rules;
 	}
 	/// <summary>
@@ -37,9 +38,65 @@ public class GroundNavalProduction
 		if (data.playerUnitCount [(int)UnitName.SupplyShip] < 2) {
 			outList.Add (new Tuple<UnitName, float> (UnitName.SupplyShip, .25f));
 			// Suppress expensive ground unit production
-			outList.Add (new Tuple<UnitName, float> (UnitName.MediumTank, -.25f));
-			outList.Add (new Tuple<UnitName, float> (UnitName.Rockets, -.25f));
-			outList.Add (new Tuple<UnitName, float> (UnitName.LightTank, -.25f));
+			outList.Add (new Tuple<UnitName, float> (UnitName.MediumTank, -.2f));
+			outList.Add (new Tuple<UnitName, float> (UnitName.Rockets, -.2f));
+			outList.Add (new Tuple<UnitName, float> (UnitName.LightTank, -.2f));
+		}
+		return outList;
+	}
+	/// <summary>
+	/// A rule that builds more navy when the enemy has more navy, 
+	/// and more ground when the enemy has more ground troops
+	/// </summary>
+	/// <returns>The force rule.</returns>
+	/// <param name="data">Data.</param>
+	/// <param name="thisPlayer">This player.</param>
+	List<Tuple<UnitName, float>> OverallForceRule (Instance data, Player thisPlayer)
+	{
+		var outList = new List<Tuple<UnitName, float>> ();
+		var totalEnemyGround = data.enemyAverageUnitCount [(int)UnitName.FieldArtillery] + 
+			data.enemyAverageUnitCount [(int)UnitName.Rockets] + 
+			data.enemyAverageUnitCount [(int)UnitName.LightTank] + 
+			data.enemyAverageUnitCount [(int)UnitName.MediumTank];
+		
+		var totalEnemyNavy = data.enemyAverageUnitCount [(int)UnitName.Corvette] + 
+			data.enemyAverageUnitCount [(int)UnitName.Destroyer] + 
+			data.enemyAverageUnitCount [(int)UnitName.Submarine] + 
+			data.enemyAverageUnitCount [(int)UnitName.Boomer];
+		
+		var totalPlayerGround = data.playerUnitCount [(int)UnitName.FieldArtillery] + 
+			data.playerUnitCount [(int)UnitName.Rockets] + 
+			data.playerUnitCount [(int)UnitName.LightTank] + 
+			data.playerUnitCount [(int)UnitName.MediumTank];
+		
+		var totalPlayerNavy = data.playerUnitCount [(int)UnitName.Corvette] + 
+			data.playerUnitCount [(int)UnitName.Destroyer] + 
+			data.playerUnitCount [(int)UnitName.Submarine] + 
+			data.playerUnitCount [(int)UnitName.Boomer];
+		
+		if (totalEnemyNavy > totalEnemyGround) {
+			if (totalPlayerNavy > totalPlayerGround) {
+				outList.Add (new Tuple<UnitName, float> (UnitName.Corvette, .1f));
+				outList.Add (new Tuple<UnitName, float> (UnitName.Destroyer, .1f));
+				outList.Add (new Tuple<UnitName, float> (UnitName.Submarine, .1f));
+			} else {
+				outList.Add (new Tuple<UnitName, float> (UnitName.Corvette, .15f));
+				outList.Add (new Tuple<UnitName, float> (UnitName.Destroyer, .15f));
+				outList.Add (new Tuple<UnitName, float> (UnitName.Submarine, .15f));
+				outList.Add (new Tuple<UnitName, float> (UnitName.Boomer, .1f));
+				outList.Add (new Tuple<UnitName, float> (UnitName.FieldArtillery, -.1f));
+				outList.Add (new Tuple<UnitName, float> (UnitName.LightTank, -.1f));
+				outList.Add (new Tuple<UnitName, float> (UnitName.MediumTank, -.1f));
+			}
+		} else {
+			if (totalPlayerNavy > totalPlayerGround) {
+				outList.Add (new Tuple<UnitName, float> (UnitName.FieldArtillery, .1f));
+				outList.Add (new Tuple<UnitName, float> (UnitName.LightTank, .1f));
+				outList.Add (new Tuple<UnitName, float> (UnitName.MediumTank, .1f));
+				outList.Add (new Tuple<UnitName, float> (UnitName.Rockets, .1f));
+			} else {
+				// Do nothing
+			}
 		}
 		return outList;
 	}

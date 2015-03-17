@@ -5,3 +5,5 @@ save feature
 better general power - should flash when ready
 adjust menu items for screen size - reduce text size
 display keys for play - create buttons for mobile-friendly - remove right-click interactions
+finish ai
+finish production engines
