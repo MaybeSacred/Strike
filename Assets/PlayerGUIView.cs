@@ -176,14 +176,6 @@ public class PlayerGUIView : MonoBehaviour
 		AISelectDropdown.gameObject.SetActive (false);
 		playerSelected = null;
 	}
-	/// <summary>
-	/// Returns the player associated with this gui block
-	/// </summary>
-	/// <returns>The player.</returns>
-	public Player GetPlayer ()
-	{
-		return thisPlayer;
-	}
 	
 	/// <summary>
 	/// Changes the hue of a slider

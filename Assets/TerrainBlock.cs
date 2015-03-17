@@ -44,15 +44,6 @@ public class TerrainBlock : MonoBehaviour, System.IComparable<TerrainBlock>
 	public int fogVisionBoost;
 	public TERRAINTYPE typeOfTerrain;
 	
-	[System.Serializable]
-	public class MovementFuelCost
-	{
-		public MovementType type;
-		/// <summary>
-		/// -1 if a move type cannot move on this terrain
-		/// </summary>
-		public float cost;
-	}
 	public bool randomizeOnStartup;
 	public UnitController occupyingUnit{ get; private set; }
 	public Property occupyingProperty{ get; private set; }
@@ -62,6 +53,17 @@ public class TerrainBlock : MonoBehaviour, System.IComparable<TerrainBlock>
 	bool displayUnitInfo;
 	public string description;
 	int[] reachability;
+	
+	[System.Serializable]
+	public class MovementFuelCost
+	{
+		public MovementType type;
+		/// <summary>
+		/// -1 if a move type cannot move on this terrain
+		/// </summary>
+		public float cost;
+	}
+	
 	void Awake ()
 	{
 		reachability = new int[System.Enum.GetNames (typeof(MovementType)).Length];

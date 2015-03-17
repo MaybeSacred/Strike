@@ -63,7 +63,7 @@ public class Utilities : MonoBehaviour
 	{
 		for (int i = 0; i < generalPrototypes.Length; i++) {
 			if (generalPrototypes [i].name.Equals (id.ToString ())) {
-				return Instantiate (generalPrototypes [i]) as General;
+				return generalPrototypes [i];
 			}
 		}
 		throw new UnityException ("General not found");

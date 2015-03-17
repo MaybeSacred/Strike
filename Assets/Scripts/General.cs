@@ -20,16 +20,24 @@ public class General : MonoBehaviour
 	public bool powerInEffect { get; private set; }
 	private List<UnitController> unitsInPowerEffect;
 	private List<ParticleSystem> zoneBlocks;
-	public ParticleSystem prototype;
+	public ParticleSystem particlePrototype;
 	public Player owner { get; private set; }
 	private bool isActive;
 	void Awake ()
 	{
-		zoneBlocks = new List<ParticleSystem> (GetBlockCount (zoneSize + zoneSizeBoost));
-		for (int i = 0; i < GetBlockCount(zoneSize + 2); i++) {
-			zoneBlocks.Add (Instantiate (prototype) as ParticleSystem);
-			zoneBlocks [i].gameObject.SetActive (false);
+	
+	}
+	public static General CreateGeneral (General prototype)
+	{
+		General g = Instantiate (prototype) as General;
+		g.transform.position = Vector3.zero;
+		g.zoneBlocks = new List<ParticleSystem> (g.GetBlockCount (g.zoneSize + g.zoneSizeBoost));
+		for (int i = 0; i < g.GetBlockCount(g.zoneSize + 2); i++) {
+			g.zoneBlocks.Add (Instantiate (g.particlePrototype) as ParticleSystem);
+			g.zoneBlocks [i].transform.SetParent (g.transform);
+			g.zoneBlocks [i].gameObject.SetActive (false);
 		}
+		return g;
 	}
 	public void ShowZone (TerrainBlock centerBlock)
 	{

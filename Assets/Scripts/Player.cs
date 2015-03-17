@@ -110,7 +110,7 @@ public class Player : MonoBehaviour
 	/// </summary>
 	public void SetupGeneral ()
 	{
-		selectedGeneral = Utilities.GetGeneral (generalSelectedInGUI);
+		selectedGeneral = General.CreateGeneral (Utilities.GetGeneral (generalSelectedInGUI));
 		selectedGeneral.SetOwner (this);
 	}
 	/// <summary>
