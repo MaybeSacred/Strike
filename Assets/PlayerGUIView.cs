@@ -43,7 +43,7 @@ public class PlayerGUIView : MonoBehaviour
 	{
 		var names = new WWW (SkirmishMenuViewer.ApplicationServerURL + @"/Data/naughty.txt");
 		while (!names.isDone) {
-			yield return new WaitForSeconds (.001f);
+			yield return new WaitForEndOfFrame ();
 		}
 		MemoryStream ms = new MemoryStream (names.bytes);
 		StreamReader sr = new StreamReader (ms);
@@ -225,6 +225,9 @@ public class PlayerGUIView : MonoBehaviour
 			return false;
 		}
 		if (naughtyWords.Contains (input)) {
+			return false;
+		}
+		if (input.Trim ().Equals ("")) {
 			return false;
 		}
 		return true;

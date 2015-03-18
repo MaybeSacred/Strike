@@ -349,6 +349,13 @@ public class SkirmishMenuViewer : MonoBehaviour
 		}
 	}
 	/// <summary>
+	/// Returns the application to the start screen
+	/// </summary>
+	public void OnReturnToStartScreen ()
+	{
+		Utilities.LoadTitleScreen ();
+	}
+	/// <summary>
 	/// Starts the game.
 	/// </summary>
 	public void StartGame ()
