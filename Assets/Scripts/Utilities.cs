@@ -18,7 +18,7 @@ public class Utilities : MonoBehaviour
 	public static Color canFireNowRangeColor;	
 	public static Color cannotFireNowRangeColor;
 	public UnitPrefabBindingClass[] editorUnits;
-	public static UnitPrefabBindingClass[] units;
+	static Dictionary<UnitName, MonoBehaviour> units;
 	public static bool fogOfWarEnabled;
 	public static TerrainBlock selectedBlock;
 	public static General[] generalPrototypes;
@@ -48,7 +48,10 @@ public class Utilities : MonoBehaviour
 	{
 		DontDestroyOnLoad (this);
 		generalPrototypes = generals;
-		units = editorUnits;
+		units = new Dictionary<UnitName, MonoBehaviour> ();
+		foreach (var e in editorUnits) {
+			units.Add (e.name, e.prefab);
+		}
 		healthPoint = hpPic;
 		unitRankInsignias = unitRankInsigniasEditor;
 		canFireNowRangeColor = new Color ((float)113 / 256, 0, 0, (float)143 / 256);
@@ -163,8 +166,10 @@ public class Utilities : MonoBehaviour
 	
 	public static MonoBehaviour GetPrefabFromUnitName (UnitName inName)
 	{
-		if ((int)inName < units.Length && units [(int)inName].prefab != null) {
-			return units [(int)inName].prefab;
+		if (units.ContainsKey (inName)) {
+			MonoBehaviour temp;
+			units.TryGetValue (inName, out temp);
+			return temp;
 		}
 		return null;
 	}

@@ -5,7 +5,7 @@ using System;
 public class InGameController : MonoBehaviour
 {
 	// Exposed instance
-	public static InGameController instance;
+	public static InGameController instance{ get; protected set; }
 	
 	List<Player> players;
 	List<PlayerInGameStatistics> collectedStatistics;

@@ -25,7 +25,7 @@ public class CombinedForcesProduction
 	{
 		var outList = new List<Tuple<UnitName, float>> ();
 		if (thisPlayer.funds > 15000) {
-			outList.Add (new Tuple<UnitName, float> (UnitName.Carrier, .5f));
+			outList.Add (new Tuple<UnitName, float> (UnitName.Carrier, .2f));
 		}
 		// A blocking to save up for at least one carrier when there are air units to be carried
 		if (data.GetPlayerAirUnitCount () > 1 &&

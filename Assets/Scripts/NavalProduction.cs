@@ -40,7 +40,9 @@ class NavalProduction
 		var enemyAirUnits = data.GetEnemyAirUnitCount ();
 		if (thisPlayer.funds > (Utilities.GetPrefabFromUnitName (UnitName.Corvette) as UnitController).baseCost) {
 			if (enemyAirUnits > data.GetEnemyNavalUnitCount ()) {
-				outList.Add (new Tuple<UnitName, float> (UnitName.Carrier, .25f));
+				if (data.playerUnitCount [(int)UnitName.Carrier] < 2) {
+					outList.Add (new Tuple<UnitName, float> (UnitName.Carrier, .25f));
+				}
 			}
 		}
 		return outList;

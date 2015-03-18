@@ -39,10 +39,18 @@ public class SkirmishMenuViewer : MonoBehaviour
 	public GameObject loadingDisplay;
 	public UnityEngine.UI.Button mapNamesOpenButton, setPlayersButton;
 	//current root folder where map data are located
-	public static string ApplicationServerURL = "https://dl.dropboxusercontent.com/u/65011402/strike";
+	public static readonly string ApplicationServerURL = "https://dl.dropboxusercontent.com/u/65011402/strike";
+	public GameObject skirmishView;
 	void Awake ()
 	{
 		instance = this;
+		if (!skirmishView.gameObject.activeSelf) {
+			skirmishView.SetActive (true);
+		}
+		var temp = FindObjectOfType<InGameGUI> ();
+		if (temp != null && temp.gameObject.activeSelf) {
+			temp.gameObject.SetActive (false);
+		}
 	}
 	// Use this for initialization
 	void Start ()
