@@ -137,7 +137,6 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 	private bool showingHealth, showingHitDamage;
 	private bool wasTargeted;
 	private bool hasUnitSelectedMutex;
-	public GUIStyle infoBoxOptions;
 	private bool showingNextTurnAttackRange, showingAttackRange;
 	public TerrainBlock currentBlock { get; private set; }
 	public TerrainBlock awaitingOrdersBlock { get; private set; }
@@ -161,10 +160,10 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 	public UnitPropertyModifier modifier;
 	public ParticleSystem moveIndicatorParticles { get; private set; }
 	public AttackableObject AITarget;
-	public TerrainBlock AITargetBlock;
+	public TerrainBlock AITargetBlock{ get; set; }
 	public bool canReachTarget{ get; set; }
 	public float AIDefensiveness;
-	public int comTowerEffect;
+	public int comTowerEffect{ get; set; }
 	[HideInInspector]
 	public TerrainBlock
 		AICachedCurrentBlock;
@@ -1505,7 +1504,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 			damageToUnit = damageToUnit > possibleTargets [i].GetHealth ().GetRawHealth () ? possibleTargets [i].GetHealth ().GetRawHealth () : damageToUnit;
 			if (possibleTargets [i].GetOwner ().IsNeutralSide ()) {
 				if (possibleTargets [i] is Property) {
-					damageToUnit *= Mathf.Pow ((100 - InGameController.instance.ClosestEnemyHQ (block, moveClass, owner)) / 145f, 5) * .5f;
+					damageToUnit *= Mathf.Pow ((100 - InGameController.instance.ClosestEnemyHQ (block, moveClass, owner).Item1) / 145f, 5) * .5f;
 				}
 			}
 			if (possibleTargets [i].GetOccupyingBlock ().HasProperty () && !possibleTargets [i].GetOccupyingBlock ().occupyingProperty.GetOwner ().IsSameSide (owner)) {

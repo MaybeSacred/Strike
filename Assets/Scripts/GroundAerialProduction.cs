@@ -20,7 +20,7 @@ public class GroundAerialProduction
 
 	public List<ProductionEngine.ProductionRule> GetRules ()
 	{
-		List<ProductionEngine.ProductionRule> rules = new List<ProductionEngine.ProductionRule> ();
+		var rules = new List<ProductionEngine.ProductionRule> ();
 		
 		return rules;
 	}

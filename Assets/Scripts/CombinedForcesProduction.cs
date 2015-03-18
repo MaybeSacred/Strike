@@ -18,13 +18,20 @@ public class CombinedForcesProduction
 	public List<ProductionEngine.ProductionRule> GetRules ()
 	{
 		List<ProductionEngine.ProductionRule> rules = new List<ProductionEngine.ProductionRule> ();
-		
+		rules.Add (CarrierRule);
 		return rules;
 	}
-	List<Tuple<UnitName, float>> BomberRule (Instance data, Player thisPlayer)
+	List<Tuple<UnitName, float>> CarrierRule (Instance data, Player thisPlayer)
 	{
 		var outList = new List<Tuple<UnitName, float>> ();
-		
+		if (thisPlayer.funds > 15000) {
+			outList.Add (new Tuple<UnitName, float> (UnitName.Carrier, .5f));
+		}
+		// A blocking to save up for at least one carrier when there are air units to be carried
+		if (data.GetPlayerAirUnitCount () > 1 &&
+			data.playerUnitCount [(int)UnitName.Carrier] < 1) {
+			outList.Add (new Tuple<UnitName, float> (UnitName.Carrier, 1.25f));
+		}
 		return outList;
 	}
 }

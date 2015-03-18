@@ -99,6 +99,10 @@ class AirProduction
 				outList.Add (new Tuple<UnitName, float> (UnitName.LiftCopter, 1));
 			}
 		} else {
+			if (data.playerUnitCount [(int)UnitName.LiftCopter] < 1) {
+				//Small constant chance of producing one regardless
+				outList.Add (new Tuple<UnitName, float> (UnitName.LiftCopter, .2f));
+			}
 			if (data.neutralUnitCount [(int)UnitName.City] + data.neutralUnitCount [(int)UnitName.Airport] + 
 				data.neutralUnitCount [(int)UnitName.Factory] + data.neutralUnitCount [(int)UnitName.Shipyard] > 4) {
 				outList.Add (new Tuple<UnitName, float> (UnitName.LiftCopter, .33f));

@@ -40,7 +40,7 @@ public class DamageValues : MonoBehaviour
 		#if UNITY_WEBPLAYER
 		var names = new WWW (SkirmishMenuViewer.ApplicationServerURL + @"/Maps/unitDamageValues.csv");
 		while (!names.isDone) {
-			yield return new WaitForSeconds (.001f);
+			yield return new WaitForEndOfFrame ();
 		}
 		MemoryStream ms = new MemoryStream (names.bytes);
 		StreamReader reader = new StreamReader (ms);
@@ -55,7 +55,7 @@ public class DamageValues : MonoBehaviour
 			if (!values [0].Equals ("")) {
 				UnitName currentName = (UnitName)Enum.Parse (typeof(UnitName), values [0]);
 				for (int i = 1; i < values.Length; i++) {
-					if (!values [i].Equals ("")) {
+					if (!columnValues [i].Equals ("") && !values [i].Equals ("")) {
 						unitDamageArray [(int)currentName] [(int)(UnitName)Enum.Parse (typeof(UnitName), columnValues [i])] = int.Parse (values [i]);
 					}
 				}

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 public class InGameController : MonoBehaviour
 {
@@ -16,7 +17,7 @@ public class InGameController : MonoBehaviour
 	public bool isPaused;
 	public TerrainBuilder currentTerrain;
 	bool unitSelectedMutex, infoBoxMutex;
-	Object selectedUnit;
+	MonoBehaviour selectedUnit;
 	int currentUnitMousedOver;
 	List<ParticleSystem> possibleTargetParticles;
 	public WeatherController weather;
@@ -168,7 +169,7 @@ public class InGameController : MonoBehaviour
 		}
 	}
 
-	public bool AcquireUnitSelectedMutex (Object mutexAttempter)
+	public bool AcquireUnitSelectedMutex (MonoBehaviour mutexAttempter)
 	{
 		if (unitSelectedMutex == true) {
 			return false;
@@ -306,7 +307,7 @@ public class InGameController : MonoBehaviour
 	public Player GetTargetablePlayer (Player owner)
 	{
 		int startNum;
-		int i = Random.Range (1, players.Count);
+		int i = UnityEngine.Random.Range (1, players.Count);
 		startNum = i;
 		if (!owner.IsSameSide (players [i])) {
 			return players [i];
@@ -324,33 +325,21 @@ public class InGameController : MonoBehaviour
 		}
 		throw new UnityException ("No Valid Players");
 	}
-	public float ClosestEnemyHQ (TerrainBlock block, MovementType moveType, Player querier, out TerrainBlock hqBlock)
+	public Tuple<float, TerrainBlock> ClosestEnemyHQ (TerrainBlock block, MovementType moveType, Player querier)
 	{
-		float bestSoFar = float.MaxValue;
-		hqBlock = null;
+		var bestSoFar = float.MaxValue;
+		TerrainBlock bestBlockSoFar = null;
 		for (int i = 1; i < players.Count; i++) {
 			if (!players [i].IsSameSide (querier)) {
 				if (block.GetDistanceToHQ (players [i], moveType) < bestSoFar) {
 					bestSoFar = block.GetDistanceToHQ (players [i], moveType);
-					hqBlock = players [i].hQBlock;
+					bestBlockSoFar = players [i].hQBlock;
 				}
 			}
 		}
-		return bestSoFar;
+		return new Tuple<float, TerrainBlock> (bestSoFar, bestBlockSoFar);
 	}
 	
-	public float ClosestEnemyHQ (TerrainBlock block, MovementType moveType, Player querier)
-	{
-		float bestSoFar = float.MaxValue;
-		for (int i = 1; i < players.Count; i++) {
-			if (!players [i].IsSameSide (querier)) {
-				if (block.GetDistanceToHQ (players [i], moveType) < bestSoFar) {
-					bestSoFar = block.GetDistanceToHQ (players [i], moveType);
-				}
-			}
-		}
-		return bestSoFar;
-	}
 	public int TotalValueRelativeToPlayer (Player relative)
 	{
 		int totalEnemyValue = 0;

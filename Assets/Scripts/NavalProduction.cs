@@ -37,16 +37,11 @@ class NavalProduction
 	List<Tuple<UnitName, float>> CarrierRule (Instance data, Player thisPlayer)
 	{
 		List<Tuple<UnitName, float>> outList = new List<Tuple<UnitName, float>> ();
-		if (thisPlayer.funds > 15000) {
-			if (data.playerUnitCount [(int)UnitName.Airport] > 0 || data.enemyAverageUnitCount [(int)UnitName.Airport] > 0) {
-				outList.Add (new Tuple<UnitName, float> (UnitName.Carrier, .5f));
+		var enemyAirUnits = data.GetEnemyAirUnitCount ();
+		if (thisPlayer.funds > (Utilities.GetPrefabFromUnitName (UnitName.Corvette) as UnitController).baseCost) {
+			if (enemyAirUnits > data.GetEnemyNavalUnitCount ()) {
+				outList.Add (new Tuple<UnitName, float> (UnitName.Carrier, .25f));
 			}
-		}
-		// A blocking to save up for at least one carrier
-		if (data.playerUnitCount [(int)UnitName.CarpetBomber] + data.playerUnitCount [(int)UnitName.AttackCopter] + 
-			data.playerUnitCount [(int)UnitName.Interceptor] + data.playerUnitCount [(int)UnitName.TacticalFighter] > 1 &&
-			data.playerUnitCount [(int)UnitName.Carrier] < 1) {
-			outList.Add (new Tuple<UnitName, float> (UnitName.Carrier, 1.5f));
 		}
 		return outList;
 	}

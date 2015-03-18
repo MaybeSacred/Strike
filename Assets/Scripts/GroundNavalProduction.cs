@@ -54,25 +54,10 @@ public class GroundNavalProduction
 	List<Tuple<UnitName, float>> OverallForceRule (Instance data, Player thisPlayer)
 	{
 		var outList = new List<Tuple<UnitName, float>> ();
-		var totalEnemyGround = data.enemyAverageUnitCount [(int)UnitName.FieldArtillery] + 
-			data.enemyAverageUnitCount [(int)UnitName.Rockets] + 
-			data.enemyAverageUnitCount [(int)UnitName.LightTank] + 
-			data.enemyAverageUnitCount [(int)UnitName.MediumTank];
-		
-		var totalEnemyNavy = data.enemyAverageUnitCount [(int)UnitName.Corvette] + 
-			data.enemyAverageUnitCount [(int)UnitName.Destroyer] + 
-			data.enemyAverageUnitCount [(int)UnitName.Submarine] + 
-			data.enemyAverageUnitCount [(int)UnitName.Boomer];
-		
-		var totalPlayerGround = data.playerUnitCount [(int)UnitName.FieldArtillery] + 
-			data.playerUnitCount [(int)UnitName.Rockets] + 
-			data.playerUnitCount [(int)UnitName.LightTank] + 
-			data.playerUnitCount [(int)UnitName.MediumTank];
-		
-		var totalPlayerNavy = data.playerUnitCount [(int)UnitName.Corvette] + 
-			data.playerUnitCount [(int)UnitName.Destroyer] + 
-			data.playerUnitCount [(int)UnitName.Submarine] + 
-			data.playerUnitCount [(int)UnitName.Boomer];
+		var totalEnemyGround = data.GetEnemyOffensiveVehicleUnitCount ();
+		var totalEnemyNavy = data.GetEnemyNavalUnitCount ();
+		var totalPlayerGround = data.GetPlayerOffensiveVehicleUnitCount ();
+		var totalPlayerNavy = data.GetPlayerNavalUnitCount ();
 		
 		if (totalEnemyNavy > totalEnemyGround) {
 			if (totalPlayerNavy > totalPlayerGround) {

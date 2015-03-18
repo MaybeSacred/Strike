@@ -116,11 +116,11 @@ public abstract class AIPlayer : Player
 	protected abstract float EvaluatePosition (TerrainBlock position, out UnitOrderOptions order);
 	public float MoveTowardsEnemyHQ (TerrainBlock block)
 	{
-		float closest = InGameController.instance.ClosestEnemyHQ (block, currentUnit.moveClass, currentUnit.GetOwner ());
-		if (closest < 1 && !currentUnit.canCapture) {
+		var closest = InGameController.instance.ClosestEnemyHQ (block, currentUnit.moveClass, currentUnit.GetOwner ());
+		if (closest.Item1 < 1 && !currentUnit.canCapture) {
 			return -10;
 		}
-		return (100 - closest) * hQMoveTowardsModifier;
+		return (100 - closest.Item1) * hQMoveTowardsModifier;
 	}
 	protected virtual float UtilityOfAddingGeneral ()
 	{

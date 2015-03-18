@@ -145,9 +145,9 @@ public class AIPlayerMedium : AIPlayer
 				} else {
 					currentPropDistance = InGameController.instance.currentTerrain.MinDistanceToTileThroughUnMovableBlocks (unit.currentBlock, prop.GetOccupyingBlock (), unit, 5);
 				}
-				float enemyHQDistance = InGameController.instance.ClosestEnemyHQ (prop.GetOccupyingBlock (), unit.moveClass, this);
+				var enemyHQTuple = InGameController.instance.ClosestEnemyHQ (prop.GetOccupyingBlock (), unit.moveClass, this);
 				float playerHQDistance = InGameController.instance.currentTerrain.MinDistanceToTileThroughUnMovableBlocks (unit.currentBlock, hQBlock, unit, 5);
-				enemyHQDistance = enemyHQDistance > 0 ? enemyHQDistance : 1;
+				var enemyHQDistance = enemyHQTuple.Item1 > 0 ? enemyHQTuple.Item1 : 1;
 				playerHQDistance = playerHQDistance > 0 ? playerHQDistance : 1;
 				currentPropDistance *= (playerHQDistance / enemyHQDistance);
 				currentPropDistance /= prop.AICapturePriority;
@@ -297,7 +297,8 @@ public class AIPlayerMedium : AIPlayer
 			}
 		} else {
 			Debug.Log ("No Target");
-			InGameController.instance.ClosestEnemyHQ (inUnit.currentBlock, inUnit.moveClass, this, out inUnit.AITargetBlock);
+			var tuple = InGameController.instance.ClosestEnemyHQ (inUnit.currentBlock, inUnit.moveClass, this);
+			inUnit.AITargetBlock = tuple.Item2;
 			if (inUnit.AITargetBlock.CanReachBlock (inUnit, inUnit.currentBlock)) {
 				inUnit.canReachTarget = true;
 			} else {
@@ -703,7 +704,7 @@ public class AIPlayerMedium : AIPlayer
 	void SortPropertiesByHQDistance (MovementType moveType)
 	{
 		for (int i = 0; i < properties.Count; i++) {
-			properties [i].cachedDistanceFromEnemyHQ = InGameController.instance.ClosestEnemyHQ (properties [i].GetOccupyingBlock (), moveType, this);
+			properties [i].cachedDistanceFromEnemyHQ = InGameController.instance.ClosestEnemyHQ (properties [i].GetOccupyingBlock (), moveType, this).Item1;
 		}
 		properties.Sort (Property.CompareByDistanceFromEnemyHQ);
 	}
