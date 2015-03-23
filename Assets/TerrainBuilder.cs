@@ -625,6 +625,14 @@ public class TerrainBuilder : MonoBehaviour
 			}
 		}
 	}
+	/// <summary>
+	/// Returns blocks within the specified attack range around the startBlock
+	/// </summary>
+	/// <returns>The within range.</returns>
+	/// <param name="startBlock">Start block.</param>
+	/// <param name="minRange">Minimum range.</param>
+	/// <param name="maxRange">Max range.</param>
+	/// <param name="querier">Querier.</param>
 	public List<TerrainBlock> BlocksWithinRange (TerrainBlock startBlock, int minRange, int maxRange, UnitController querier)
 	{
 		int startPointX = Mathf.RoundToInt (startBlock.transform.position.x);
@@ -653,6 +661,14 @@ public class TerrainBuilder : MonoBehaviour
 		}
 		return outList;
 	}
+	/// <summary>
+	/// Returns all attackable objects between the min and max range of startBlock
+	/// </summary>
+	/// <returns>The within range.</returns>
+	/// <param name="startBlock">Start block.</param>
+	/// <param name="minRange">Minimum range.</param>
+	/// <param name="maxRange">Max range.</param>
+	/// <param name="querier">Querier.</param>
 	public List<AttackableObject> ObjectsWithinRange (TerrainBlock startBlock, int minRange, int maxRange, UnitController querier)
 	{
 		int startPointX = Mathf.RoundToInt (startBlock.transform.position.x);

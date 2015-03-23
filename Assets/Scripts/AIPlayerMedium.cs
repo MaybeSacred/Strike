@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 public class AIPlayerMedium : AIPlayer
 {
 	bool producingUnits;
@@ -8,7 +9,8 @@ public class AIPlayerMedium : AIPlayer
 	{
 		RandomProd,
 		HalfNHalf,
-		Learned}
+		Learned
+	}
 	;
 	public ProductionTest productionType;
 	private Clusterer clusterer;
@@ -181,74 +183,73 @@ public class AIPlayerMedium : AIPlayer
 		List<UnitController> targetedUnitsNeedingSupply = new List<UnitController> ();
 		List<UnitController> assignedUnits = new List<UnitController> ();
 		//list of clusters of clustered enemy units
-		List<List<AttackableObject>> lists = clusterer.Estimate (InGameController.instance.GetAllEnemyUnits (this));
+		var lists = clusterer.Estimate (InGameController.instance.GetAllEnemyUnits (this));
 		//assign infantry to buildings if possible - easy first step
-		for (int i = 0; i < units.Count; i++) {
-			//although able to capture, snipers are better used in combat
-			if (units [i].canCapture && units [i].unitClass != UnitName.Sniper) {
-				units [i].AITarget = GetNextClosestUncapturedProperty (units [i]);
-				if (units [i].AITarget != null) {
-					assignedUnits.Add (units [i]);
-					targetedObjects.Add (units [i].AITarget);
+		var infantryList = units.Where ((x) => {
+			if (x.unitClass == UnitName.Infantry || x.unitClass == UnitName.Mortar || x.unitClass == UnitName.Stinger) {
+				return true;
+			}
+			return false;
+		});
+		foreach (var i in infantryList) {
+			if (i.AITarget == null) {
+				i.AITarget = GetNextClosestUncapturedProperty (i);
+				if (i.AITarget != null) {
+					assignedUnits.Add (i);
+					targetedObjects.Add (i.AITarget);
 				}
 			}
 		}
-		//assign all other units to clusters of enemy units, or our own units if they're support units
-		int[] unitsAssignedToCluster = new int[lists.Count];
-		for (int i = 0; i < units.Count; i++) {
-			if (!assignedUnits.Contains (units [i])) {
-				if (units [i].NeedsResupply ()) {
-					units [i].AITarget = GetClosestResupplyUnit (units [i]);
-					if (units [i].AITarget == null) {
-						if (units [i].moveClass == MovementType.Littoral || units [i].moveClass == MovementType.Sea) {
-							makeSupplySea = true;
-						} else {
-							makeSupplyLand = true;
-						}
-						units [i].AITarget = hQBlock.occupyingProperty;
+		var unassignedUnits = units.Where ((x) => x.AITarget == null);
+		foreach (var i in unassignedUnits) {
+			// Units needing resupply
+			if (i.NeedsResupply ()) {
+				i.AITarget = GetClosestResupplyUnit (i);
+				if (i.AITarget == null) {
+					if (i.moveClass == MovementType.Littoral || i.moveClass == MovementType.Sea) {
+						makeSupplySea = true;
+					} else {
+						makeSupplyLand = true;
+					}
+					i.AITarget = hQBlock.occupyingProperty;
+				}
+			}
+			// combat units
+			if (i.minAttackRange > 0) {
+				//find best cluster for this unit
+				float bestClusterAptitude = float.NegativeInfinity;
+				int bestCluster = 0;
+				for (int k = 0; k < lists.Count; k++) {
+					float currentAptitude = ClusterAptitude (lists [k], i);
+					if (currentAptitude > bestClusterAptitude) {
+						bestCluster = k;
+						bestClusterAptitude = currentAptitude;
 					}
 				}
-				//combat units
-				else if (units [i].minAttackRange > 0) {
-					//find best cluster for this unit
-					float bestClusterAptitude = float.NegativeInfinity;
-					int bestCluster = 0;
-					for (int k = 0; k < lists.Count; k++) {
-						float currentAptitude = ClusterAptitude (lists [k], units [i]);
-						if (currentAptitude > bestClusterAptitude && unitsAssignedToCluster [k] < lists [k].Count * clusterAssignmentOverflow) {
-							bestCluster = k;
-							bestClusterAptitude = currentAptitude;
+				//find best unit in that cluster
+				i.AITarget = BestUnitInCluster (lists [bestCluster], i);
+			}
+			// Supplying units
+			if (i.canSupply) {
+				UnitController candidate = null;
+				float closestDistance = float.PositiveInfinity;
+				float currentDistance = 0;
+				foreach (UnitController uc in unitsNeedingSupply) {
+					if (!targetedUnitsNeedingSupply.Contains (candidate)) {
+						currentDistance = (i.transform.position - uc.transform.position).magnitude;
+						if (currentDistance < closestDistance) {
+							candidate = uc;
+							closestDistance = currentDistance;
 						}
 					}
-					//find best unit in that cluster
-					units [i].AITarget = BestUnitInCluster (lists [bestCluster], units [i]);
-					unitsAssignedToCluster [bestCluster]++;
 				}
-				//supplying units
-				else if (units [i].canSupply) {
-					UnitController candidate = null;
-					float closestDistance = float.PositiveInfinity;
-					float currentDistance = 0;
-					foreach (UnitController uc in unitsNeedingSupply) {
-						if (!targetedUnitsNeedingSupply.Contains (candidate)) {
-							currentDistance = (units [i].transform.position - uc.transform.position).magnitude;
-							if (currentDistance < closestDistance) {
-								candidate = uc;
-								closestDistance = currentDistance;
-								if (UnityEngine.Random.value < .75f) {
-									break;
-								}
-							}
-						}
-					}
-					targetedUnitsNeedingSupply.Add (candidate);
-					units [i].AITarget = candidate;
-				}
-				assignedUnits.Add (units [i]);
+				targetedUnitsNeedingSupply.Add (candidate);
+				i.AITarget = candidate;
 			}
 		}
 		for (int i = 0; i < units.Count; i++) {
 			SetTargetBlock (units [i]);
+			Debug.Log (units [i].AITarget.ToString () + units [i].AITargetBlock.ToString ());
 		}
 	}
 	void ComputeAllUnitPositions ()
@@ -385,7 +386,7 @@ public class AIPlayerMedium : AIPlayer
 				bestBlockSoFar = block;
 			}
 		}
-		Debug.Break ();
+		//Debug.Break ();
 		//Debug.Log(currentUnit.unitClass + " Positions evaluated: " + totalPositionsEvaluated);// + " / positions at depth 0: " + blocks.Count);
 		return bestBlockSoFar;
 	}
