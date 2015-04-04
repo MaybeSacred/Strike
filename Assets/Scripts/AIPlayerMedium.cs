@@ -217,17 +217,9 @@ public class AIPlayerMedium : AIPlayer
 			// combat units
 			if (i.minAttackRange > 0) {
 				//find best cluster for this unit
-				float bestClusterAptitude = float.NegativeInfinity;
-				int bestCluster = 0;
-				for (int k = 0; k < lists.Count; k++) {
-					float currentAptitude = ClusterAptitude (lists [k], i);
-					if (currentAptitude > bestClusterAptitude) {
-						bestCluster = k;
-						bestClusterAptitude = currentAptitude;
-					}
-				}
+				var best = lists.Max ((x) => ClusterAptitude (x, i));
 				//find best unit in that cluster
-				i.AITarget = BestUnitInCluster (lists [bestCluster], i);
+				i.AITarget = BestUnitInCluster (best, i);
 			}
 			// Supplying units
 			if (i.canSupply) {

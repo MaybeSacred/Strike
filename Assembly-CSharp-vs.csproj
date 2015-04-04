@@ -75,6 +75,7 @@
      <Compile Include="Assets\Scripts\Clusterer.cs" />
      <Compile Include="Assets\Scripts\CombinedForcesProduction.cs" />
      <Compile Include="Assets\Scripts\DamageValues.cs" />
+     <Compile Include="Assets\Scripts\Extensions.cs" />
      <Compile Include="Assets\Scripts\GameSettings.cs" />
      <Compile Include="Assets\Scripts\GameView.cs" />
      <Compile Include="Assets\Scripts\General.cs" />
