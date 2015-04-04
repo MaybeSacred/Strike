@@ -35,13 +35,13 @@ public class WeatherController : MonoBehaviour
 			} else {
 				weatherParticles [i].transform.position = new Vector3 ((InGameController.instance.currentTerrain.upperXMapBound - InGameController.instance.currentTerrain.lowerXMapBound) / 2, 10, (InGameController.instance.currentTerrain.upperZMapBound - InGameController.instance.currentTerrain.lowerZMapBound) / 2);
 			}
-			weatherParticles [i].particleSystem.emissionRate *= (InGameController.instance.currentTerrain.upperXMapBound - InGameController.instance.currentTerrain.lowerXMapBound) * (InGameController.instance.currentTerrain.upperZMapBound - InGameController.instance.currentTerrain.lowerZMapBound);
-			weatherParticles [i].particleSystem.maxParticles = Mathf.RoundToInt (weatherParticles [i].particleSystem.emissionRate * weatherParticles [i].particleSystem.startLifetime);
-			weatherParticles [i].particleSystem.Stop ();
+			weatherParticles [i].GetComponent<ParticleSystem>().emissionRate *= (InGameController.instance.currentTerrain.upperXMapBound - InGameController.instance.currentTerrain.lowerXMapBound) * (InGameController.instance.currentTerrain.upperZMapBound - InGameController.instance.currentTerrain.lowerZMapBound);
+			weatherParticles [i].GetComponent<ParticleSystem>().maxParticles = Mathf.RoundToInt (weatherParticles [i].GetComponent<ParticleSystem>().emissionRate * weatherParticles [i].GetComponent<ParticleSystem>().startLifetime);
+			weatherParticles [i].GetComponent<ParticleSystem>().Stop ();
 			weatherParticles [i].gameObject.SetActive (false);
 		}
 		weatherParticles [(int)currentWeather].gameObject.SetActive (true);
-		weatherParticles [(int)currentWeather].particleSystem.Play ();
+		weatherParticles [(int)currentWeather].GetComponent<ParticleSystem>().Play ();
 	}
 	
 	// Update is called once per frame
@@ -134,12 +134,12 @@ public class WeatherController : MonoBehaviour
 	}
 	void ChangeState (WeatherType next, List<Player> players)
 	{
-		weatherParticles [(int)currentWeather].particleSystem.Stop ();
+		weatherParticles [(int)currentWeather].GetComponent<ParticleSystem>().Stop ();
 		weatherParticles [(int)currentWeather].gameObject.SetActive (false);
 		RemoveWeatherEffect (players, currentWeather);
 		currentWeather = next;
 		weatherParticles [(int)currentWeather].gameObject.SetActive (true);
-		weatherParticles [(int)currentWeather].particleSystem.Play ();
+		weatherParticles [(int)currentWeather].GetComponent<ParticleSystem>().Play ();
 		AddWeatherEffect (players, currentWeather);
 	}
 }

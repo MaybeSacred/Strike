@@ -49,7 +49,7 @@ public class InGameController : MonoBehaviour
 			DontDestroyOnLoad (this);
 			currentTerrain = GameObject.FindObjectOfType<TerrainBuilder> ();
 			mouseOverParticles = Instantiate (mouseParticles) as ParticleSystem;
-			mouseOverParticles.particleSystem.Stop ();
+			mouseOverParticles.GetComponent<ParticleSystem>().Stop ();
 		} else {
 			Destroy (this);
 		}

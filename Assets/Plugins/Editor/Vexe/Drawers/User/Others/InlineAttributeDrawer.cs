@@ -86,7 +86,7 @@ using Editor = UnityEditor.Editor;
 						using (gui.Indent())
 						{
 							var c = target as Camera;
-							if (c.isOrthoGraphic)
+							if (c.orthographic)
 								c.orthographicSize = gui.Float("Size", c.orthographicSize);
 							else c.fieldOfView = gui.FloatSlider("FOV", c.fieldOfView, 1, 179);
 						}

@@ -83,7 +83,7 @@ public class InGameGUI : MonoBehaviour
 	void Update ()
 	{
 		RaycastHit hit;
-		if (Physics.Raycast (Utilities.gameCamera.camera.ScreenPointToRay (Input.mousePosition), out hit, float.PositiveInfinity, 1 << LayerMask.NameToLayer ("Default"))) {
+		if (Physics.Raycast (Utilities.gameCamera.GetComponent<Camera>().ScreenPointToRay (Input.mousePosition), out hit, float.PositiveInfinity, 1 << LayerMask.NameToLayer ("Default"))) {
 			TerrainBlock newMouseOver = hit.collider.GetComponent<TerrainBlock> ();
 			if (newMouseOver == null) {
 				Debug.Log ("Null terrainBlock" + Input.mousePosition.ToString ());

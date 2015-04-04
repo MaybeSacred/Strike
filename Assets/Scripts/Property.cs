@@ -72,8 +72,8 @@ public class Property : MonoBehaviour, AttackableObject
 	void Awake ()
 	{
 		health = new Health ();
-		if (collider != null) {
-			collider.enabled = false;
+		if (GetComponent<Collider>() != null) {
+			GetComponent<Collider>().enabled = false;
 		}
 		Transform[] trans = GetComponentsInChildren<Transform> ();
 		for (int i = 0; i < trans.Length; i++) {
@@ -89,7 +89,7 @@ public class Property : MonoBehaviour, AttackableObject
 		isUnderConstruction = false;
 		if (propertyType == UnitName.ComTower) {
 			mouseOverEffect = (ParticleSystem)Instantiate (mouseOverEffect, transform.position, transform.rotation);
-			mouseOverEffect.particleSystem.Stop ();
+			mouseOverEffect.GetComponent<ParticleSystem>().Stop ();
 		}
 	}
 	void Start ()
@@ -229,8 +229,8 @@ public class Property : MonoBehaviour, AttackableObject
 	{
 		infoBoxTimeoutCounter = 0;
 		if (propertyType == UnitName.ComTower) {
-			if (!mouseOverEffect.particleSystem.isPlaying)
-				mouseOverEffect.particleSystem.Play ();
+			if (!mouseOverEffect.GetComponent<ParticleSystem>().isPlaying)
+				mouseOverEffect.GetComponent<ParticleSystem>().Play ();
 		}
 	}
 	public void OnMouseUpExtra ()
@@ -272,7 +272,7 @@ public class Property : MonoBehaviour, AttackableObject
 	public void OnMouseExitExtra ()
 	{
 		if (propertyType == UnitName.ComTower) {
-			mouseOverEffect.particleSystem.Stop ();
+			mouseOverEffect.GetComponent<ParticleSystem>().Stop ();
 		}
 	}
 
@@ -288,7 +288,7 @@ public class Property : MonoBehaviour, AttackableObject
 			}
 			currentOwner = newOwner;
 			currentOwner.AddProperty (this);
-			graphicsObject.renderer.material.color = newOwner.mainPlayerColor;
+			graphicsObject.GetComponent<Renderer>().material.color = newOwner.mainPlayerColor;
 		}
 	}
 	public void DisplayCapturableGraphics ()

@@ -220,7 +220,7 @@ public class MapDataExporter : Editor
 			if (GUILayout.Button (terrainImages [i])) {
 				Reset ();
 				selectedBlockToPaint = Instantiate (terrainPrefabs [i]) as GameObject;
-				selectedBlockToPaint.collider.enabled = false;
+				selectedBlockToPaint.GetComponent<Collider>().enabled = false;
 				selectedBlockIndex = terrainPrefabs.IndexOf (terrainPrefabs [i]);
 			}
 			if ((i % 2) == 1 || i == terrainPrefabs.Count - 1) {
@@ -236,7 +236,7 @@ public class MapDataExporter : Editor
 			if (GUILayout.Button (buildingImages [i])) {
 				Reset ();
 				selectedBlockToPaint = Instantiate (buildingPrefabs [i]) as GameObject;
-				selectedBlockToPaint.collider.enabled = false;
+				selectedBlockToPaint.GetComponent<Collider>().enabled = false;
 				selectedBuildingIndex = buildingPrefabs.IndexOf (buildingPrefabs [i]);
 			}
 			if ((i % 2) == 1 || i == buildingPrefabs.Count - 1) {

@@ -90,7 +90,7 @@ public class General : MonoBehaviour
 	{
 		owner = newOwner;
 		foreach (ParticleSystem ps in zoneBlocks) {
-			ps.particleSystem.startColor = new Color (owner.mainPlayerColor.r, owner.mainPlayerColor.g, owner.mainPlayerColor.b, .167f);
+			ps.GetComponent<ParticleSystem>().startColor = new Color (owner.mainPlayerColor.r, owner.mainPlayerColor.g, owner.mainPlayerColor.b, .167f);
 		}
 	}
 	public void UpdateGeneral (int inDamage)

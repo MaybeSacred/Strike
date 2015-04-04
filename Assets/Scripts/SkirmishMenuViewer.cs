@@ -72,7 +72,7 @@ public class SkirmishMenuViewer : MonoBehaviour
 	{
 		foreach (PlayerGUIView pg in players) {
 			while (!pg.started) {
-				yield return new WaitForSeconds (.01f);
+				yield return new WaitForEndOfFrame ();
 			}
 		}
 		SwitchToMapSelect ();

@@ -212,7 +212,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 		targetedDamageOutline.text = "";
 		InGameController.instance.weather.ApplyCurrentWeatherEffect (this);
 		moveIndicatorParticles.transform.position = transform.position + .5f * Vector3.down;
-		moveIndicatorParticles.particleSystem.startColor = owner.mainPlayerColor;
+		moveIndicatorParticles.GetComponent<ParticleSystem>().startColor = owner.mainPlayerColor;
 		moveIndicatorParticles.transform.parent = transform;
 		comTowerEffect = owner.ComTowersInRange (this, currentBlock);
 	}
@@ -858,7 +858,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 	public void SetOwner (Player newOwner)
 	{
 		owner = newOwner;
-		moveIndicatorParticles.particleSystem.startColor = owner.mainPlayerColor;
+		moveIndicatorParticles.GetComponent<ParticleSystem>().startColor = owner.mainPlayerColor;
 	}
 	/// <summary>
 	/// Gets the unit's owner
