@@ -60,6 +60,7 @@
      <Compile Include="Assets\IncrementButton.cs" />
      <Compile Include="Assets\MapHolderGameMenu.cs" />
      <Compile Include="Assets\MenuBackgroundMapDisplayer.cs" />
+     <Compile Include="Assets\MessagePanel.cs" />
      <Compile Include="Assets\OptionsMenu.cs" />
      <Compile Include="Assets\PlayerGUIView.cs" />
      <Compile Include="Assets\PlayerTurnAnimation.cs" />
