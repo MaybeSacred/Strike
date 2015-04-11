@@ -49,7 +49,7 @@ public class InGameController : MonoBehaviour
 			DontDestroyOnLoad (this);
 			currentTerrain = GameObject.FindObjectOfType<TerrainBuilder> ();
 			mouseOverParticles = Instantiate (mouseParticles) as ParticleSystem;
-			mouseOverParticles.GetComponent<ParticleSystem>().Stop ();
+			mouseOverParticles.GetComponent<ParticleSystem> ().Stop ();
 		} else {
 			Destroy (this);
 		}
@@ -112,6 +112,11 @@ public class InGameController : MonoBehaviour
 		} else {
 			RightClick = false;
 		}
+#if DEBUG
+		if (Input.GetKeyDown (Utilities.bindings.clearButton)) {
+			RemovePlayer (InGameController.instance.GetCurrentPlayer ());
+		}
+#endif
 	}
 	public void SimulateLeftClick ()
 	{
@@ -123,10 +128,7 @@ public class InGameController : MonoBehaviour
 	}
 	public int NumberOfActivePlayers ()
 	{
-		if (players != null) {
-			return players.Count;
-		}
-		return 0;
+		return players != null ? players.Count : 0;
 	}
 	public void DisplayPossibleTargetParticles (List<AttackableObject> possibleTargets)
 	{

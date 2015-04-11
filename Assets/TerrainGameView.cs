@@ -17,6 +17,6 @@ public class TerrainGameView : GameView
 		defenseText.text = defense;
 		totalDefenseText.text = totalDefense;
 		currentWeather.text = InGameController.instance.weather.currentWeather.ToString ();
-		turnField.text = InGameController.instance.currentTurn.ToString ();
+		turnField.text = "Turn: " + InGameController.instance.currentTurn.ToString ();
 	}
 }

@@ -144,12 +144,6 @@ public class Utilities : MonoBehaviour
 			Destroy (this);
 		}
 	}
-	void Update ()
-	{
-		if (Input.GetKeyDown (bindings.clearButton)) {
-			InGameController.instance.RemovePlayer (InGameController.instance.GetCurrentPlayer ());
-		}
-	}
 
 	public static Texture2D GetRankImage (UnitRanks rank)
 	{
@@ -163,7 +157,11 @@ public class Utilities : MonoBehaviour
 	{
 		return carryingUnitImage;
 	}
-	
+	/// <summary>
+	/// Gets a unit prototype from the input UnitName
+	/// </summary>
+	/// <returns>The prefab from unit name.</returns>
+	/// <param name="inName">In name.</param>
 	public static MonoBehaviour GetPrefabFromUnitName (UnitName inName)
 	{
 		if (units.ContainsKey (inName)) {

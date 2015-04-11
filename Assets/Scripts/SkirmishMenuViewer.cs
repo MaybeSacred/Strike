@@ -318,16 +318,18 @@ public class SkirmishMenuViewer : MonoBehaviour
 	/// </summary>
 	public void SwitchToOptionsSelect ()
 	{
-		playerSelect.gameObject.SetActive (false);
-		optionsSelect.gameObject.SetActive (true);
+		if (IsPlayerDataValid ()) {
+			playerSelect.gameObject.SetActive (false);
+			optionsSelect.gameObject.SetActive (true);
+		}
 	}
 	/// <summary>
 	/// Switches panels to map setup
 	/// </summary>
 	public void SwitchToMapSelect ()
 	{
-		mapSelect.gameObject.SetActive (true);
 		playerSelect.gameObject.SetActive (false);
+		mapSelect.gameObject.SetActive (true);
 	}
 	public void ToggleFogOfWar (bool inBool)
 	{
@@ -349,16 +351,49 @@ public class SkirmishMenuViewer : MonoBehaviour
 		}
 	}
 	/// <summary>
+	/// Validates the player data.
+	/// </summary>
+	/// <returns><c>true</c>, if player data was validated, <c>false</c> otherwise.</returns>
+	bool IsPlayerDataValid ()
+	{
+		bool atLeastTwoSides = false;
+		int lastSide = players [0].thisPlayer.side;
+		foreach (var player in players) {
+			if (!player.IsValid ()) {
+				return false;
+			}
+			if (player.isActiveAndEnabled && player.thisPlayer.side != lastSide) {
+				atLeastTwoSides = true;
+			}
+		}
+		if (!atLeastTwoSides) {
+			MessagePanel.ShowPanel ("Error", "All players are only on one side");
+			return false;
+		}
+		return true;
+	}
+	/// <summary>
 	/// Returns the application to the start screen
 	/// </summary>
 	public void OnReturnToStartScreen ()
 	{
 		Utilities.LoadTitleScreen ();
 	}
+	public void TryStartGame ()
+	{
+		if (IsOptionsValid ()) {
+			StartGame ();
+		}
+	}
+	public bool IsOptionsValid ()
+	{
+		
+		return true;
+	}
 	/// <summary>
 	/// Starts the game.
 	/// </summary>
-	public void StartGame ()
+	void StartGame ()
 	{
 		settings.startingFunds = GameObject.Find ("Input StartingFunds").GetComponent<IncrementButton> ().GetValue ();
 		settings.propertyBaseFunds = GameObject.Find ("Input PropertyIncome").GetComponent<IncrementButton> ().GetValue ();

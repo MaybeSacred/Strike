@@ -430,7 +430,9 @@ public class Player : MonoBehaviour
 	{
 		pigs.won = won;
 	}
-	
+	/// <summary>
+	/// Initialize the player to start the game.
+	/// </summary>
 	public void Initialize ()
 	{
 		EndTurn ();
@@ -440,6 +442,14 @@ public class Player : MonoBehaviour
 				break;
 			}
 		}
+	}
+	public bool IsValid ()
+	{
+		if (string.IsNullOrEmpty (playerName)) {
+			MessagePanel.ShowPanel ("Unassigned Value", "Name of player " + GetPlayerNumber () + " is not set");
+			return false;
+		}
+		return true;
 	}
 	/// <summary>
 	/// Gets the side.

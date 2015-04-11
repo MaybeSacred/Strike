@@ -54,7 +54,7 @@ public class PlayerGUIView : MonoBehaviour
 	void Start ()
 	{
 		thisPlayer = Instantiate (thisPlayer) as Player;
-		thisPlayer.Setup (Random.Range (1, 4), Generals.Taron, new Color (1, 0, 0), "Player");
+		thisPlayer.Setup (Random.Range (1, 4), Generals.Taron, new Color (1, 0, 0), "");
 		// Initialize sliders
 		playerSideSlider.value = thisPlayer.side;
 		ChangeSide (thisPlayer.side);
@@ -238,6 +238,17 @@ public class PlayerGUIView : MonoBehaviour
 	public void DisplayDropDownMenu ()
 	{
 		
+	}
+	/// <summary>
+	/// Validate the contained player's properties
+	/// Returns false if any of the values were not set properly
+	/// </summary>
+	public bool IsValid ()
+	{
+		if (isActiveAndEnabled) {
+			return thisPlayer.IsValid ();
+		}
+		return true;
 	}
 	/// <summary>
 	/// Converts a color in hsv to rgb colour space
