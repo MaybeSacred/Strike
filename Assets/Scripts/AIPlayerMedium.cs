@@ -93,7 +93,7 @@ public class AIPlayerMedium : AIPlayer
 	{
 		if (!units.Contains (inUnit)) {
 			units.Add (inUnit);
-			inUnit.SetOwner (this);
+			inUnit.owner = this;
 			countsOfEachUnit [(int)inUnit.unitClass]++;
 			if (inUnit.canTransport) {
 				List<UnitController> temp = null;
@@ -153,7 +153,7 @@ public class AIPlayerMedium : AIPlayer
 				playerHQDistance = playerHQDistance > 0 ? playerHQDistance : 1;
 				currentPropDistance *= (playerHQDistance / enemyHQDistance);
 				currentPropDistance /= prop.AICapturePriority;
-				if (!targetedObjects.Contains (prop) && currentPropDistance < closestDistance && prop.propertyClass.capturable && !(prop.GetOccupyingBlock ().IsOccupied () && (prop.GetOccupyingBlock ().occupyingUnit.GetOwner ().IsSameSide (unit.GetOwner ()) && prop.occupyingUnit != unit))) {
+				if (!targetedObjects.Contains (prop) && currentPropDistance < closestDistance && prop.propertyClass.capturable && !(prop.GetOccupyingBlock ().IsOccupied () && (prop.GetOccupyingBlock ().occupyingUnit.owner.IsSameSide (unit.owner) && prop.occupyingUnit != unit))) {
 					closestProperty = prop;
 					closestDistance = currentPropDistance;
 				}
@@ -326,7 +326,12 @@ public class AIPlayerMedium : AIPlayer
 		float distance = (inUnit.transform.position - median).magnitude;
 		return sum / (distance > 1 ? distance : 1);
 	}
-	
+	/// <summary>
+	/// Returns the best unit to attack for the input unit from the list of enemyUnits
+	/// </summary>
+	/// <returns>The unit in cluster.</returns>
+	/// <param name="enemyUnits">Enemy units.</param>
+	/// <param name="inUnit">In unit.</param>
 	AttackableObject BestUnitInCluster (List<AttackableObject> enemyUnits, UnitController inUnit)
 	{
 		float best = 0;
@@ -370,9 +375,11 @@ public class AIPlayerMedium : AIPlayer
 		Debug.Log (blocks.Count);
 		foreach (TerrainBlock block in blocks) {
 			PositionEvaluation temp = RecursiveEvaluatePosition (block);
+#if DEBUG
 			GameObject go = Instantiate (graphicalValueBlock, block.transform.position, Quaternion.identity) as GameObject;
 			go.transform.Translate (0, temp.value, 0);
 			blockList.Add (go);
+#endif
 			if (temp.value > bestValueSoFar.value) {
 				bestValueSoFar = temp;
 				bestBlockSoFar = block;
@@ -459,7 +466,7 @@ public class AIPlayerMedium : AIPlayer
 	protected PositionEvaluation EvaluatePosition (TerrainBlock position)
 	{
 		PositionEvaluation bestOptionValue = new PositionEvaluation (0);
-		if (position.IsOccupied () && position.occupyingUnit != currentUnit && (!position.occupyingUnit.CanCarryUnit (currentUnit) || !position.occupyingUnit.GetOwner ().IsSameSide (currentUnit.GetOwner ()))) {
+		if (position.IsOccupied () && position.occupyingUnit != currentUnit && (!position.occupyingUnit.CanCarryUnit (currentUnit) || !position.occupyingUnit.owner.IsSameSide (currentUnit.owner))) {
 			bestOptionValue.value = -100000;
 			return bestOptionValue;
 		} else {
@@ -557,7 +564,7 @@ public class AIPlayerMedium : AIPlayer
 					{
 						float supplyValue = 0;
 						for (int i = 0; i < position.adjacentBlocks.Length; i++) {
-							if (position.adjacentBlocks [i].IsOccupied () && position.adjacentBlocks [i].occupyingUnit.GetOwner ().IsSameSide (currentUnit.GetOwner ()) && position.adjacentBlocks [i].occupyingUnit != currentUnit) {
+							if (position.adjacentBlocks [i].IsOccupied () && position.adjacentBlocks [i].occupyingUnit.owner.IsSameSide (currentUnit.owner) && position.adjacentBlocks [i].occupyingUnit != currentUnit) {
 								supplyValue += (1 - position.adjacentBlocks [i].occupyingUnit.GetNormalizedFuel ()) + (1 - position.adjacentBlocks [i].occupyingUnit.GetNormalizedAmmo ());
 							}
 						}
@@ -597,7 +604,7 @@ public class AIPlayerMedium : AIPlayer
 				}
 			}
 			if (position.HasProperty ()) {
-				if (position.occupyingProperty.CanHealUnit (currentUnit) && position.occupyingProperty.GetOwner ().IsSameSide (currentUnit.GetOwner ())) {
+				if (position.occupyingProperty.CanHealUnit (currentUnit) && position.occupyingProperty.owner.IsSameSide (currentUnit.owner)) {
 					if (currentUnit.health < 80) {
 						float value = (1 - ((float)currentUnit.health.GetRawHealth ()) / 100f);
 						if (position.occupyingProperty.CanProduceUnit (currentUnit.unitClass)) {
@@ -619,7 +626,7 @@ public class AIPlayerMedium : AIPlayer
 		}
 	}
 	
-	public float MoveTowardsTarget (TerrainBlock block)
+	float MoveTowardsTarget (TerrainBlock block)
 	{
 		return (1000 - block.cachedGCost) * hQMoveTowardsModifier;
 	}
@@ -632,10 +639,10 @@ public class AIPlayerMedium : AIPlayer
 		InGameController.instance.currentTerrain.SaveIlluminatedBlocks ();
 		foreach (AttackableObject temp in otherUnits) {
 			if (temp is UnitController) {
-				other = (UnitController)temp;
-				if (other.GetOwner ().IsSameSide (currentUnit.GetOwner ()) && other.EffectiveMoveRange () >= TerrainBuilder.ManhattanDistance (other.currentBlock, block)) {
+				other = temp as UnitController;
+				if (other.owner.IsSameSide (currentUnit.owner) && other.EffectiveMoveRange () >= TerrainBuilder.ManhattanDistance (other.currentBlock, block)) {
 					alliedUnits++;
-				} else if (!other.GetOwner ().IsSameSide (currentUnit.GetOwner ()) && !other.GetOwner ().IsNeutralSide () && other.EffectiveMoveRange () + other.EffectiveAttackRange () >= TerrainBuilder.ManhattanDistance (other.currentBlock, block) && other.gameObject.activeSelf) {
+				} else if (!other.owner.IsSameSide (currentUnit.owner) && !other.owner.IsNeutralSide () && other.EffectiveMoveRange () + other.EffectiveAttackRange () >= TerrainBuilder.ManhattanDistance (other.currentBlock, block) && other.gameObject.activeSelf) {
 					float distance = 0;
 					if (other.canMoveAndAttack && other.minAttackRange > 0) {
 						List<TerrainBlock> otherBlocks = InGameController.instance.currentTerrain.MoveableBlocks (other.currentBlock, other, other.EffectiveMoveRange ());
@@ -724,10 +731,12 @@ public class AIPlayerMedium : AIPlayer
 			case UnitState.FinishedMove:
 				{
 					currentUnit = null;
+#if DEBUG
 					foreach (GameObject go in blockList) {
 						Destroy (go);
 					}
 					blockList.Clear ();
+#endif
 					break;
 				} 
 			case UnitState.AwaitingOrder:

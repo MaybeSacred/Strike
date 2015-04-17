@@ -3,115 +3,21 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 
-public enum UnitName
-{
-	Infantry,
-	Stinger,
-	Stryker,
-	CarpetBomber,
-	TacticalFighter,
-	Interceptor,
-	AttackCopter,
-	LiftCopter,
-	LightTank,
-	MediumTank,
-	Rockets,
-	Missiles,
-	FieldArtillery,
-	Mortar,
-	SupplyTank,
-	UAV,
-	Humvee,
-	Sniper,
-	MobileRadar,
-	Corvette,
-	Destroyer,
-	Submarine,
-	Carrier,
-	Amphibious,
-	SupplyShip,
-	AATank,
-	Boomer,
-	Headquarters,
-	City,
-	Factory,
-	Airport,
-	Shipyard,
-	ComTower,
-	Bridge,
-	Bunker}
-;
-public enum UnitState
-{
-	UnMoved,
-	BuildingBridge,
-	Selected,
-	Moving,
-	AwaitingOrder,
-	TargetingUnit,
-	Unloading,
-	FinishedMove,
-	Dying}
-;
-public enum UnitOrderOptions
-{
-	ProduceMissile,
-	BuildBridge,
-	Attack,
-	Supply,
-	Repair,
-	Capture,
-	Load,
-	Unload,
-	Board,
-	AddGeneral,
-	GeneralPower,
-	BuildUnit,
-	UnStealthify,
-	Stealthify,
-	Join,
-	EndTurn}
-;
-public enum MovementType
-{
-	Air,
-	Sea,
-	Littoral,
-	LightVehicle,
-	HeavyVehicle,
-	Tank,
-	Amphibious,
-	Sniper,
-	Infantry}
-;
-//Story idea: in the middle of and right after nuclear war
-public enum UnitRanks
-{
-	UnRanked,
-	Private,
-	Corporal,
-	Sergeant,
-	Elite}
-;
-//Used for determining counterattack ability
-public enum UnitAttackType
-{
-	Direct,
-	Indirect,
-	Both}
-;
-
 public class UnitController : MonoBehaviour, AttackableObject, IComparable
 {
-	public static float actionDisplayXOffset = -50, actionDisplayYOffset = 0, actionDisplayWidth = 100, actionDisplayHeight = 25,
-		infoBoxXOffset = -80, infoBoxYOffset = 40, infoBoxWidth = 80, infoBoxHeight = 80;
 	public static Texture2D healthPoint;
 	public UnitName unitClass;
 	public TextMesh targetedDamageDisplay, targetedDamageOutline;
 	public MovementType moveClass;
 	public bool canMoveAndAttack;
 	public UnitAttackType attackType;
-	private Player owner;
+	public Player owner {
+		get { return owner; }
+		set {
+			owner = value;
+			moveIndicatorParticles.GetComponent<ParticleSystem> ().startColor = owner.mainPlayerColor;
+		}
+	}
 	public int playerNumber; //Used for predeployed units
 	public UnitState currentState{ get; private set; }
 	public int baseCost;
@@ -145,7 +51,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 	private bool hitFogOfWarUnit;
 	[HideInInspector]
 	public Property
-		occupiedProperty;
+		occupiedProperty{ get; set; }
 	public ParticleSystem destroyedParticles;
 	private List<UnitController> partiallyUnloadedUnits;
 	private UnitController currentlyUnloadingUnit;
@@ -212,7 +118,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 		targetedDamageOutline.text = "";
 		InGameController.instance.weather.ApplyCurrentWeatherEffect (this);
 		moveIndicatorParticles.transform.position = transform.position + .5f * Vector3.down;
-		moveIndicatorParticles.GetComponent<ParticleSystem>().startColor = owner.mainPlayerColor;
+		moveIndicatorParticles.GetComponent<ParticleSystem> ().startColor = owner.mainPlayerColor;
 		moveIndicatorParticles.transform.parent = transform;
 		comTowerEffect = owner.ComTowersInRange (this, currentBlock);
 	}
@@ -299,11 +205,11 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 	{
 		possibleOrders.Clear ();
 		if (block.IsOccupied () && block.occupyingUnit != this) {
-			if (block.occupyingUnit.CanCarryUnit (this) && block.occupyingUnit.GetOwner ().IsSameSide (owner)) {
+			if (block.occupyingUnit.CanCarryUnit (this) && block.occupyingUnit.owner.IsSameSide (owner)) {
 				possibleOrders.Add (UnitOrderOptions.Load);
-			} else if (block.occupyingUnit.GetOwner ().IsNeutralSide () && canCapture) {
+			} else if (block.occupyingUnit.owner.IsNeutralSide () && canCapture) {
 				possibleOrders.Add (UnitOrderOptions.Board);
-			} else if (block.occupyingUnit.GetOwner () == owner && block.occupyingUnit.health.PrettyHealth () < 10 && block.occupyingUnit.unitClass == unitClass && block.occupyingUnit.carriedUnits.Count < 1 && carriedUnits.Count < 1) {
+			} else if (block.occupyingUnit.owner == owner && block.occupyingUnit.health.PrettyHealth () < 10 && block.occupyingUnit.unitClass == unitClass && block.occupyingUnit.carriedUnits.Count < 1 && carriedUnits.Count < 1) {
 				possibleOrders.Add (UnitOrderOptions.Join);
 			}
 		} else {
@@ -319,7 +225,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 			}
 			if (canSupply) {
 				for (int i = 0; i < block.adjacentBlocks.Length; i++) {
-					if (block.adjacentBlocks [i].HasProperty () && block.adjacentBlocks [i].occupyingProperty.GetOwner ().IsSameSide (owner) && block.adjacentBlocks [i].occupyingProperty.health < 100) {
+					if (block.adjacentBlocks [i].HasProperty () && block.adjacentBlocks [i].occupyingProperty.owner.IsSameSide (owner) && block.adjacentBlocks [i].occupyingProperty.health < 100) {
 						possibleOrders.Add (UnitOrderOptions.Repair);
 						break;
 					}
@@ -327,20 +233,20 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 			}
 			if (canSupply) {
 				for (int i = 0; i < block.adjacentBlocks.Length; i++) {
-					if (block.adjacentBlocks [i].IsOccupied () && block.adjacentBlocks [i].occupyingUnit.GetOwner ().IsSameSide (owner) && block.adjacentBlocks [i].occupyingUnit != this) {
+					if (block.adjacentBlocks [i].IsOccupied () && block.adjacentBlocks [i].occupyingUnit.owner.IsSameSide (owner) && block.adjacentBlocks [i].occupyingUnit != this) {
 						possibleOrders.Add (UnitOrderOptions.Supply);
 						break;
 					}
 				}
 			}
-			if (canCapture && block.HasProperty () && !block.occupyingProperty.GetOwner ().IsSameSide (owner) && block.occupyingProperty.propertyClass.capturable) {
+			if (canCapture && block.HasProperty () && !block.occupyingProperty.owner.IsSameSide (owner) && block.occupyingProperty.propertyClass.capturable) {
 				if (block.IsOccupied () && block.occupyingUnit != this) {
 					
 				} else {
 					possibleOrders.Add (UnitOrderOptions.Capture);
 				}
 			}
-			if (didNotMoveThisTurn && block.HasProperty () && block.occupyingProperty.CanProduceUnit (unitClass) && block.occupyingProperty.GetOwner ().IsSameSide (owner)) {
+			if (didNotMoveThisTurn && block.HasProperty () && block.occupyingProperty.CanProduceUnit (unitClass) && block.occupyingProperty.owner.IsSameSide (owner)) {
 				if (owner.currentGeneralUnit == null && owner.funds >= baseCost / 2) {
 					possibleOrders.Add (UnitOrderOptions.AddGeneral);
 				}
@@ -387,11 +293,11 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 		List<AttackableObject> allUnitsInRange = InGameController.instance.currentTerrain.ObjectsWithinRange (block, minAttackRange, modifier.ApplyModifiers (UnitPropertyModifier.PropertyModifiers.AttackRange, maxAttackRange), this);
 		foreach (AttackableObject ao in allUnitsInRange) {
 			if (ao is UnitController && ((UnitController)ao) != this) {
-				if (!((UnitController)ao).GetOwner ().IsSameSide (owner) && DamageValues.CanAttackUnit (this, (UnitController)ao) && ((UnitController)ao).gameObject.activeSelf) {
+				if (!((UnitController)ao).owner.IsSameSide (owner) && DamageValues.CanAttackUnit (this, (UnitController)ao) && ((UnitController)ao).gameObject.activeSelf) {
 					list.Add (ao);
 				}
 			} else if (ao is Property) {
-				if (!((Property)ao).GetOwner ().IsSameSide (owner) && DamageValues.CanAttackUnit (this, ((Property)ao))) {
+				if (!((Property)ao).owner.IsSameSide (owner) && DamageValues.CanAttackUnit (this, ((Property)ao))) {
 					list.Add (ao);
 				}
 			}
@@ -421,8 +327,8 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 				TerrainBlock block = hit.collider.GetComponent<TerrainBlock> ();
 				GeneratePath (block);
 				if (InGameController.instance.LeftClick && !InGameController.instance.RightClick) {
-					if (!block.IsOccupied () || (((block.occupyingUnit.GetOwner ().IsSameSide (owner) || block.occupyingUnit.GetOwner ().IsNeutralSide ()) && block.occupyingUnit.CanCarryUnit (this))
-						|| (!block.occupyingUnit.gameObject.activeSelf) || block.occupyingUnit.GetOwner () == owner && block.occupyingUnit.health.PrettyHealth () < 10 && block.occupyingUnit.unitClass == unitClass && block.occupyingUnit.carriedUnits.Count < 1 && carriedUnits.Count < 1 && block.occupyingUnit != this)) {
+					if (!block.IsOccupied () || (((block.occupyingUnit.owner.IsSameSide (owner) || block.occupyingUnit.owner.IsNeutralSide ()) && block.occupyingUnit.CanCarryUnit (this))
+						|| (!block.occupyingUnit.gameObject.activeSelf) || block.occupyingUnit.owner == owner && block.occupyingUnit.health.PrettyHealth () < 10 && block.occupyingUnit.unitClass == unitClass && block.occupyingUnit.carriedUnits.Count < 1 && carriedUnits.Count < 1 && block.occupyingUnit != this)) {
 						ChangeState (UnitState.Selected, UnitState.Moving);
 					}
 				}
@@ -572,7 +478,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 	void GeneratePath (TerrainBlock block)
 	{
 		if (!currentMoveBlocks.Contains (block)) {
-			if (block.IsOccupied () && !(block.occupyingUnit.GetOwner ().IsSameSide (owner) || block.occupyingUnit.GetOwner ().IsNeutralSide ()) && block.occupyingUnit.gameObject.activeSelf) {
+			if (block.IsOccupied () && !(block.occupyingUnit.owner.IsSameSide (owner) || block.occupyingUnit.owner.IsNeutralSide ()) && block.occupyingUnit.gameObject.activeSelf) {
 				
 			} else {
 				float pathDistance;
@@ -852,23 +758,6 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 		targetedDamageOutline.transform.rotation = Camera.main.transform.rotation;
 	}
 	/// <summary>
-	/// Sets the owner of the unit.
-	/// </summary>
-	/// <param name="newOwner">New owner.</param>
-	public void SetOwner (Player newOwner)
-	{
-		owner = newOwner;
-		moveIndicatorParticles.GetComponent<ParticleSystem>().startColor = owner.mainPlayerColor;
-	}
-	/// <summary>
-	/// Gets the unit's owner
-	/// </summary>
-	/// <returns>The owner.</returns>
-	public Player GetOwner ()
-	{
-		return owner;
-	}
-	/// <summary>
 	/// Heals the unit, and uses the owning player's funds if useFunds is specified
 	/// </summary>
 	/// <param name="attemptedHealAmount">Attempted heal amount.</param>
@@ -937,7 +826,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 		}
 		CalculateFuelUsage ();
 		if (currentBlock.HasProperty ()) {
-			if (currentBlock.occupyingProperty.GetOwner ().IsSameSide (owner) && currentBlock.occupyingProperty.CanHealUnit (this)) {
+			if (currentBlock.occupyingProperty.owner.IsSameSide (owner) && currentBlock.occupyingProperty.CanHealUnit (this)) {
 				Heal (2, true);
 				Resupply ();
 			}
@@ -950,7 +839,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 		}
 		if (canSupply) {
 			foreach (TerrainBlock t in currentBlock.adjacentBlocks) {
-				if (t.IsOccupied () && t.occupyingUnit.GetOwner ().IsSameSide (owner) && t.occupyingUnit != this) {
+				if (t.IsOccupied () && t.occupyingUnit.owner.IsSameSide (owner) && t.occupyingUnit != this) {
 					t.occupyingUnit.Resupply ();
 				}
 			}
@@ -1059,6 +948,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 		InGameController.instance.currentTerrain.ClearMoveBlocks ();
 		showingAttackRange = false;
 	}
+	/*
 	public void OnGUI ()
 	{
 		if (currentState == UnitState.AwaitingOrder) {
@@ -1091,6 +981,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 			}
 		}
 	}
+	*/
 	/// <summary>
 	/// Returns whether retaliator can retaliate (counter-attack) defender
 	/// </summary>
@@ -1152,7 +1043,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 			Snipe (other, damageOut);
 		} else {
 			primaryAmmoRemaining--;
-			if (owner.selectedGeneral.IsInZoneRange (transform) && !other.GetOwner ().IsNeutralSide ()) {
+			if (owner.selectedGeneral.IsInZoneRange (transform) && !other.owner.IsNeutralSide ()) {
 				owner.selectedGeneral.UpdateGeneral (damageOut > other.health.GetRawHealth () ? other.health.GetRawHealth () : damageOut);
 			}
 			if (other.TakeDamage (damageOut, false)) {
@@ -1167,8 +1058,8 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 				if (TakeDamage (damageOut, false)) {
 					other.RankUp ();
 				}
-				if (other.GetOwner ().selectedGeneral.IsInZoneRange (other.transform) && !owner.IsNeutralSide ()) {
-					other.GetOwner ().selectedGeneral.UpdateGeneral (damageOut > other.health.GetRawHealth () ? other.health.GetRawHealth () : damageOut);
+				if (other.owner.selectedGeneral.IsInZoneRange (other.transform) && !owner.IsNeutralSide ()) {
+					other.owner.selectedGeneral.UpdateGeneral (damageOut > other.health.GetRawHealth () ? other.health.GetRawHealth () : damageOut);
 				}
 				other.primaryAmmoRemaining--;
 			}
@@ -1195,7 +1086,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 	{
 		int damageOut = DamageValues.CalculateDamage (this, other) + DamageValues.CalculateLuckDamage (health.GetRawHealth ());
 		other.TakeDamage (damageOut);
-		if (owner.selectedGeneral.IsInZoneRange (transform) && !other.GetOwner ().IsNeutralSide ()) {
+		if (owner.selectedGeneral.IsInZoneRange (transform) && !other.owner.IsNeutralSide ()) {
 			owner.selectedGeneral.UpdateGeneral (damageOut > other.health.GetRawHealth () ? other.health.GetRawHealth () : damageOut);
 		}
 		primaryAmmoRemaining--;
@@ -1302,7 +1193,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 		case UnitOrderOptions.Repair:
 			{
 				for (int i = 0; i < awaitingOrdersBlock.adjacentBlocks.Length; i++) {
-					if (awaitingOrdersBlock.adjacentBlocks [i].HasProperty () && awaitingOrdersBlock.adjacentBlocks [i].occupyingProperty.GetOwner ().IsSameSide (owner)) {
+					if (awaitingOrdersBlock.adjacentBlocks [i].HasProperty () && awaitingOrdersBlock.adjacentBlocks [i].occupyingProperty.owner.IsSameSide (owner)) {
 						if (awaitingOrdersBlock.adjacentBlocks [i].occupyingProperty.justBuilt) {
 						
 						} else if (awaitingOrdersBlock.adjacentBlocks [i].occupyingProperty.isUnderConstruction) {
@@ -1318,7 +1209,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 		case UnitOrderOptions.Supply:
 			{
 				for (int i = 0; i < awaitingOrdersBlock.adjacentBlocks.Length; i++) {
-					if (awaitingOrdersBlock.adjacentBlocks [i].IsOccupied () && awaitingOrdersBlock.adjacentBlocks [i].occupyingUnit.GetOwner ().IsSameSide (owner)) {
+					if (awaitingOrdersBlock.adjacentBlocks [i].IsOccupied () && awaitingOrdersBlock.adjacentBlocks [i].occupyingUnit.owner.IsSameSide (owner)) {
 						awaitingOrdersBlock.adjacentBlocks [i].occupyingUnit.Resupply ();
 					}
 				}
@@ -1502,12 +1393,12 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 		for (int i = 0; i < possibleTargets.Count; i++) {
 			float damageToUnit = DamageValues.CalculateDamage (this, possibleTargets [i]);
 			damageToUnit = damageToUnit > possibleTargets [i].GetHealth ().GetRawHealth () ? possibleTargets [i].GetHealth ().GetRawHealth () : damageToUnit;
-			if (possibleTargets [i].GetOwner ().IsNeutralSide ()) {
-				if (possibleTargets [i] is Property) {
+			if (possibleTargets [i] is Property) {
+				if ((possibleTargets [i] as Property).owner.IsNeutralSide ()) {
 					damageToUnit *= Mathf.Pow ((100 - InGameController.instance.ClosestEnemyHQ (block, moveClass, owner).Item1) / 145f, 5) * .5f;
 				}
 			}
-			if (possibleTargets [i].GetOccupyingBlock ().HasProperty () && !possibleTargets [i].GetOccupyingBlock ().occupyingProperty.GetOwner ().IsSameSide (owner)) {
+			if (possibleTargets [i].GetOccupyingBlock ().HasProperty () && !possibleTargets [i].GetOccupyingBlock ().occupyingProperty.owner.IsSameSide (owner)) {
 				damageToUnit *= (6 - 5 * possibleTargets [i].GetOccupyingBlock ().occupyingProperty.NormalizedCaptureCount ());
 			}
 			if (damageToUnit * possibleTargets [i].UnitCost () / 100000f > bestTargetedUnitDamage) {
@@ -1601,7 +1492,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 		case UnitOrderOptions.Repair:
 			{
 				for (int i = 0; i < awaitingOrdersBlock.adjacentBlocks.Length; i++) {
-					if (awaitingOrdersBlock.adjacentBlocks [i].HasProperty () && awaitingOrdersBlock.adjacentBlocks [i].occupyingProperty.GetOwner ().IsSameSide (owner)) {
+					if (awaitingOrdersBlock.adjacentBlocks [i].HasProperty () && awaitingOrdersBlock.adjacentBlocks [i].occupyingProperty.owner.IsSameSide (owner)) {
 						if (awaitingOrdersBlock.adjacentBlocks [i].occupyingProperty.justBuilt) {
 						
 						} else if (awaitingOrdersBlock.adjacentBlocks [i].occupyingProperty.isUnderConstruction) {
@@ -1617,7 +1508,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 		case UnitOrderOptions.Supply:
 			{
 				for (int i = 0; i < awaitingOrdersBlock.adjacentBlocks.Length; i++) {
-					if (awaitingOrdersBlock.adjacentBlocks [i].IsOccupied () && awaitingOrdersBlock.adjacentBlocks [i].occupyingUnit.GetOwner ().IsSameSide (owner)) {
+					if (awaitingOrdersBlock.adjacentBlocks [i].IsOccupied () && awaitingOrdersBlock.adjacentBlocks [i].occupyingUnit.owner.IsSameSide (owner)) {
 						awaitingOrdersBlock.adjacentBlocks [i].occupyingUnit.Resupply ();
 					}
 				}
@@ -1795,3 +1686,100 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 		detailedTextBox.SetBoxInfo (unitClass.ToString (), description, bestAgainst, weakestAgainst);
 	}
 }
+public enum UnitName
+{
+	Infantry,
+	Stinger,
+	Stryker,
+	CarpetBomber,
+	TacticalFighter,
+	Interceptor,
+	AttackCopter,
+	LiftCopter,
+	LightTank,
+	MediumTank,
+	Rockets,
+	Missiles,
+	FieldArtillery,
+	Mortar,
+	SupplyTank,
+	UAV,
+	Humvee,
+	Sniper,
+	MobileRadar,
+	Corvette,
+	Destroyer,
+	Submarine,
+	Carrier,
+	Amphibious,
+	SupplyShip,
+	AATank,
+	Boomer,
+	Headquarters,
+	City,
+	Factory,
+	Airport,
+	Shipyard,
+	ComTower,
+	Bridge,
+	Bunker}
+;
+public enum UnitState
+{
+	UnMoved,
+	BuildingBridge,
+	Selected,
+	Moving,
+	AwaitingOrder,
+	TargetingUnit,
+	Unloading,
+	FinishedMove,
+	Dying}
+;
+public enum UnitOrderOptions
+{
+	ProduceMissile,
+	BuildBridge,
+	Attack,
+	Supply,
+	Repair,
+	Capture,
+	Load,
+	Unload,
+	Board,
+	AddGeneral,
+	GeneralPower,
+	BuildUnit,
+	UnStealthify,
+	Stealthify,
+	Join,
+	EndTurn}
+;
+public enum MovementType
+{
+	Air,
+	Sea,
+	Littoral,
+	LightVehicle,
+	HeavyVehicle,
+	Tank,
+	Amphibious,
+	Sniper,
+	Infantry}
+;
+//Story idea: in the middle of and right after nuclear war
+public enum UnitRanks
+{
+	UnRanked,
+	Private,
+	Corporal,
+	Sergeant,
+	Elite}
+;
+//Used for determining counterattack ability
+public enum UnitAttackType
+{
+	Direct,
+	Indirect,
+	Both}
+;

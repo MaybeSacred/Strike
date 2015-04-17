@@ -83,7 +83,7 @@ public class InGameGUI : MonoBehaviour
 	void Update ()
 	{
 		RaycastHit hit;
-		if (Physics.Raycast (Utilities.gameCamera.GetComponent<Camera>().ScreenPointToRay (Input.mousePosition), out hit, float.PositiveInfinity, 1 << LayerMask.NameToLayer ("Default"))) {
+		if (Physics.Raycast (Utilities.gameCamera.GetComponent<Camera> ().ScreenPointToRay (Input.mousePosition), out hit, float.PositiveInfinity, 1 << LayerMask.NameToLayer ("Default"))) {
 			TerrainBlock newMouseOver = hit.collider.GetComponent<TerrainBlock> ();
 			if (newMouseOver == null) {
 				Debug.Log ("Null terrainBlock" + Input.mousePosition.ToString ());
@@ -97,7 +97,7 @@ public class InGameGUI : MonoBehaviour
 			if (blockMousedOver.IsOccupied () && blockMousedOver.occupyingUnit.gameObject.activeSelf) {
 				if (unitMousedOver != blockMousedOver.occupyingUnit) {
 					unitMousedOver = blockMousedOver.occupyingUnit;
-					SetHoveredPlayerDisplay (unitMousedOver.GetOwner ());
+					SetHoveredPlayerDisplay (unitMousedOver.owner);
 					SetCurrentUnitDisplay (unitMousedOver);
 				}
 			} else {
@@ -107,7 +107,7 @@ public class InGameGUI : MonoBehaviour
 			if (blockMousedOver.HasProperty ()) {
 				if (propertyMousedOver != blockMousedOver.occupyingProperty) {
 					propertyMousedOver = blockMousedOver.occupyingProperty;
-					SetHoveredPlayerDisplay (propertyMousedOver.GetOwner ());
+					SetHoveredPlayerDisplay (propertyMousedOver.owner);
 					SetCurrentPropertyDisplay (propertyMousedOver);
 				}
 			} else {
@@ -189,12 +189,12 @@ public class InGameGUI : MonoBehaviour
 			SetCurrentPlayerDisplay (player);
 		}// Else check if player is equal to unitMousedOver player
 		else if (unitMousedOver != null) {
-			if (player == unitMousedOver.GetOwner ()) {
+			if (player == unitMousedOver.owner) {
 				SetHoveredPlayerDisplay (player);
 			}
 		}// Else check for propertyMousedOver player
 		else if (propertyMousedOver != null) {
-			if (player == propertyMousedOver.GetOwner ()) {
+			if (player == propertyMousedOver.owner) {
 				SetHoveredPlayerDisplay (player);
 			}
 		}

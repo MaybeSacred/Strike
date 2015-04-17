@@ -14,14 +14,14 @@ public class MessagePanel : MonoBehaviour
 	{
 		if (instance == null) {
 			instance = this;
-			foreach (var button in GetComponentsInChildren<Button>()) {
+			foreach (var button in GetComponentsInChildren<Button>(true)) {
 				if (button.name.Contains ("ccept")) {
 					accept = button;
 				} else if (button.name.Contains ("ecline")) {
 					decline = button;
 				}
 			}
-			foreach (var text in GetComponentsInChildren<Text>()) {
+			foreach (var text in GetComponentsInChildren<Text>(true)) {
 				if (text.name.Contains ("Type")) {
 					messageType = text;
 				} else if (text.name.Equals ("Message")) {
@@ -34,26 +34,17 @@ public class MessagePanel : MonoBehaviour
 		}
 	}
 	/// <summary>
-	/// Shows the panel.
-	/// Does not show decline button
-	/// </summary>
-	/// <param name="messageType">Message type.</param>
-	/// <param name="message">Message.</param>
-	public static void ShowPanel (string messageType, string message)
-	{
-		ShowPanel (messageType, message, () => {
-			return;});
-	}
-	/// <summary>
 	/// Shows the panel, with option for declination functionality
 	/// </summary>
 	/// <param name="messageType">Message type.</param>
 	/// <param name="message">Message.</param>
 	/// <param name="onAccept">On accept.</param>
 	/// <param name="onDecline">On decline.</param>
-	public static void ShowPanel (string messageType, string message, Action onAccept, Action onDecline = null)
+	public static void ShowPanel (string messageType, string message, Action onAccept = null, Action onDecline = null, string acceptButtonText = "OK", string declineButtonText = "Cancel")
 	{
-		instance.onAccept = onAccept;
+		if (onAccept != null) {
+			instance.onAccept = onAccept;
+		}
 		instance.onDecline = onDecline;
 		instance.gameObject.SetActive (true);
 		// If we dont have a decline function provided, dont show decline button
@@ -64,6 +55,8 @@ public class MessagePanel : MonoBehaviour
 		}
 		instance.message.text = message;
 		instance.messageType.text = messageType;
+		instance.accept.GetComponentsInChildren<Text> (true) [0].text = acceptButtonText;
+		instance.decline.GetComponentsInChildren<Text> (true) [0].text = declineButtonText;
 	}
 	public void OnAccept ()
 	{

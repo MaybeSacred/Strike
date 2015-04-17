@@ -64,7 +64,7 @@ public abstract class AIPlayer : Player
 	{
 		if (!units.Contains (inUnit)) {
 			units.Add (inUnit);
-			inUnit.SetOwner (this);
+			inUnit.owner = this;
 			countsOfEachUnit [(int)inUnit.unitClass]++;
 		}
 	}
@@ -116,7 +116,7 @@ public abstract class AIPlayer : Player
 	protected abstract float EvaluatePosition (TerrainBlock position, out UnitOrderOptions order);
 	public float MoveTowardsEnemyHQ (TerrainBlock block)
 	{
-		var closest = InGameController.instance.ClosestEnemyHQ (block, currentUnit.moveClass, currentUnit.GetOwner ());
+		var closest = InGameController.instance.ClosestEnemyHQ (block, currentUnit.moveClass, currentUnit.owner);
 		if (closest.Item1 < 1 && !currentUnit.canCapture) {
 			return -10;
 		}

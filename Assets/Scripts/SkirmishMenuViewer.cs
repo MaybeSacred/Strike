@@ -367,7 +367,7 @@ public class SkirmishMenuViewer : MonoBehaviour
 			}
 		}
 		if (!atLeastTwoSides) {
-			MessagePanel.ShowPanel ("Error", "All players are only on one side");
+			MessagePanel.ShowPanel ("Unassigned Value", "All players are only on one side");
 			return false;
 		}
 		return true;
@@ -379,12 +379,19 @@ public class SkirmishMenuViewer : MonoBehaviour
 	{
 		Utilities.LoadTitleScreen ();
 	}
+	/// <summary>
+	/// Ensures that all option values are set; if so, the game is started
+	/// </summary>
 	public void TryStartGame ()
 	{
 		if (IsOptionsValid ()) {
 			StartGame ();
 		}
 	}
+	/// <summary>
+	/// Determines whether the options are complete/valid
+	/// </summary>
+	/// <returns><c>true</c> if this instance is options valid; otherwise, <c>false</c>.</returns>
 	public bool IsOptionsValid ()
 	{
 		

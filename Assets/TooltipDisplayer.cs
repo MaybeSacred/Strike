@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
-using System.Collections;
+using System.Linq;
 
 public class TooltipDisplayer : MonoBehaviour
 {
@@ -16,7 +16,7 @@ public class TooltipDisplayer : MonoBehaviour
 	{
 		tooltip.gameObject.SetActive (false);
 	}
-	
+
 	// Update is called once per frame
 	void Update ()
 	{
@@ -24,8 +24,7 @@ public class TooltipDisplayer : MonoBehaviour
 		pe.position = Input.mousePosition;
 		List<RaycastResult> hits = new List<RaycastResult> ();
 		EventSystem.current.RaycastAll (pe, hits);
-		bool gameObjectFound = false;
-		foreach (var p in hits) {
+		var first = hits.FirstOrDefault (p => {
 			if (p.gameObject.GetComponent<TooltipData> () != null) {
 				if (lastObjectMouseWasOver != p.gameObject) {
 					mouseOverTimer = 0;
@@ -33,11 +32,11 @@ public class TooltipDisplayer : MonoBehaviour
 					lastObjectMouseWasOver = p.gameObject;
 					tooltip.gameObject.SetActive (false);
 				}
-				gameObjectFound = true;
-				break;
+				return true;
 			}
-		}
-		if (gameObjectFound) {
+			return false;
+		});
+		if (first.isValid) {
 			mouseOverTimer += Time.deltaTime;
 			if (mouseOverTimer > mouseOverStartTime && !tooltipWasDisplayed) {
 				tooltipWasDisplayed = true;

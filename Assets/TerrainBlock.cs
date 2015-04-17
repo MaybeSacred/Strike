@@ -476,7 +476,7 @@ public class TerrainBlock : MonoBehaviour, System.IComparable<TerrainBlock>
 			int bestIndexSoFar = 0;
 			for (int i = 0; i < adjacentBlocks.Length; i++) {
 				if (adjacentBlocks [i].UnitMovementCost (unit.moveClass) > 0 && adjacentBlocks [i].UnitMovementCost (unit.moveClass) < bestSoFar && !adjacentBlocks [i].showingMoveTile) {
-					if (adjacentBlocks [i].IsOccupied () && adjacentBlocks [i].occupyingUnit.gameObject.activeSelf && !adjacentBlocks [i].occupyingUnit.GetOwner ().IsSameSide (unit.GetOwner ()) && DamageValues.CanAttackUnit (unit, adjacentBlocks [i].occupyingUnit)) {
+					if (adjacentBlocks [i].IsOccupied () && adjacentBlocks [i].occupyingUnit.gameObject.activeSelf && !adjacentBlocks [i].occupyingUnit.owner.IsSameSide (unit.owner) && DamageValues.CanAttackUnit (unit, adjacentBlocks [i].occupyingUnit)) {
 						
 					} else {
 						bestSoFar = adjacentBlocks [i].UnitMovementCost (unit.moveClass);

@@ -10,7 +10,7 @@
 //------------------------------------------------------------------------------
 using System;
 using System.Collections.Generic;
-
+using System.Linq;
 public static class Extensions
 {
 	/// <summary>
@@ -88,6 +88,18 @@ public static class Extensions
 			}
 		}
 		return outValue;
+	}
+	/// <summary>
+	/// Returns an enumerable with values between start inclusive and end exclusive from the provided enumerable
+	/// </summary>
+	/// <param name="enumerable">Enumerable.</param>
+	/// <param name="comparer">Comparer.</param>
+	/// <param name="start">Start.</param>
+	/// <param name="end">End.</param>
+	/// <typeparam name="TSource">The 1st type parameter.</typeparam>
+	public static IEnumerable<TSource> Between<TSource> (this IEnumerable<TSource> enumerable, Func<TSource, TSource, int> comparer, TSource start, TSource end)
+	{
+		return enumerable.Where (x => comparer (x, start) >= 0).Where (x => comparer (x, end) < 0);
 	}
 }
 

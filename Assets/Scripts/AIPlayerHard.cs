@@ -29,7 +29,7 @@ public class AIPlayerHard : AIPlayer
 	
 	protected override float EvaluatePosition (TerrainBlock position, out UnitOrderOptions order)
 	{
-		if (position.IsOccupied () && position.occupyingUnit != currentUnit && (!position.occupyingUnit.CanCarryUnit (currentUnit) || !position.occupyingUnit.GetOwner ().IsSameSide (currentUnit.GetOwner ()))) {
+		if (position.IsOccupied () && position.occupyingUnit != currentUnit && (!position.occupyingUnit.CanCarryUnit (currentUnit) || !position.occupyingUnit.owner.IsSameSide (currentUnit.owner))) {
 			order = UnitOrderOptions.EndTurn;
 			return -1;
 		} else {
@@ -122,7 +122,7 @@ public class AIPlayerHard : AIPlayer
 					{
 						float supplyValue = 0;
 						for (int i = 0; i < position.adjacentBlocks.Length; i++) {
-							if (position.adjacentBlocks [i].IsOccupied () && position.adjacentBlocks [i].occupyingUnit.GetOwner ().IsSameSide (currentUnit.GetOwner ()) && position.adjacentBlocks [i].occupyingUnit != currentUnit) {
+							if (position.adjacentBlocks [i].IsOccupied () && position.adjacentBlocks [i].occupyingUnit.owner.IsSameSide (currentUnit.owner) && position.adjacentBlocks [i].occupyingUnit != currentUnit) {
 								supplyValue += (1 - position.adjacentBlocks [i].occupyingUnit.GetNormalizedFuel ()) + (1 - position.adjacentBlocks [i].occupyingUnit.GetNormalizedAmmo ());
 							}
 						}
@@ -152,7 +152,7 @@ public class AIPlayerHard : AIPlayer
 				}
 			}
 			if (position.HasProperty ()) {
-				if (position.occupyingProperty.CanHealUnit (currentUnit) && position.occupyingProperty.GetOwner ().IsSameSide (currentUnit.GetOwner ())) {
+				if (position.occupyingProperty.CanHealUnit (currentUnit) && position.occupyingProperty.owner.IsSameSide (currentUnit.owner)) {
 					float value = (1 - (float)currentUnit.health.GetRawHealth () / 100f);
 					if (position.occupyingProperty.CanProduceUnit (currentUnit.unitClass)) {
 						value *= .8f;

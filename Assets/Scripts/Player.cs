@@ -196,7 +196,7 @@ public class Player : MonoBehaviour
 	{
 		if (!units.Contains (inUnit)) {
 			units.Add (inUnit);
-			inUnit.SetOwner (this);
+			inUnit.owner = this;
 			InGameGUI.instance.SetPlayerDisplay (this);
 		}
 	}

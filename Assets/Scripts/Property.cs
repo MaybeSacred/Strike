@@ -8,7 +8,7 @@ public class Property : MonoBehaviour, AttackableObject
 	public static int productionDisplayWidth = 220;
 	public UnitName propertyType;
 	public Health health;
-	private Player currentOwner;
+	public Player owner{ get; set; }
 	public PropertyAttributes propertyClass;
 	public UnitState currentState { get; private set; }
 	private bool currentlyDead;
@@ -72,8 +72,8 @@ public class Property : MonoBehaviour, AttackableObject
 	void Awake ()
 	{
 		health = new Health ();
-		if (GetComponent<Collider>() != null) {
-			GetComponent<Collider>().enabled = false;
+		if (GetComponent<Collider> () != null) {
+			GetComponent<Collider> ().enabled = false;
 		}
 		Transform[] trans = GetComponentsInChildren<Transform> ();
 		for (int i = 0; i < trans.Length; i++) {
@@ -89,7 +89,7 @@ public class Property : MonoBehaviour, AttackableObject
 		isUnderConstruction = false;
 		if (propertyType == UnitName.ComTower) {
 			mouseOverEffect = (ParticleSystem)Instantiate (mouseOverEffect, transform.position, transform.rotation);
-			mouseOverEffect.GetComponent<ParticleSystem>().Stop ();
+			mouseOverEffect.GetComponent<ParticleSystem> ().Stop ();
 		}
 	}
 	void Start ()
@@ -143,7 +143,7 @@ public class Property : MonoBehaviour, AttackableObject
 
 	public void AIProduceUnit (UnitName unitNames)
 	{
-		UnitController newUnit = currentOwner.ProduceUnit (unitNames);
+		UnitController newUnit = owner.ProduceUnit (unitNames);
 		newUnit.transform.position = transform.position;
 		occupyingUnit = newUnit;
 		EndTurn ();
@@ -159,7 +159,7 @@ public class Property : MonoBehaviour, AttackableObject
 	public void StartTurn ()
 	{
 		if (!currentlyDead) {
-			currentOwner.AddFunds ((int)(propertyClass.baseFunds * Mathf.Round (health.PrettyHealth () / 10)));
+			owner.AddFunds ((int)(propertyClass.baseFunds * Mathf.Round (health.PrettyHealth () / 10)));
 		}
 		if (isUnderConstruction) {
 			justBuilt = false;
@@ -204,9 +204,9 @@ public class Property : MonoBehaviour, AttackableObject
 	{
 		if (propertyType == UnitName.Headquarters) {
 			propertyType = UnitName.City;
-			InGameController.instance.RemovePlayer (currentOwner);
+			InGameController.instance.RemovePlayer (owner);
 		} else {
-			currentOwner.RemoveProperty (this);
+			owner.RemoveProperty (this);
 		}
 		health.SetRawHealth (-59);
 		if (InGameController.instance.GetPlayer (0) != null) {	
@@ -229,13 +229,13 @@ public class Property : MonoBehaviour, AttackableObject
 	{
 		infoBoxTimeoutCounter = 0;
 		if (propertyType == UnitName.ComTower) {
-			if (!mouseOverEffect.GetComponent<ParticleSystem>().isPlaying)
-				mouseOverEffect.GetComponent<ParticleSystem>().Play ();
+			if (!mouseOverEffect.GetComponent<ParticleSystem> ().isPlaying)
+				mouseOverEffect.GetComponent<ParticleSystem> ().Play ();
 		}
 	}
 	public void OnMouseUpExtra ()
 	{
-		if (InGameController.instance.GetCurrentPlayer () == currentOwner && propertyClass.producableUnits.Length > 0 && !InGameController.instance.isPaused) {
+		if (InGameController.instance.GetCurrentPlayer () == owner && propertyClass.producableUnits.Length > 0 && !InGameController.instance.isPaused) {
 			if (!hasUnitSelectedMutex) {
 				hasUnitSelectedMutex = InGameController.instance.AcquireUnitSelectedMutex (this);
 			}
@@ -246,13 +246,13 @@ public class Property : MonoBehaviour, AttackableObject
 				case UnitState.UnMoved:
 					{
 						currentState = UnitState.AwaitingOrder;
-						InGameGUI.instance.ShowUnitSelectionDisplay (propertyClass.producableUnits, GetOwner ().funds, AIProduceUnit, OnUnSelect);
+						InGameGUI.instance.ShowUnitSelectionDisplay (propertyClass.producableUnits, owner.funds, AIProduceUnit, OnUnSelect);
 						break;
 					}
 				case UnitState.Selected:
 					{
 						currentState = UnitState.AwaitingOrder;
-						InGameGUI.instance.ShowUnitSelectionDisplay (propertyClass.producableUnits, GetOwner ().funds, AIProduceUnit, OnUnSelect);
+						InGameGUI.instance.ShowUnitSelectionDisplay (propertyClass.producableUnits, owner.funds, AIProduceUnit, OnUnSelect);
 						break;
 					}
 				case UnitState.AwaitingOrder:
@@ -272,23 +272,18 @@ public class Property : MonoBehaviour, AttackableObject
 	public void OnMouseExitExtra ()
 	{
 		if (propertyType == UnitName.ComTower) {
-			mouseOverEffect.GetComponent<ParticleSystem>().Stop ();
+			mouseOverEffect.GetComponent<ParticleSystem> ().Stop ();
 		}
-	}
-
-	public Player GetOwner ()
-	{
-		return currentOwner;
 	}
 	public void SetOwner (Player newOwner)
 	{
-		if (newOwner != currentOwner) {
-			if (currentOwner != null) {
-				currentOwner.RemoveProperty (this);
+		if (newOwner != owner) {
+			if (owner != null) {
+				owner.RemoveProperty (this);
 			}
-			currentOwner = newOwner;
-			currentOwner.AddProperty (this);
-			graphicsObject.GetComponent<Renderer>().material.color = newOwner.mainPlayerColor;
+			owner = newOwner;
+			owner.AddProperty (this);
+			graphicsObject.GetComponent<Renderer> ().material.color = newOwner.mainPlayerColor;
 		}
 	}
 	public void DisplayCapturableGraphics ()
@@ -305,13 +300,13 @@ public class Property : MonoBehaviour, AttackableObject
 		if (captureCount <= 0) {
 			if (propertyType == UnitName.Headquarters) {
 				propertyType = UnitName.City;
-				InGameController.instance.RemovePlayer (currentOwner);
+				InGameController.instance.RemovePlayer (owner);
 			}
 			captureCount = 20;
 			if (unit.AITarget == this) {
 				unit.AITarget = null;
 			}
-			SetOwner (capturingUnit.GetOwner ());
+			SetOwner (capturingUnit.owner);
 		}
 	}
 
@@ -364,7 +359,7 @@ public class Property : MonoBehaviour, AttackableObject
 	{
 		if (health.GetRawHealth () < 100) {
 			for (int i = 0; i < attemptedHealAmount; i++) {
-				if (currentOwner.RemoveFunds (100)) {
+				if (owner.RemoveFunds (100)) {
 					health.AddRawHealth (10);
 					if (health.GetRawHealth () > 0) {
 						currentlyDead = false;
@@ -447,7 +442,7 @@ public class Property : MonoBehaviour, AttackableObject
 	public List<UnitController> UnitsInRange ()
 	{
 		List<UnitController> outObjects = new List<UnitController> ();
-		foreach (UnitController u in currentOwner.units) {
+		foreach (UnitController u in owner.units) {
 			if (TerrainBuilder.ManhattanDistance (u.awaitingOrdersBlock, currentBlock) <= comTowerRange) {
 				outObjects.Add (u);
 			}

@@ -157,7 +157,7 @@ public class TerrainBuilder : MonoBehaviour
 			closedSet.Add (current);
 			for (int i = 0; i < current.adjacentBlocks.Length; i++) {
 				if (current.adjacentBlocks [i].UnitMovementCost (moveType) > 0) {
-					if (!closedSet.Contains (current.adjacentBlocks [i]) && (!(current.adjacentBlocks [i].IsOccupied () && !(current.adjacentBlocks [i].occupyingUnit.GetOwner ().IsSameSide (unit.GetOwner ()) || current.adjacentBlocks [i].occupyingUnit.GetOwner ().IsNeutralSide ()) && current.adjacentBlocks [i].occupyingUnit.gameObject.activeSelf))) {
+					if (!closedSet.Contains (current.adjacentBlocks [i]) && (!(current.adjacentBlocks [i].IsOccupied () && !(current.adjacentBlocks [i].occupyingUnit.owner.IsSameSide (unit.owner) || current.adjacentBlocks [i].occupyingUnit.owner.IsNeutralSide ()) && current.adjacentBlocks [i].occupyingUnit.gameObject.activeSelf))) {
 						float tempG = current.gCost + current.adjacentBlocks [i].UnitMovementCost (moveType);
 						bool notContained = !openSet.Contains (current.adjacentBlocks [i]);
 						if (notContained || tempG < current.adjacentBlocks [i].gCost) {
@@ -286,7 +286,7 @@ public class TerrainBuilder : MonoBehaviour
 			closedSet.Add (current);
 			for (int i = 0; i < current.adjacentBlocks.Length; i++) {
 				if (current.adjacentBlocks [i].UnitMovementCost (moveType) > 0) {
-					if (!closedSet.Contains (current.adjacentBlocks [i]) && (!(current.adjacentBlocks [i].IsOccupied () && !(current.adjacentBlocks [i].occupyingUnit.GetOwner ().IsSameSide (unit.GetOwner ()) || current.adjacentBlocks [i].occupyingUnit.GetOwner ().IsNeutralSide ()) && current.adjacentBlocks [i].occupyingUnit.gameObject.activeSelf))) {
+					if (!closedSet.Contains (current.adjacentBlocks [i]) && (!(current.adjacentBlocks [i].IsOccupied () && !(current.adjacentBlocks [i].occupyingUnit.owner.IsSameSide (unit.owner) || current.adjacentBlocks [i].occupyingUnit.owner.IsNeutralSide ()) && current.adjacentBlocks [i].occupyingUnit.gameObject.activeSelf))) {
 						float tempG = current.gCost + current.adjacentBlocks [i].UnitMovementCost (moveType);
 						bool notContained = !openSet.Contains (current.adjacentBlocks [i]);
 						if (notContained || tempG < current.adjacentBlocks [i].gCost) {
@@ -431,7 +431,7 @@ public class TerrainBuilder : MonoBehaviour
 			closedSet.Add (current);
 			for (int i = 0; i < current.adjacentBlocks.Length; i++) {
 				if (current.adjacentBlocks [i].UnitMovementCost (unit.moveClass) > 0) {
-					if (!(current.adjacentBlocks [i].IsOccupied () && !(current.adjacentBlocks [i].occupyingUnit.GetOwner ().IsSameSide (unit.GetOwner ()) || current.adjacentBlocks [i].occupyingUnit.GetOwner ().IsNeutralSide ()) && current.adjacentBlocks [i].occupyingUnit.gameObject.activeSelf)) {
+					if (!(current.adjacentBlocks [i].IsOccupied () && !(current.adjacentBlocks [i].occupyingUnit.owner.IsSameSide (unit.owner) || current.adjacentBlocks [i].occupyingUnit.owner.IsNeutralSide ()) && current.adjacentBlocks [i].occupyingUnit.gameObject.activeSelf)) {
 						float tempG = current.gCost + current.adjacentBlocks [i].UnitMovementCost (unit.moveClass);
 						if (tempG < current.adjacentBlocks [i].gCost) {
 							current.adjacentBlocks [i].cameFromBlock = current;
