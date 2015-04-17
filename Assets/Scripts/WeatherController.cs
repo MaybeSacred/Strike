@@ -1,14 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-public enum WeatherType
-{
-	Clear,
-	Snowing,
-	ThunderStorm,
-	Dusty,
-	NuclearFallout/*Has decent probability of causing 1 damage to all units on map each day*/}
-;
+
 public class WeatherController : MonoBehaviour
 {
 	public WeatherType currentWeather{ get; protected set; }
@@ -35,13 +28,13 @@ public class WeatherController : MonoBehaviour
 			} else {
 				weatherParticles [i].transform.position = new Vector3 ((InGameController.instance.currentTerrain.upperXMapBound - InGameController.instance.currentTerrain.lowerXMapBound) / 2, 10, (InGameController.instance.currentTerrain.upperZMapBound - InGameController.instance.currentTerrain.lowerZMapBound) / 2);
 			}
-			weatherParticles [i].GetComponent<ParticleSystem>().emissionRate *= (InGameController.instance.currentTerrain.upperXMapBound - InGameController.instance.currentTerrain.lowerXMapBound) * (InGameController.instance.currentTerrain.upperZMapBound - InGameController.instance.currentTerrain.lowerZMapBound);
-			weatherParticles [i].GetComponent<ParticleSystem>().maxParticles = Mathf.RoundToInt (weatherParticles [i].GetComponent<ParticleSystem>().emissionRate * weatherParticles [i].GetComponent<ParticleSystem>().startLifetime);
-			weatherParticles [i].GetComponent<ParticleSystem>().Stop ();
+			weatherParticles [i].GetComponent<ParticleSystem> ().emissionRate *= (InGameController.instance.currentTerrain.upperXMapBound - InGameController.instance.currentTerrain.lowerXMapBound) * (InGameController.instance.currentTerrain.upperZMapBound - InGameController.instance.currentTerrain.lowerZMapBound);
+			weatherParticles [i].GetComponent<ParticleSystem> ().maxParticles = Mathf.RoundToInt (weatherParticles [i].GetComponent<ParticleSystem> ().emissionRate * weatherParticles [i].GetComponent<ParticleSystem> ().startLifetime);
+			weatherParticles [i].GetComponent<ParticleSystem> ().Stop ();
 			weatherParticles [i].gameObject.SetActive (false);
 		}
 		weatherParticles [(int)currentWeather].gameObject.SetActive (true);
-		weatherParticles [(int)currentWeather].GetComponent<ParticleSystem>().Play ();
+		weatherParticles [(int)currentWeather].GetComponent<ParticleSystem> ().Play ();
 	}
 	
 	// Update is called once per frame
@@ -134,12 +127,12 @@ public class WeatherController : MonoBehaviour
 	}
 	void ChangeState (WeatherType next, List<Player> players)
 	{
-		weatherParticles [(int)currentWeather].GetComponent<ParticleSystem>().Stop ();
+		weatherParticles [(int)currentWeather].GetComponent<ParticleSystem> ().Stop ();
 		weatherParticles [(int)currentWeather].gameObject.SetActive (false);
 		RemoveWeatherEffect (players, currentWeather);
 		currentWeather = next;
 		weatherParticles [(int)currentWeather].gameObject.SetActive (true);
-		weatherParticles [(int)currentWeather].GetComponent<ParticleSystem>().Play ();
+		weatherParticles [(int)currentWeather].GetComponent<ParticleSystem> ().Play ();
 		AddWeatherEffect (players, currentWeather);
 	}
 }

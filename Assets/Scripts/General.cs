@@ -1,13 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
-public enum Generals
-{
-	Lucy, //General boost, after lucille ball
-	Navya, //Boosted ground units, female Indian
-	Desmond, //Boosted naval units
-	Taron, //Boosted air units
-	Kiera //Heals units in zone, ex nurse
-}
+
 public class General : MonoBehaviour
 {
 	public int zoneSize;
@@ -90,7 +83,7 @@ public class General : MonoBehaviour
 	{
 		owner = newOwner;
 		foreach (ParticleSystem ps in zoneBlocks) {
-			ps.GetComponent<ParticleSystem>().startColor = new Color (owner.mainPlayerColor.r, owner.mainPlayerColor.g, owner.mainPlayerColor.b, .167f);
+			ps.GetComponent<ParticleSystem> ().startColor = new Color (owner.mainPlayerColor.r, owner.mainPlayerColor.g, owner.mainPlayerColor.b, .167f);
 		}
 	}
 	public void UpdateGeneral (int inDamage)

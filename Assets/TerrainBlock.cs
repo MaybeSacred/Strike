@@ -1,23 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
-public enum BLOCKDIRECTIONS
-{
-	West,
-	East,
-	North,
-	South}
-;
-public enum TERRAINTYPE
-{
-	River,
-	Mountain,
-	Sea,
-	Shoal,
-	Road,
-	Forest,
-	Hill,
-	Plain}
-;
+
 public class TerrainBlock : MonoBehaviour, System.IComparable<TerrainBlock>
 {
 	//Stuff used for pathfinding

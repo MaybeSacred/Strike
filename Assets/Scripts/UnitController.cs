@@ -11,11 +11,12 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 	public MovementType moveClass;
 	public bool canMoveAndAttack;
 	public UnitAttackType attackType;
+	Player _owner;
 	public Player owner {
-		get { return owner; }
+		get { return _owner; }
 		set {
-			owner = value;
-			moveIndicatorParticles.GetComponent<ParticleSystem> ().startColor = owner.mainPlayerColor;
+			_owner = value;
+			moveIndicatorParticles.GetComponent<ParticleSystem> ().startColor = _owner.mainPlayerColor;
 		}
 	}
 	public int playerNumber; //Used for predeployed units
@@ -1686,100 +1687,3 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 		detailedTextBox.SetBoxInfo (unitClass.ToString (), description, bestAgainst, weakestAgainst);
 	}
 }
-public enum UnitName
-{
-	Infantry,
-	Stinger,
-	Stryker,
-	CarpetBomber,
-	TacticalFighter,
-	Interceptor,
-	AttackCopter,
-	LiftCopter,
-	LightTank,
-	MediumTank,
-	Rockets,
-	Missiles,
-	FieldArtillery,
-	Mortar,
-	SupplyTank,
-	UAV,
-	Humvee,
-	Sniper,
-	MobileRadar,
-	Corvette,
-	Destroyer,
-	Submarine,
-	Carrier,
-	Amphibious,
-	SupplyShip,
-	AATank,
-	Boomer,
-	Headquarters,
-	City,
-	Factory,
-	Airport,
-	Shipyard,
-	ComTower,
-	Bridge,
-	Bunker}
-;
-public enum UnitState
-{
-	UnMoved,
-	BuildingBridge,
-	Selected,
-	Moving,
-	AwaitingOrder,
-	TargetingUnit,
-	Unloading,
-	FinishedMove,
-	Dying}
-;
-public enum UnitOrderOptions
-{
-	ProduceMissile,
-	BuildBridge,
-	Attack,
-	Supply,
-	Repair,
-	Capture,
-	Load,
-	Unload,
-	Board,
-	AddGeneral,
-	GeneralPower,
-	BuildUnit,
-	UnStealthify,
-	Stealthify,
-	Join,
-	EndTurn}
-;
-public enum MovementType
-{
-	Air,
-	Sea,
-	Littoral,
-	LightVehicle,
-	HeavyVehicle,
-	Tank,
-	Amphibious,
-	Sniper,
-	Infantry}
-;
-//Story idea: in the middle of and right after nuclear war
-public enum UnitRanks
-{
-	UnRanked,
-	Private,
-	Corporal,
-	Sergeant,
-	Elite}
-;
-//Used for determining counterattack ability
-public enum UnitAttackType
-{
-	Direct,
-	Indirect,
-	Both}
-;

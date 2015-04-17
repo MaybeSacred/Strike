@@ -2,13 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
 using System;
-public enum AILevel
-{
-	Human,
-	Easy,
-	Medium,
-	Hard}
-;
+
 public class Player : MonoBehaviour
 {
 	public static readonly int TotalUnitsAllowedPPlayer = 50;

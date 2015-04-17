@@ -28,6 +28,7 @@ public class MessagePanel : MonoBehaviour
 					message = text;
 				}
 			}
+			GetComponent<RectTransform> ().anchoredPosition = Vector2.zero;
 			HidePanel ();
 		} else {
 			Destroy (gameObject);
@@ -42,9 +43,10 @@ public class MessagePanel : MonoBehaviour
 	/// <param name="onDecline">On decline.</param>
 	public static void ShowPanel (string messageType, string message, Action onAccept = null, Action onDecline = null, string acceptButtonText = "OK", string declineButtonText = "Cancel")
 	{
-		if (onAccept != null) {
-			instance.onAccept = onAccept;
+		if (onAccept == null) {
+			onAccept = () => {};
 		}
+		instance.onAccept = onAccept;
 		instance.onDecline = onDecline;
 		instance.gameObject.SetActive (true);
 		// If we dont have a decline function provided, dont show decline button
