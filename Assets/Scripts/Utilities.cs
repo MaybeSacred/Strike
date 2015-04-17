@@ -11,8 +11,6 @@ public class Utilities : MonoBehaviour
 		public MonoBehaviour prefab;
 	}
 	public Texture[] hpPic;
-	public Texture2D[] unitRankInsigniasEditor;
-	public static Texture2D[] unitRankInsignias;
 	public static Texture2D carryingUnitImage;
 	public static Texture[] healthPoint;
 	public static Color canFireNowRangeColor;	
@@ -53,7 +51,6 @@ public class Utilities : MonoBehaviour
 			units.Add (e.name, e.prefab);
 		}
 		healthPoint = hpPic;
-		unitRankInsignias = unitRankInsigniasEditor;
 		canFireNowRangeColor = new Color ((float)113 / 256, 0, 0, (float)143 / 256);
 		cannotFireNowRangeColor = new Color ((float)96 / 256, (float)75 / 256, 0, (float)143 / 256);
 		fogOfWarEnabled = true;
@@ -145,14 +142,6 @@ public class Utilities : MonoBehaviour
 		}
 	}
 
-	public static Texture2D GetRankImage (UnitRanks rank)
-	{
-		if (rank != UnitRanks.UnRanked) {
-			return unitRankInsignias [(int)rank - 1];
-		}
-		throw new UnityException ("Invalid Rank Image Request " + StackTraceUtility.ExtractStackTrace ());
-	}
-
 	public static Texture2D GetCarryingImage (UnitName unitClass)
 	{
 		return carryingUnitImage;
@@ -164,31 +153,19 @@ public class Utilities : MonoBehaviour
 	/// <param name="inName">In name.</param>
 	public static MonoBehaviour GetPrefabFromUnitName (UnitName inName)
 	{
-		if (units.ContainsKey (inName)) {
-			MonoBehaviour temp;
-			units.TryGetValue (inName, out temp);
-			return temp;
-		}
-		return null;
+		MonoBehaviour temp;
+		units.TryGetValue (inName, out temp);
+		return temp;
 	}
 	public static void LoadTitleScreen ()
 	{
 		Application.LoadLevel ("Splash");
 	}
-	public static string PrettifyVariableName (string inVariable)
-	{
-		string temp = inVariable;
-		string outString = inVariable;
-		int numberOfChanges = 0;
-		for (int i = 2; i < temp.Length; i++) {
-			if (char.IsUpper (temp [i])) {
-				outString = outString.Insert (i + numberOfChanges, " ");
-				numberOfChanges++;
-			}
-		}
-		return outString;
-	}
 }
+/// <summary>
+/// Key bindings.
+/// For custom key configurations.
+/// </summary>
 public struct KeyBindings
 {
 	public KeyCode clearButton;

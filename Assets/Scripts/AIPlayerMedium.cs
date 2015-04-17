@@ -15,7 +15,6 @@ public class AIPlayerMedium : AIPlayer
 	public ProductionTest productionType;
 	private Clusterer clusterer;
 	private List<AttackableObject> targetedObjects;
-	private float clusterAssignmentOverflow = 1.25f;
 	private bool makeSupplySea, makeSupplyLand, makeTransport;
 	private UnitName transportToMake;
 	public bool produceRandom;
@@ -369,7 +368,6 @@ public class AIPlayerMedium : AIPlayer
 			Debug.Log ("Has no target");
 			InGameController.instance.currentTerrain.SetDistancesFromBlockIgnoreIllegalBlocks (currentUnit, currentUnit.AITargetBlock);
 		}
-		int totalPositionsEvaluated = 0;
 		blockList = new List<GameObject> ();
 		List<TerrainBlock> blocks = InGameController.instance.currentTerrain.MoveableBlocks (currentUnit.currentBlock, currentUnit, currentUnit.EffectiveMoveRange ());
 		Debug.Log (blocks.Count);
@@ -643,7 +641,6 @@ public class AIPlayerMedium : AIPlayer
 				if (other.owner.IsSameSide (currentUnit.owner) && other.EffectiveMoveRange () >= TerrainBuilder.ManhattanDistance (other.currentBlock, block)) {
 					alliedUnits++;
 				} else if (!other.owner.IsSameSide (currentUnit.owner) && !other.owner.IsNeutralSide () && other.EffectiveMoveRange () + other.EffectiveAttackRange () >= TerrainBuilder.ManhattanDistance (other.currentBlock, block) && other.gameObject.activeSelf) {
-					float distance = 0;
 					if (other.canMoveAndAttack && other.minAttackRange > 0) {
 						List<TerrainBlock> otherBlocks = InGameController.instance.currentTerrain.MoveableBlocks (other.currentBlock, other, other.EffectiveMoveRange ());
 						float otherMaxAttackRange = other.EffectiveAttackRange ();

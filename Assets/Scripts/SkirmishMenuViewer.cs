@@ -24,7 +24,6 @@ public class SkirmishMenuViewer : MonoBehaviour
 	MapData selectedMap;
 	
 	public PlayerGUIView[] players;
-	string[] generalNames;
 	GameSettings settings;
 	public Player playerPrototype;
 	//new GUI stuff							//parent panel to load buttons to
@@ -57,7 +56,6 @@ public class SkirmishMenuViewer : MonoBehaviour
 	{
 		playerSelect.gameObject.SetActive (true);
 		settings = new GameSettings ();
-		generalNames = System.Enum.GetNames (typeof(Generals));
 		mapNameOuterPanel.gameObject.SetActive (false);
 		scrollBar.gameObject.SetActive (false);
 		StartCoroutine (LoadMapsAsync ());

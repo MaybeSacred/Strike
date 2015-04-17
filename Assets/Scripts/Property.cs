@@ -5,7 +5,6 @@ public class Property : MonoBehaviour, AttackableObject
 	public string prettyName;
 	public int startingOwner;
 	private bool hasUnitSelectedMutex;
-	public static int productionDisplayWidth = 220;
 	public UnitName propertyType;
 	public Health health;
 	public Player owner{ get; set; }

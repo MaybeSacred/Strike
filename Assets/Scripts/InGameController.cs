@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System;
 
-public class InGameController : MonoBehaviour
+public sealed class InGameController : MonoBehaviour
 {
 	// Exposed instance
-	public static InGameController instance{ get; protected set; }
+	public static InGameController instance{ get; private set; }
 	
 	List<Player> players;
 	List<PlayerInGameStatistics> collectedStatistics;
@@ -27,14 +27,14 @@ public class InGameController : MonoBehaviour
 	private bool leftClick, rightClick;
 	public bool LeftClick {
 		get { return leftClick; }
-		protected set {
+		private set {
 			leftClick = value;
 			simulatedLeftClick = false;
 		}
 	}
 	public bool RightClick {
 		get { return rightClick; }
-		protected set {
+		private set {
 			rightClick = value;
 			simulatedRightClick = false;
 		}
@@ -45,8 +45,7 @@ public class InGameController : MonoBehaviour
 	{
 		if (instance == null || instance == this) {
 			instance = this;
-			currentTurn++;
-			DontDestroyOnLoad (this);
+			currentTurn = 1;
 			currentTerrain = GameObject.FindObjectOfType<TerrainBuilder> ();
 			mouseOverParticles = Instantiate (mouseParticles) as ParticleSystem;
 			mouseOverParticles.GetComponent<ParticleSystem> ().Stop ();
@@ -132,15 +131,13 @@ public class InGameController : MonoBehaviour
 	}
 	public void DisplayPossibleTargetParticles (List<AttackableObject> possibleTargets)
 	{
-		int i;
 		if (possibleTargets.Count > possibleTargetParticles.Count) {
 			int difference = possibleTargets.Count - possibleTargetParticles.Count;
-			for (i = 0; i < difference; i++) {
+			for (int i = 0; i < difference; i++) {
 				possibleTargetParticles.Add (Instantiate (possibleTargetParticlePrototype) as ParticleSystem);
 			}
 		}
-		i = 0;
-		for (; i < possibleTargets.Count; i++) {
+		for (int i = 0; i < possibleTargets.Count; i++) {
 			possibleTargetParticles [i].transform.position = possibleTargets [i].GetPosition ();
 			possibleTargetParticles [i].gameObject.SetActive (true);
 		}
@@ -327,6 +324,13 @@ public class InGameController : MonoBehaviour
 		}
 		throw new UnityException ("No Valid Players");
 	}
+	/// <summary>
+	/// Returns the closest enemy hq to the provided terrain block and using the moveType
+	/// </summary>
+	/// <returns>The enemy H.</returns>
+	/// <param name="block">Block.</param>
+	/// <param name="moveType">Move type.</param>
+	/// <param name="querier">Querier.</param>
 	public Tuple<float, TerrainBlock> ClosestEnemyHQ (TerrainBlock block, MovementType moveType, Player querier)
 	{
 		var bestSoFar = float.MaxValue;
@@ -354,6 +358,12 @@ public class InGameController : MonoBehaviour
 		}
 		return relative.TotalRelativeValue () - (totalEnemies > 0 ? totalEnemyValue / totalEnemies : 0);
 	}
+	/// <summary>
+	/// Creates an Instance from the various data within InGameController
+	/// </summary>
+	/// <returns>The instance.</returns>
+	/// <param name="unitMade">Unit made.</param>
+	/// <param name="reinforcement">If set to <c>true</c> reinforcement.</param>
 	public Instance CreateInstance (UnitName unitMade, bool reinforcement)
 	{
 		Instance outInstance;

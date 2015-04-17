@@ -29,7 +29,6 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 	public int fogOfWarRange;
 	public int primaryAmmo;
 	private int primaryAmmoRemaining;
-	private float infoBoxTimeoutCounter;
 	private bool unitJustSelected;//Used to separate mouse clicks when unit is first selected
 	public int maxAttackRange, minAttackRange;
 	private bool didNotMoveThisTurn;
@@ -44,7 +43,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 	private bool showingHealth, showingHitDamage;
 	private bool wasTargeted;
 	private bool hasUnitSelectedMutex;
-	private bool showingNextTurnAttackRange, showingAttackRange;
+	private bool showingNextTurnAttackRange;
 	public TerrainBlock currentBlock { get; private set; }
 	public TerrainBlock awaitingOrdersBlock { get; private set; }
 	private List<TerrainBlock> currentMoveBlocks;
@@ -157,7 +156,6 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 	}
 	public void OnMouseOverExtra ()
 	{
-		infoBoxTimeoutCounter = 0;
 		if (Input.GetMouseButton (1) && (currentState == UnitState.UnMoved || currentState == UnitState.FinishedMove) && gameObject.activeSelf) {
 			ShowNextTurnAttackRange ();
 		}
@@ -399,7 +397,6 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 				if (currentMoveBlocks [movingCounter / inverseMovingSpeed].IsOccupied () && !currentMoveBlocks [movingCounter / inverseMovingSpeed].occupyingUnit.gameObject.activeSelf) {
 					hitFogOfWarUnit = true;
 					awaitingOrdersBlock = currentMoveBlocks [movingCounter / inverseMovingSpeed - 1];
-					infoBoxTimeoutCounter = 0;
 					ChangeState (UnitState.Moving, UnitState.FinishedMove);
 				} else {
 					transform.position = new Vector3 (currentMoveBlocks [movingCounter / inverseMovingSpeed].transform.position.x, transform.position.y, currentMoveBlocks [movingCounter / inverseMovingSpeed].transform.position.z);
@@ -897,7 +894,6 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 	/// </summary>
 	public void ShowAttackRange ()
 	{
-		showingAttackRange = true;
 		if ((canMoveAndAttack || didNotMoveThisTurn) && primaryAmmoRemaining > 0) {
 			InGameController.instance.currentTerrain.IlluminatePossibleAttackBlocksRange (awaitingOrdersBlock, minAttackRange, (primaryAmmoRemaining > 0 ? modifier.ApplyModifiers (UnitPropertyModifier.PropertyModifiers.AttackRange, maxAttackRange) : 0));
 		}
@@ -947,7 +943,6 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 	public void HideAttackRange ()
 	{
 		InGameController.instance.currentTerrain.ClearMoveBlocks ();
-		showingAttackRange = false;
 	}
 	/*
 	public void OnGUI ()
