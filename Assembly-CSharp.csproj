@@ -86,6 +86,7 @@
      <Compile Include="Assets\Scripts\GroundProductionGeneral.cs" />
      <Compile Include="Assets\Scripts\GroundProductionSpecific.cs" />
      <Compile Include="Assets\Scripts\Health.cs" />
+     <Compile Include="Assets\Scripts\IResettable.cs" />
      <Compile Include="Assets\Scripts\InGameController.cs" />
      <Compile Include="Assets\Scripts\Instance.cs" />
      <Compile Include="Assets\Scripts\LearnerUtilities.cs" />
@@ -107,6 +108,7 @@
      <Compile Include="Assets\Scripts\UnitController.cs" />
      <Compile Include="Assets\Scripts\UnitPropertyModifier.cs" />
      <Compile Include="Assets\Scripts\UnitSelectionDisplayer.cs" />
+     <Compile Include="Assets\Scripts\UnitTarget.cs" />
      <Compile Include="Assets\Scripts\Utilities.cs" />
      <Compile Include="Assets\Scripts\WeatherController.cs" />
      <Compile Include="Assets\SkirmishEndMenuPlayer.cs" />

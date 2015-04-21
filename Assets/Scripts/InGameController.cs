@@ -17,7 +17,7 @@ public sealed class InGameController : MonoBehaviour
 	public bool isPaused;
 	public TerrainBuilder currentTerrain;
 	bool unitSelectedMutex, infoBoxMutex;
-	MonoBehaviour selectedUnit;
+	IResettable selectedUnit;
 	int currentUnitMousedOver;
 	List<ParticleSystem> possibleTargetParticles;
 	public WeatherController weather;
@@ -87,12 +87,7 @@ public sealed class InGameController : MonoBehaviour
 		} else {
 			if (Input.GetKeyDown (KeyCode.Escape)) {
 				if (selectedUnit != null) {
-					if (selectedUnit is UnitController) {
-						((UnitController)selectedUnit).ResetUnit ();
-					}
-					if (selectedUnit is Property) {
-						((Property)selectedUnit).ResetUnit ();
-					}
+					selectedUnit.ResetUnit ();
 				}
 				isPaused = true;
 				InGameGUI.instance.Pause ();
@@ -174,7 +169,7 @@ public sealed class InGameController : MonoBehaviour
 			return false;
 		} else {
 			unitSelectedMutex = true;
-			selectedUnit = mutexAttempter;
+			selectedUnit = (IResettable)mutexAttempter;
 		}
 		return true;
 	}

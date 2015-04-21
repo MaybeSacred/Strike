@@ -1,6 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
-
+using System.Linq;
 public class TerrainBuilder : MonoBehaviour
 {
 	TerrainBlock[,] terrain;
@@ -262,7 +262,18 @@ public class TerrainBuilder : MonoBehaviour
 		}
 		return float.PositiveInfinity;
 	}
-	private TerrainBlock ClosestCoMoveableTile (UnitController unit, TerrainBlock startTile, UnitController otherUnit, float maxDistance, MovementType moveType)
+	/// <summary>
+	/// Should work by calculating movable blocks for each input unit
+	/// then taking the intersection of these blocks, then finding one of the shortest paths for both
+	/// Current method is wrong
+	/// </summary>
+	/// <returns>The co movable tile.</returns>
+	/// <param name="unit">Unit.</param>
+	/// <param name="startTile">Start tile.</param>
+	/// <param name="otherUnit">Other unit.</param>
+	/// <param name="maxDistance">Max distance.</param>
+	/// <param name="moveType">Move type.</param>
+	private TerrainBlock ClosestCoMovableTile (UnitController unit, TerrainBlock startTile, UnitController otherUnit, float maxDistance, MovementType moveType)
 	{
 		List<TerrainBlock> closedSet = new List<TerrainBlock> ();
 		PriorityQueues.PriorityQueue<TerrainBlock> openSet = new PriorityQueues.PriorityQueue<TerrainBlock> ();
@@ -341,7 +352,7 @@ public class TerrainBuilder : MonoBehaviour
 		}
 	}
 	/// <summary>
-	/// Calculates Minimum paths, while assigning a cost of 1 to blocks that the unit cannot normally move on
+	/// Calculates minimum paths, while assigning a cost of 1 to blocks that the unit cannot normally move on
 	/// </summary>
 	/// <param name="moveType">Move type.</param>
 	/// <param name="startTile">Start tile.</param>
@@ -378,9 +389,9 @@ public class TerrainBuilder : MonoBehaviour
 			}
 		}
 	}
-	public void SetDistancesFromBlockSharedMoveableBlock (UnitController unit, TerrainBlock startTile, AttackableObject aITarget)
+	public void SetDistancesFromBlockSharedMovableBlock (UnitController unit, TerrainBlock startTile, AttackableObject aITarget)
 	{
-		TerrainBlock closestBlock = ClosestCoMoveableTile (unit, unit.currentBlock, (UnitController)aITarget, 50000f, unit.moveClass);
+		TerrainBlock closestBlock = ClosestCoMovableTile (unit, unit.currentBlock, (UnitController)aITarget, 50000f, unit.moveClass);
 		if (closestBlock != null) {
 			MinDistanceToTiles (unit.moveClass, closestBlock, 50000);
 		}
@@ -388,7 +399,11 @@ public class TerrainBuilder : MonoBehaviour
 			t.cachedGCost = t.gCost;
 		}
 	}
-
+	/// <summary>
+	/// Sets the cached cost for all blocks reachable by unit from startTile, ignoring blocks that the unit can't reach
+	/// </summary>
+	/// <param name="unit">Unit.</param>
+	/// <param name="startTile">Start tile.</param>
 	public void SetDistancesFromBlockIgnoreIllegalBlocks (UnitController unit, TerrainBlock startTile)
 	{
 		MinDistanceToTilesIgnoreIllegalBlocks (unit.moveClass, startTile, 50000);
@@ -396,7 +411,11 @@ public class TerrainBuilder : MonoBehaviour
 			t.cachedGCost = t.gCost;
 		}
 	}
-
+	/// <summary>
+	/// Sets the cached cost for all blocks reachable by unit from startTile
+	/// </summary>
+	/// <param name="unit">Unit.</param>
+	/// <param name="startTile">Start tile.</param>
 	public void SetDistancesFromBlock (UnitController unit, TerrainBlock startTile)
 	{
 		MinDistanceToTiles (unit.moveClass, startTile, 50000);
@@ -405,6 +424,7 @@ public class TerrainBuilder : MonoBehaviour
 		}
 	}
 	/// <summary>
+	/// Returns a list of all blocks within maxDistance from the startTile, given the input unit's move characteristics
 	/// Returns null if no path OR a shortest path longer than maxDistance is found
 	/// </summary>
 	/// <returns>The distance between tiles.</returns>
@@ -484,32 +504,35 @@ public class TerrainBuilder : MonoBehaviour
 			}
 		}
 	}
-
+	/// <summary>
+	/// Illuminates support blocks within the range of the startblock given the input unit's moveRange
+	/// </summary>
+	/// <param name="startBlock">Start block.</param>
+	/// <param name="unit">Unit.</param>
+	/// <param name="moveRange">Move range.</param>
 	public void IlluminatePossibleSupportBlocks (TerrainBlock startBlock, UnitController unit, float moveRange)
 	{
 		foreach (TerrainBlock tb in illuminatedMovementRangeBlocks) {
 			tb.HideTileColor ();
 		}
 		illuminatedMovementRangeBlocks.Clear ();
-		TerrainBlock[] tempList = MinDistanceToTiles (unit, startBlock, moveRange).ToArray ();
-		for (int i = 0; i < tempList.Length; i++) {
-			if (tempList [i].gCost <= moveRange) {
-				tempList [i].DisplaySupportTile ();
-				illuminatedMovementRangeBlocks.Add (tempList [i]);
+		MovableBlocks (startBlock, unit, moveRange).ForEach (x => {
+			if (x.gCost <= moveRange) {
+				x.DisplaySupportTile ();
+				illuminatedMovementRangeBlocks.Add (x);
 			}
-		}
+		});
 	}
-
-	public List<TerrainBlock> MoveableBlocks (TerrainBlock startBlock, UnitController unit, float moveRange)
+	/// <summary>
+	/// Returns all movable blocks within 
+	/// </summary>
+	/// <returns>The blocks.</returns>
+	/// <param name="startBlock">Start block.</param>
+	/// <param name="unit">Unit.</param>
+	/// <param name="moveRange">Move range.</param>
+	public List<TerrainBlock> MovableBlocks (TerrainBlock startBlock, UnitController unit, float moveRange)
 	{
-		TerrainBlock[] tempList = MinDistanceToTiles (unit, startBlock, moveRange).ToArray ();
-		List<TerrainBlock> outList = new List<TerrainBlock> ();
-		for (int i = 0; i < tempList.Length; i++) {
-			if (tempList [i].gCost <= moveRange) {
-				outList.Add (tempList [i]);
-			}
-		}
-		return outList;
+		return MinDistanceToTiles (unit, startBlock, moveRange).Where (tile => tile.gCost <= moveRange).ToList ();
 	}
 	public void IlluminatePossibleAttackBlocksRange (TerrainBlock startBlock, int minRange, int maxRange)
 	{
@@ -626,7 +649,7 @@ public class TerrainBuilder : MonoBehaviour
 		}
 	}
 	/// <summary>
-	/// Returns blocks within the specified attack range around the startBlock
+	/// Returns blocks between [minRange, maxRange] using Manhattan distance
 	/// </summary>
 	/// <returns>The within range.</returns>
 	/// <param name="startBlock">Start block.</param>
@@ -725,6 +748,12 @@ public class TerrainBuilder : MonoBehaviour
 			block.HideFog ();
 		}
 	}
+	/// <summary>
+	/// Creates, populates, and returns a MapData object
+	/// </summary>
+	/// <returns>The map data.</returns>
+	/// <param name="blocks">Blocks.</param>
+	/// <param name="mapName">Map name.</param>
 	public static MapData CreateMapData (TerrainBlock[] blocks, string mapName)
 	{
 		float largestX = 0;

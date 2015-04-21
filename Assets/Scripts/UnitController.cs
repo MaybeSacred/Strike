@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 
-public class UnitController : MonoBehaviour, AttackableObject, IComparable
+public class UnitController : MonoBehaviour, AttackableObject, IComparable, IResettable
 {
 	public static Texture2D healthPoint;
 	public UnitName unitClass;
@@ -65,6 +65,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 	private bool displayUnitInfo;
 	public UnitPropertyModifier modifier;
 	public ParticleSystem moveIndicatorParticles { get; private set; }
+	public UnitTarget target;
 	public AttackableObject AITarget;
 	public TerrainBlock AITargetBlock{ get; set; }
 	public bool canReachTarget{ get; set; }
@@ -1310,9 +1311,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable
 		}
 		return false;
 	}
-	/// <summary>
-	/// Resets certain turn state variables
-	/// </summary>
+	
 	public void ResetUnit ()
 	{
 		if (owner == InGameController.instance.GetPlayer (InGameController.instance.currentPlayer)) {

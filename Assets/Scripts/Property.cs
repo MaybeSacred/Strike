@@ -1,6 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
-public class Property : MonoBehaviour, AttackableObject
+public class Property : MonoBehaviour, AttackableObject, IResettable
 {
 	public string prettyName;
 	public int startingOwner;
