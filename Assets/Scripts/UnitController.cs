@@ -66,15 +66,15 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable, IRes
 	public UnitPropertyModifier modifier;
 	public ParticleSystem moveIndicatorParticles { get; private set; }
 	public UnitTarget target;
-	public AttackableObject AITarget;
-	public TerrainBlock AITargetBlock{ get; set; }
-	public bool canReachTarget{ get; set; }
+	//public AttackableObject AITarget;
+	//public TerrainBlock AITargetBlock{ get; set; }
+	//public bool canReachTarget{ get; set; }
 	public float AIDefensiveness;
 	public int comTowerEffect{ get; set; }
 	[HideInInspector]
-	public TerrainBlock
-		AICachedCurrentBlock;
-	public int AIMovePriority;
+	//public TerrainBlock AICachedCurrentBlock;
+	public int
+		AIMovePriority;
 	// Use this for initialization
 	void Awake ()
 	{
@@ -95,7 +95,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable, IRes
 		}
 		modifier = new UnitPropertyModifier ();
 		try {
-			AICachedCurrentBlock = currentBlock = awaitingOrdersBlock = InGameController.instance.currentTerrain.GetBlockAtPos (transform.position);
+			currentBlock = awaitingOrdersBlock = InGameController.instance.currentTerrain.GetBlockAtPos (transform.position);
 		} catch {
 			
 		}
@@ -104,7 +104,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable, IRes
 	{
 		RaycastHit hit;
 		Physics.Raycast (new Vector3 (transform.position.x, transform.position.y + 3, transform.position.z), Vector3.down, out hit, 10f, 1);
-		AICachedCurrentBlock = currentBlock = awaitingOrdersBlock = hit.collider.gameObject.GetComponent<TerrainBlock> ();
+		currentBlock = awaitingOrdersBlock = hit.collider.gameObject.GetComponent<TerrainBlock> ();
 		if (currentBlock == null) {
 			Debug.Log ("No block");
 		} else {
@@ -122,6 +122,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable, IRes
 		moveIndicatorParticles.GetComponent<ParticleSystem> ().startColor = owner.mainPlayerColor;
 		moveIndicatorParticles.transform.parent = transform;
 		comTowerEffect = owner.ComTowersInRange (this, currentBlock);
+		target = new UnitTarget (this);
 	}
 	void OnMouseOver ()
 	{
@@ -846,7 +847,6 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable, IRes
 		if (owner.currentGeneralUnit == this && !isInUnit) {
 			owner.selectedGeneral.ShowZone (awaitingOrdersBlock);
 		}
-		AICachedCurrentBlock = currentBlock;
 		if (!isInUnit) {
 			ChangeState (UnitState.FinishedMove, UnitState.UnMoved);
 		}

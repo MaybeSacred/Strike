@@ -9,11 +9,38 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using UnityEngine;
 public class UnitTarget
 {
-	public AttackableObject primaryTarget{ get; private set; }
+	AttackableObject _primaryTarget_;
+	/// <summary>
+	/// The primary target. Should be a ranked list of targets
+	/// </summary>
+	/// <value>The primary target.</value>
+	public AttackableObject primaryTarget {
+		get { return _primaryTarget_; }
+		set { 
+			_primaryTarget_ = value;
+			if (primaryTarget == null) {
+				Debug.Log ("Primary target nulled. " + parent.name);
+			}
+		}
+	}
+	/// <summary>
+	/// The block that the unit is currently moving towards, which is also the primaryTarget's block, if the unit can reach that block
+	/// </summary>
+	/// <value>The target block.</value>
 	public TerrainBlock targetBlock{ get; private set; }
-	public bool canReachBlock{ get; private set; }
+	/// <summary>
+	/// Gets a value indicating whether this <see cref="UnitTarget"/>can reach the primary target's block.
+	/// </summary>
+	/// <value><c>true</c> if can reach target; otherwise, <c>false</c>.</value>
+	public bool canReachTarget { get; private set; }
+	/// <summary>
+	/// Gets a value indicating whether this <see cref="UnitTarget"/>can attack the primary target's block.
+	/// </summary>
+	/// <value><c>true</c> if can attack target; otherwise, <c>false</c>.</value>
+	public bool canAttackTarget { get; private set; }
 	UnitController parent{ get; set; }
 	public UnitTarget (UnitController parent, AttackableObject target =  null)
 	{
@@ -25,6 +52,98 @@ public class UnitTarget
 		if (newTarget != null) {
 			//InGameController.instance.currentTerrain(parent.currentBlock, newTarget.GetOccupyingBlock(), parent, 1);
 		}
+	}
+	public bool HasTarget ()
+	{
+		return primaryTarget != null;
+	}
+	public override string ToString ()
+	{
+		return string.Format ("[UnitTarget: primaryTarget={0}, targetBlock={1}, canReachBlock={2}]", primaryTarget, targetBlock, canReachTarget);
+	}
+	/// <summary>
+	/// Sets the terrain block states for the parent's target
+	/// </summary>
+	public void SetTerrainBlockStates ()
+	{
+		if (HasTarget ()) {
+			if (canReachTarget) {
+				InGameController.instance.currentTerrain.SetDistancesFromBlock (parent, targetBlock);
+			} else {
+				Debug.Log ("Can't reach target, has one");
+				if (primaryTarget is UnitController) {
+					InGameController.instance.currentTerrain.SetDistancesFromBlockSharedMovableBlock (parent, targetBlock, primaryTarget);
+				} else {
+					InGameController.instance.currentTerrain.SetDistancesFromBlockIgnoreIllegalBlocks (parent, targetBlock);
+				}
+			}
+		} else {
+			Debug.Log ("Has no target");
+			InGameController.instance.currentTerrain.SetDistancesFromBlockIgnoreIllegalBlocks (parent, targetBlock);
+		}
+	}
+	public void SetTargetBlock ()
+	{
+		canReachTarget = false;
+		canAttackTarget = false;
+		if (HasTarget ()) {
+			// First check if we can reach the target directly
+			if (primaryTarget.GetOccupyingBlock ().CanReachBlock (parent, parent.currentBlock)) {
+				canReachTarget = true;
+				targetBlock = primaryTarget.GetOccupyingBlock ();
+			}
+			// Next check if we can attack the target. Note that its possible we may not be able to attack, but can reach a target
+			foreach (TerrainBlock tb in InGameController.instance.currentTerrain.BlocksWithinRange(primaryTarget.GetOccupyingBlock(), parent.minAttackRange, parent.EffectiveAttackRange(), parent)) {
+				if (tb.CanReachBlock (parent, parent.currentBlock)) {
+					canAttackTarget = true;
+					targetBlock = tb;
+					break;
+				}
+			}
+			// if we cant attack or reach the target
+			if (!canAttackTarget) {
+				
+			}
+		} else {
+		
+		}
+		//Debug.Log(inUnit.AITarget.GetUnitClass());
+		//finds a block that the inUnit can reach and attack, or attempts to obtain a taxiing unit to get to the target
+		//it sets the inUnit targetblock to either the first, or the occupying block of the target
+			
+		//			
+		//			inUnit.canReachTarget = canReach;
+		//			if (canReach) {
+		//				inUnit.AITargetBlock = reachableBlock;
+		//			} else if (inUnit.moveClass == MovementType.Sea || inUnit.moveClass == MovementType.Littoral) {
+		//				inUnit.AITargetBlock = inUnit.AITarget.GetOccupyingBlock ();
+		//			} else {
+		//				UnitController target = GetSupportUnit (inUnit);
+		//				if (target == null) {
+		//					SetTransportToMake (inUnit);
+		//				} else {
+		//					target.AITarget = inUnit;
+		//					target.AITargetBlock = inUnit.currentBlock;
+		//				}
+		//				inUnit.AITargetBlock = inUnit.AITarget.GetOccupyingBlock ();
+		//			}
+		//		} else {
+		//			Debug.Log ("No Target");
+		//			var tuple = InGameController.instance.ClosestEnemyHQ (inUnit.currentBlock, inUnit.moveClass, this);
+		//			inUnit.AITargetBlock = tuple.Item2;
+		//			if (inUnit.AITargetBlock.CanReachBlock (inUnit, inUnit.currentBlock)) {
+		//				inUnit.canReachTarget = true;
+		//			} else {
+		//				inUnit.canReachTarget = false;
+		//			}
+		/*if(inUnit.AITarget != null){
+			Debug.Log(inUnit.name + " " + inUnit.AITarget + " " + inUnit.AITarget.GetPosition());
+			Debug.Log(inUnit.AITargetBlock.transform.position);
+		}
+		else{
+			Debug.Log("Has no target: " + inUnit.name);
+			Debug.Log(inUnit.AITargetBlock.transform.position);
+		}*/
 	}
 }
 

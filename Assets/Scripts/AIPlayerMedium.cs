@@ -53,7 +53,7 @@ public class AIPlayerMedium : AIPlayer
 		float closestUnitDistance = float.PositiveInfinity;
 		foreach (List<UnitController> list in supportUnits.Values) {
 			foreach (UnitController checkUnit in list) {
-				if (checkUnit.AITarget == null && checkUnit.CanCarryUnit (inUnit)) {
+				if (checkUnit.target.HasTarget () && checkUnit.CanCarryUnit (inUnit)) {
 					float distance = TerrainBuilder.ManhattanDistance (checkUnit.currentBlock, inUnit.currentBlock);
 					if (distance < closestUnitDistance) {
 						closestUnit = checkUnit;
@@ -152,7 +152,7 @@ public class AIPlayerMedium : AIPlayer
 				var enemyHQDistance = enemyHQTuple.Item1 > 0 ? enemyHQTuple.Item1 : .5f;
 				playerHQDistance = playerHQDistance > 0 ? playerHQDistance : .5f;
 				currentPropDistance *= (playerHQDistance / enemyHQDistance);
-				currentPropDistance /= prop.AICapturePriority;
+				currentPropDistance /= prop.propertyClass.AICapturePriority;
 				if (!targetedObjects.Contains (prop) && currentPropDistance < closestDistance && prop.propertyClass.capturable && !(prop.GetOccupyingBlock ().IsOccupied () && (prop.GetOccupyingBlock ().occupyingUnit.owner.IsSameSide (unit.owner) && prop.occupyingUnit != unit))) {
 					closestProperty = prop;
 					closestDistance = currentPropDistance;
@@ -175,6 +175,9 @@ public class AIPlayerMedium : AIPlayer
 		}
 		return closestUnit;
 	}
+	/// <summary>
+	/// Should add targets to units' target lists. This way we can push certain units to focus on particular units (interceptors targeting interceptors/t fighters)
+	/// </summary>
 	void UpdateTargets ()
 	{
 		targetedObjects.Clear ();
@@ -189,26 +192,27 @@ public class AIPlayerMedium : AIPlayer
 			x.unitClass == UnitName.Infantry || x.unitClass == UnitName.Mortar || x.unitClass == UnitName.Stinger
 		);
 		foreach (var i in infantryList) {
-			if (i.AITarget == null) {
-				i.AITarget = GetNextClosestUncapturedProperty (i);
-				if (i.AITarget != null) {
+			if (!i.target.HasTarget ()) {
+				var possibleTarget = GetNextClosestUncapturedProperty (i);
+				if (possibleTarget != null) {
 					assignedUnits.Add (i);
-					targetedObjects.Add (i.AITarget);
+					targetedObjects.Add (possibleTarget);
+					i.target.SetTarget (possibleTarget);
 				}
 			}
 		}
-		var unassignedUnits = units.Where ((x) => x.AITarget == null);
+		var unassignedUnits = units.Where ((x) => !x.target.HasTarget ());
 		foreach (var i in unassignedUnits) {
 			// Units needing resupply
 			if (i.NeedsResupply ()) {
-				i.AITarget = GetClosestResupplyUnit (i);
-				if (i.AITarget == null) {
+				var possibleTarget = GetClosestResupplyUnit (i);
+				if (possibleTarget) {
 					if (i.moveClass == MovementType.Littoral || i.moveClass == MovementType.Sea) {
 						makeSupplySea = true;
 					} else {
 						makeSupplyLand = true;
 					}
-					i.AITarget = hQBlock.occupyingProperty;
+					i.target.SetTarget (hQBlock.occupyingProperty);
 				}
 			}
 			// combat units
@@ -216,7 +220,7 @@ public class AIPlayerMedium : AIPlayer
 				//find best cluster for this unit
 				var best = lists.Max ((x) => ClusterAptitude (x, i));
 				//find best unit in that cluster
-				i.AITarget = BestUnitInCluster (best, i);
+				i.target.SetTarget (BestUnitInCluster (best, i));
 			}
 			// Supplying units
 			if (i.canSupply) {
@@ -233,76 +237,23 @@ public class AIPlayerMedium : AIPlayer
 					}
 				}
 				targetedUnitsNeedingSupply.Add (candidate);
-				i.AITarget = candidate;
+				i.target.SetTarget (candidate);
 			}
 		}
 		for (int i = 0; i < units.Count; i++) {
-			SetTargetBlock (units [i]);
-			Debug.Log (units [i].AITarget.ToString () + units [i].AITargetBlock.ToString ());
+			units [i].target.SetTargetBlock ();
+			Debug.Log (units [i].target.ToString ());
 		}
 	}
+	/// <summary>
+	/// TODO
+	/// </summary>
 	void ComputeAllUnitPositions ()
 	{
 		List<UnitController> temp = new List<UnitController> (unitsToMove);
 		temp.Sort (UnitController.CompareByMovePriority);
 		unitsToMove = new Stack<UnitController> (temp);
 		
-	}
-	void SetTargetBlock (UnitController inUnit)
-	{
-		if (inUnit.AITarget != null) {
-			bool canReach = false;
-			TerrainBlock reachableBlock = null;
-			//Debug.Log(inUnit.AITarget.GetUnitClass());
-			//finds a block that the inUnit can reach and attack, or attempts to obtain a taxiing unit to get to the target
-			//it sets the inUnit targetblock to either the first, or the occupying block of the target
-			if (inUnit.AITarget is UnitController) {
-				foreach (TerrainBlock tb in InGameController.instance.currentTerrain.BlocksWithinRange(inUnit.AITarget.GetOccupyingBlock(), inUnit.minAttackRange, inUnit.EffectiveAttackRange(), inUnit)) {
-					if (tb.CanReachBlock (inUnit, inUnit.currentBlock)) {
-						canReach = true;
-						reachableBlock = tb;
-						break;
-					}
-				}
-			} else {
-				if (inUnit.AITarget.GetOccupyingBlock ().CanReachBlock (inUnit, inUnit.currentBlock)) {
-					canReach = true;
-					reachableBlock = inUnit.AITarget.GetOccupyingBlock ();
-				}
-			}
-			inUnit.canReachTarget = canReach;
-			if (canReach) {
-				inUnit.AITargetBlock = reachableBlock;
-			} else if (inUnit.moveClass == MovementType.Sea || inUnit.moveClass == MovementType.Littoral) {
-				inUnit.AITargetBlock = inUnit.AITarget.GetOccupyingBlock ();
-			} else {
-				UnitController target = GetSupportUnit (inUnit);
-				if (target == null) {
-					SetTransportToMake (inUnit);
-				} else {
-					target.AITarget = inUnit;
-					target.AITargetBlock = inUnit.currentBlock;
-				}
-				inUnit.AITargetBlock = inUnit.AITarget.GetOccupyingBlock ();
-			}
-		} else {
-			Debug.Log ("No Target");
-			var tuple = InGameController.instance.ClosestEnemyHQ (inUnit.currentBlock, inUnit.moveClass, this);
-			inUnit.AITargetBlock = tuple.Item2;
-			if (inUnit.AITargetBlock.CanReachBlock (inUnit, inUnit.currentBlock)) {
-				inUnit.canReachTarget = true;
-			} else {
-				inUnit.canReachTarget = false;
-			}
-		}
-		/*if(inUnit.AITarget != null){
-			Debug.Log(inUnit.name + " " + inUnit.AITarget + " " + inUnit.AITarget.GetPosition());
-			Debug.Log(inUnit.AITargetBlock.transform.position);
-		}
-		else{
-			Debug.Log("Has no target: " + inUnit.name);
-			Debug.Log(inUnit.AITargetBlock.transform.position);
-		}*/
 	}
 	
 	/// <summary>
@@ -342,6 +293,7 @@ public class AIPlayerMedium : AIPlayer
 		}
 		return bestUnit;
 	}
+	
 	void Update ()
 	{
 		if (canIssueOrders && !InGameController.instance.endingGame) {
@@ -353,19 +305,8 @@ public class AIPlayerMedium : AIPlayer
 	{
 		TerrainBlock bestBlockSoFar = null;
 		PositionEvaluation bestValueSoFar = new PositionEvaluation (float.NegativeInfinity);
-		if (currentUnit.canReachTarget && currentUnit.AITarget != null) {
-			InGameController.instance.currentTerrain.SetDistancesFromBlock (currentUnit, currentUnit.AITargetBlock);
-		} else if (currentUnit.AITarget != null) {
-			Debug.Log ("cant reach target, has one");
-			if (currentUnit.AITarget is UnitController) {
-				InGameController.instance.currentTerrain.SetDistancesFromBlockSharedMovableBlock (currentUnit, currentUnit.AITargetBlock, currentUnit.AITarget);
-			} else {
-				InGameController.instance.currentTerrain.SetDistancesFromBlockIgnoreIllegalBlocks (currentUnit, currentUnit.AITargetBlock);
-			}
-		} else {
-			Debug.Log ("Has no target");
-			InGameController.instance.currentTerrain.SetDistancesFromBlockIgnoreIllegalBlocks (currentUnit, currentUnit.AITargetBlock);
-		}
+		
+		currentUnit.target.SetTerrainBlockStates ();
 		blockList = new List<GameObject> ();
 		List<TerrainBlock> blocks = InGameController.instance.currentTerrain.MovableBlocks (currentUnit.currentBlock, currentUnit, currentUnit.EffectiveMoveRange ());
 		Debug.Log (blocks.Count);
@@ -510,7 +451,7 @@ public class AIPlayerMedium : AIPlayer
 					}
 				case UnitOrderOptions.Capture:
 					{
-						float bestCapture = captureModifier * (((float)currentUnit.health.GetRawHealth ()) / 100) + (1 - position.occupyingProperty.NormalizedCaptureCount ()) * position.occupyingProperty.AICapturePriority;
+						float bestCapture = captureModifier * (((float)currentUnit.health.GetRawHealth ()) / 100) + (1 - position.occupyingProperty.NormalizedCaptureCount ()) * position.occupyingProperty.propertyClass.AICapturePriority;
 						if (bestCapture > bestOptionValue.value) {
 							bestOptionValue.value = bestCapture;
 							bestOptionValue.bestOrder = UnitOrderOptions.Capture;

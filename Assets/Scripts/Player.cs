@@ -225,7 +225,7 @@ public class Player : MonoBehaviour
 		Property outUnit = (Property)MonoBehaviour.Instantiate (Utilities.GetPrefabFromUnitName (prop), position, rotation);
 		outUnit.startingOwner = playerNumber;
 		outUnit.SetOwner (this);
-		RemoveFunds (outUnit.baseCost);
+		RemoveFunds (outUnit.propertyClass.baseCost);
 		return outUnit;
 	}
 	/// <summary>
@@ -289,7 +289,7 @@ public class Player : MonoBehaviour
 	public bool CanProduceProperty (UnitName possibleUnit)
 	{
 		if (Utilities.GetPrefabFromUnitName (possibleUnit) != null) {
-			if (funds >= ((Property)Utilities.GetPrefabFromUnitName (possibleUnit)).baseCost) {
+			if (funds >= ((Property)Utilities.GetPrefabFromUnitName (possibleUnit)).propertyClass.baseCost) {
 				return true;
 			}
 		}

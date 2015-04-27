@@ -20,23 +20,24 @@ public class Property : MonoBehaviour, AttackableObject, IResettable
 	private UnitController capturingUnit;
 	private TerrainBlock currentBlock;
 	private Transform graphicsObject;
-	public string description;
 	private static ParticleSystem staticSmokeParticles, staticFireParticles;
 	private ParticleSystem smokeParticles, fireParticles;
-	public int baseCost;
 	public bool isUnderConstruction { get; private set; }
 	public bool justBuilt { get; private set; }
 	public ParticleSystem mouseOverEffect;
 	public int comTowerRange;
-	public float AICapturePriority;
 	//Distance to nearest enemy hq
 	public float cachedDistanceFromEnemyHQ;
+
 	[System.Serializable]
 	public class PropertyAttributes
 	{
 		public int baseFunds;
+		public int baseCost;
 		public bool capturable;
 		public int defenseBonus;
+		public string description;
+		public float AICapturePriority;
 		public UnitName[] producableUnits;
 	}
 	public bool IsAlive ()
@@ -66,7 +67,7 @@ public class Property : MonoBehaviour, AttackableObject, IResettable
 	}
 	public int UnitCost ()
 	{
-		return baseCost;
+		return propertyClass.baseCost;
 	}
 	void Awake ()
 	{
@@ -302,8 +303,8 @@ public class Property : MonoBehaviour, AttackableObject, IResettable
 				InGameController.instance.RemovePlayer (owner);
 			}
 			captureCount = 20;
-			if (unit.AITarget == this) {
-				unit.AITarget = null;
+			if (unit.target.primaryTarget == this) {
+				unit.target.primaryTarget = null;
 			}
 			SetOwner (capturingUnit.owner);
 		}
@@ -462,7 +463,7 @@ public class Property : MonoBehaviour, AttackableObject, IResettable
 	public void SetDetailedInfo (DetailedInfoBoxViewer detailedTextBox)
 	{
 		List<UnitName> weakestAgainst = DamageValues.TopDamagingUnits (propertyType);
-		detailedTextBox.SetBoxInfo (propertyType.ToString (), description, null, weakestAgainst);
+		detailedTextBox.SetBoxInfo (propertyType.ToString (), propertyClass.description, null, weakestAgainst);
 	}
 
 }
