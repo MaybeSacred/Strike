@@ -197,7 +197,7 @@ public class AIPlayerMedium : AIPlayer
 				if (possibleTarget != null) {
 					assignedUnits.Add (i);
 					targetedObjects.Add (possibleTarget);
-					i.target.SetTarget (possibleTarget);
+					i.target.AddTarget (possibleTarget);
 				}
 			}
 		}
@@ -212,7 +212,7 @@ public class AIPlayerMedium : AIPlayer
 					} else {
 						makeSupplyLand = true;
 					}
-					i.target.SetTarget (hQBlock.occupyingProperty);
+					i.target.AddTarget (hQBlock.occupyingProperty);
 				}
 			}
 			// combat units
@@ -220,7 +220,7 @@ public class AIPlayerMedium : AIPlayer
 				//find best cluster for this unit
 				var best = lists.Max ((x) => ClusterAptitude (x, i));
 				//find best unit in that cluster
-				i.target.SetTarget (BestUnitInCluster (best, i));
+				i.target.AddTarget (BestUnitInCluster (best, i));
 			}
 			// Supplying units
 			if (i.canSupply) {
@@ -237,12 +237,8 @@ public class AIPlayerMedium : AIPlayer
 					}
 				}
 				targetedUnitsNeedingSupply.Add (candidate);
-				i.target.SetTarget (candidate);
+				i.target.AddTarget (candidate);
 			}
-		}
-		for (int i = 0; i < units.Count; i++) {
-			units [i].target.SetTargetBlock ();
-			Debug.Log (units [i].target.ToString ());
 		}
 	}
 	/// <summary>
@@ -310,6 +306,7 @@ public class AIPlayerMedium : AIPlayer
 		blockList = new List<GameObject> ();
 		List<TerrainBlock> blocks = InGameController.instance.currentTerrain.MovableBlocks (currentUnit.currentBlock, currentUnit, currentUnit.EffectiveMoveRange ());
 		Debug.Log (blocks.Count);
+		
 		foreach (TerrainBlock block in blocks) {
 			PositionEvaluation temp = RecursiveEvaluatePosition (block);
 #if DEBUG

@@ -303,9 +303,6 @@ public class Property : MonoBehaviour, AttackableObject, IResettable
 				InGameController.instance.RemovePlayer (owner);
 			}
 			captureCount = 20;
-			if (unit.target.primaryTarget == this) {
-				unit.target.primaryTarget = null;
-			}
 			SetOwner (capturingUnit.owner);
 		}
 	}

@@ -9,22 +9,18 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 public class UnitTarget
 {
-	AttackableObject _primaryTarget_;
+	List<AttackableObject> _targets;
 	/// <summary>
-	/// The primary target. Should be a ranked list of targets
+	/// The primary target.
 	/// </summary>
 	/// <value>The primary target.</value>
 	public AttackableObject primaryTarget {
-		get { return _primaryTarget_; }
-		set { 
-			_primaryTarget_ = value;
-			if (primaryTarget == null) {
-				Debug.Log ("Primary target nulled. " + parent.name);
-			}
-		}
+		get { return _targets.FirstOrDefault (); }
 	}
 	/// <summary>
 	/// The block that the unit is currently moving towards, which is also the primaryTarget's block, if the unit can reach that block
@@ -42,20 +38,27 @@ public class UnitTarget
 	/// <value><c>true</c> if can attack target; otherwise, <c>false</c>.</value>
 	public bool canAttackTarget { get; private set; }
 	UnitController parent{ get; set; }
-	public UnitTarget (UnitController parent, AttackableObject target =  null)
+	public UnitTarget (UnitController parent)
 	{
 		this.parent = parent;
-		SetTarget (target);
+		_targets = new List<AttackableObject> ();
 	}
-	public void SetTarget (AttackableObject newTarget)
+	public void AddTarget (AttackableObject newTarget)
 	{
-		if (newTarget != null) {
-			//InGameController.instance.currentTerrain(parent.currentBlock, newTarget.GetOccupyingBlock(), parent, 1);
+		if (newTarget == null) {
+			throw new ArgumentNullException ("newTarget");
+		}
+		if (!_targets.Contains (newTarget)) {
+			_targets.Add (newTarget);
 		}
 	}
+	/// <summary>
+	/// Determines whether this instance has a target.
+	/// </summary>
+	/// <returns><c>true</c> if this instance has target; otherwise, <c>false</c>.</returns>
 	public bool HasTarget ()
 	{
-		return primaryTarget != null;
+		return primaryTarget != default(AttackableObject);
 	}
 	public override string ToString ()
 	{
@@ -66,6 +69,7 @@ public class UnitTarget
 	/// </summary>
 	public void SetTerrainBlockStates ()
 	{
+		SetTargetBlock ();
 		if (HasTarget ()) {
 			if (canReachTarget) {
 				InGameController.instance.currentTerrain.SetDistancesFromBlock (parent, targetBlock);
@@ -82,30 +86,51 @@ public class UnitTarget
 			InGameController.instance.currentTerrain.SetDistancesFromBlockIgnoreIllegalBlocks (parent, targetBlock);
 		}
 	}
-	public void SetTargetBlock ()
+	
+	void HasNoReachableTarget ()
+	{
+		
+	}
+	
+	bool CheckForReachableTarget (AttackableObject input)
+	{
+		// First check if we can reach the target directly
+		if (primaryTarget.GetOccupyingBlock ().CanReachBlock (parent, parent.currentBlock)) {
+			canReachTarget = true;
+			targetBlock = primaryTarget.GetOccupyingBlock ();
+		}
+		// Next check if we can attack the target. Note that its possible we may not be able to attack, but can reach a target
+		foreach (TerrainBlock tb in InGameController.instance.currentTerrain.BlocksWithinRange(primaryTarget.GetOccupyingBlock(), parent.minAttackRange, parent.EffectiveAttackRange(), parent)) {
+			if (tb.CanReachBlock (parent, parent.currentBlock)) {
+				canAttackTarget = true;
+				targetBlock = tb;
+				break;
+			}
+		}
+		return canReachTarget || canAttackTarget;
+	}
+	/// <summary>
+	/// Sets the target block, using targeted units
+	/// </summary>
+	void SetTargetBlock ()
 	{
 		canReachTarget = false;
 		canAttackTarget = false;
 		if (HasTarget ()) {
-			// First check if we can reach the target directly
-			if (primaryTarget.GetOccupyingBlock ().CanReachBlock (parent, parent.currentBlock)) {
-				canReachTarget = true;
-				targetBlock = primaryTarget.GetOccupyingBlock ();
-			}
-			// Next check if we can attack the target. Note that its possible we may not be able to attack, but can reach a target
-			foreach (TerrainBlock tb in InGameController.instance.currentTerrain.BlocksWithinRange(primaryTarget.GetOccupyingBlock(), parent.minAttackRange, parent.EffectiveAttackRange(), parent)) {
-				if (tb.CanReachBlock (parent, parent.currentBlock)) {
-					canAttackTarget = true;
-					targetBlock = tb;
-					break;
-				}
-			}
+			_targets.First (CheckForReachableTarget);
 			// if we cant attack or reach the target
-			if (!canAttackTarget) {
-				
+			if (!canAttackTarget && !canReachTarget) {
+				HasNoReachableTarget ();
 			}
 		} else {
-		
+			Debug.Log ("No Target");
+			var tuple = InGameController.instance.ClosestEnemyHQ (parent.currentBlock, parent.moveClass, parent.owner);
+			targetBlock = tuple.Item2;
+			if (targetBlock.CanReachBlock (parent, parent.currentBlock)) {
+				canReachTarget = true;
+			} else {
+				canReachTarget = false;
+			}
 		}
 		//Debug.Log(inUnit.AITarget.GetUnitClass());
 		//finds a block that the inUnit can reach and attack, or attempts to obtain a taxiing unit to get to the target
@@ -127,15 +152,7 @@ public class UnitTarget
 		//				}
 		//				inUnit.AITargetBlock = inUnit.AITarget.GetOccupyingBlock ();
 		//			}
-		//		} else {
-		//			Debug.Log ("No Target");
-		//			var tuple = InGameController.instance.ClosestEnemyHQ (inUnit.currentBlock, inUnit.moveClass, this);
-		//			inUnit.AITargetBlock = tuple.Item2;
-		//			if (inUnit.AITargetBlock.CanReachBlock (inUnit, inUnit.currentBlock)) {
-		//				inUnit.canReachTarget = true;
-		//			} else {
-		//				inUnit.canReachTarget = false;
-		//			}
+		//		} 
 		/*if(inUnit.AITarget != null){
 			Debug.Log(inUnit.name + " " + inUnit.AITarget + " " + inUnit.AITarget.GetPosition());
 			Debug.Log(inUnit.AITargetBlock.transform.position);
