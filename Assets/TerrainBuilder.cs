@@ -18,7 +18,7 @@ public class TerrainBuilder : MonoBehaviour
 		illuminatedMovementRangeBlocks = new List<TerrainBlock> ();
 		BuildAdjacencyLists ();
 		BuildAIHQDistances ();
-		data = CreateMapData (GetComponentsInChildren<TerrainBlock> (), Application.loadedLevelName);
+		data = TerrainSupporter.CreateMapData (GetComponentsInChildren<TerrainBlock> (), Application.loadedLevelName);
 	}
 	public void SaveIlluminatedBlocks ()
 	{
@@ -112,14 +112,6 @@ public class TerrainBuilder : MonoBehaviour
 	{
 		
 	}
-	public static int ManhattanDistance (Vector3 v1, Vector3 v2)
-	{
-		return Mathf.RoundToInt (Mathf.Abs (v1.x - v2.x) + Mathf.Abs (v1.z - v2.z));
-	}
-	public static int ManhattanDistance (TerrainBlock v1, TerrainBlock v2)
-	{
-		return Mathf.RoundToInt (Mathf.Abs (v1.transform.position.x - v2.transform.position.x) + Mathf.Abs (v1.transform.position.z - v2.transform.position.z));
-	}
 	/// <summary>
 	/// Returns null if no path OR a shortest path longer than maxDistance is found
 	/// </summary>
@@ -136,7 +128,7 @@ public class TerrainBuilder : MonoBehaviour
 			block.cameFromBlock = null;
 		}
 		startTile.gCost = 0;
-		startTile.fCost = ManhattanDistance (startTile.transform.position, endTile.transform.position);
+		startTile.fCost = TerrainSupporter.ManhattanDistance (startTile.transform.position, endTile.transform.position);
 		openSet.Enqueue (startTile);
 		TerrainBlock current;
 		while (openSet.Count() > 0) {
@@ -163,7 +155,7 @@ public class TerrainBuilder : MonoBehaviour
 						if (notContained || tempG < current.adjacentBlocks [i].gCost) {
 							current.adjacentBlocks [i].cameFromBlock = current;
 							current.adjacentBlocks [i].gCost = tempG;
-							current.adjacentBlocks [i].fCost = current.adjacentBlocks [i].gCost + ManhattanDistance (current.adjacentBlocks [i].transform.position, endTile.transform.position);
+							current.adjacentBlocks [i].fCost = current.adjacentBlocks [i].gCost + TerrainSupporter.ManhattanDistance (current.adjacentBlocks [i].transform.position, endTile.transform.position);
 							if (notContained) {
 								openSet.Enqueue (current.adjacentBlocks [i]);
 							} else {
@@ -188,7 +180,7 @@ public class TerrainBuilder : MonoBehaviour
 			block.cameFromBlock = null;
 		}
 		from.gCost = 0;
-		from.fCost = ManhattanDistance (from.transform.position, to.transform.position);
+		from.fCost = TerrainSupporter.ManhattanDistance (from.transform.position, to.transform.position);
 		openSet.Enqueue (from);
 		TerrainBlock current;
 		while (openSet.Count() > 0) {
@@ -207,7 +199,7 @@ public class TerrainBuilder : MonoBehaviour
 						if (notContained || tempG < current.adjacentBlocks [i].gCost) {
 							current.adjacentBlocks [i].cameFromBlock = current;
 							current.adjacentBlocks [i].gCost = tempG;
-							current.adjacentBlocks [i].fCost = current.adjacentBlocks [i].gCost + ManhattanDistance (current.adjacentBlocks [i].transform.position, to.transform.position);
+							current.adjacentBlocks [i].fCost = current.adjacentBlocks [i].gCost + TerrainSupporter.ManhattanDistance (current.adjacentBlocks [i].transform.position, to.transform.position);
 							if (notContained) {
 								openSet.Enqueue (current.adjacentBlocks [i]);
 							} else {
@@ -231,7 +223,7 @@ public class TerrainBuilder : MonoBehaviour
 			block.cameFromBlock = null;
 		}
 		from.gCost = 0;
-		from.fCost = ManhattanDistance (from.transform.position, to.transform.position);
+		from.fCost = TerrainSupporter.ManhattanDistance (from.transform.position, to.transform.position);
 		openSet.Enqueue (from);
 		TerrainBlock current;
 		while (openSet.Count() > 0) {
@@ -249,7 +241,7 @@ public class TerrainBuilder : MonoBehaviour
 					if (notContained || tempG < current.adjacentBlocks [i].gCost) {
 						current.adjacentBlocks [i].cameFromBlock = current;
 						current.adjacentBlocks [i].gCost = tempG;
-						current.adjacentBlocks [i].fCost = current.adjacentBlocks [i].gCost + ManhattanDistance (current.adjacentBlocks [i].transform.position, to.transform.position);
+						current.adjacentBlocks [i].fCost = current.adjacentBlocks [i].gCost + TerrainSupporter.ManhattanDistance (current.adjacentBlocks [i].transform.position, to.transform.position);
 						if (notContained) {
 							openSet.Enqueue (current.adjacentBlocks [i]);
 						} else {
@@ -282,7 +274,7 @@ public class TerrainBuilder : MonoBehaviour
 			block.cameFromBlock = null;
 		}
 		startTile.gCost = 0;
-		startTile.fCost = ManhattanDistance (startTile.transform.position, otherUnit.transform.position);
+		startTile.fCost = TerrainSupporter.ManhattanDistance (startTile.transform.position, otherUnit.transform.position);
 		openSet.Enqueue (startTile);
 		TerrainBlock current;
 		while (openSet.Count() > 0) {
@@ -303,7 +295,7 @@ public class TerrainBuilder : MonoBehaviour
 						if (notContained || tempG < current.adjacentBlocks [i].gCost) {
 							current.adjacentBlocks [i].cameFromBlock = current;
 							current.adjacentBlocks [i].gCost = tempG;
-							current.adjacentBlocks [i].fCost = current.adjacentBlocks [i].gCost + ManhattanDistance (current.adjacentBlocks [i].transform.position, otherUnit.transform.position);
+							current.adjacentBlocks [i].fCost = current.adjacentBlocks [i].gCost + TerrainSupporter.ManhattanDistance (current.adjacentBlocks [i].transform.position, otherUnit.transform.position);
 							if (notContained) {
 								openSet.Enqueue (current.adjacentBlocks [i]);
 							} else {
@@ -330,7 +322,7 @@ public class TerrainBuilder : MonoBehaviour
 		TerrainBlock current;
 		while (openSet.Count() > 0) {
 			current = openSet.Dequeue ();
-			if (ManhattanDistance (current.transform.position, startTile.transform.position) > maxDistance) {
+			if (TerrainSupporter.ManhattanDistance (current.transform.position, startTile.transform.position) > maxDistance) {
 				continue;
 			}
 			closedSet.Add (current);
@@ -370,7 +362,7 @@ public class TerrainBuilder : MonoBehaviour
 		TerrainBlock current;
 		while (openSet.Count() > 0) {
 			current = openSet.Dequeue ();
-			if (ManhattanDistance (current.transform.position, startTile.transform.position) > maxDistance) {
+			if (TerrainSupporter.ManhattanDistance (current.transform.position, startTile.transform.position) > maxDistance) {
 				continue;
 			}
 			closedSet.Add (current);
@@ -445,7 +437,7 @@ public class TerrainBuilder : MonoBehaviour
 		TerrainBlock current;
 		while (openSet.Count() > 0) {
 			current = openSet.Dequeue ();
-			if (ManhattanDistance (current.transform.position, startTile.transform.position) > maxDistance) {
+			if (TerrainSupporter.ManhattanDistance (current.transform.position, startTile.transform.position) > maxDistance) {
 				continue;
 			}
 			closedSet.Add (current);
@@ -601,8 +593,8 @@ public class TerrainBuilder : MonoBehaviour
 				if (startPointX >= lowerXMapBound && startPointX <= upperXMapBound && startPointZ - k >= lowerZMapBound && startPointZ - k <= upperZMapBound) {
 					if (terrain [startPointX, startPointZ - k] != null) {
 						TerrainBlock block = terrain [startPointX, startPointZ - k];
-						if (!block.hidesInFogOfWar || !block.HasProperty () || ManhattanDistance (block.transform.position, startBlock.transform.position) < 2 || forceClear) {
-							if (block.IsOccupied () && !(block.occupyingUnit.isStealthed && ManhattanDistance (block.transform.position, startBlock.transform.position) > 1)) {
+						if (!block.hidesInFogOfWar || !block.HasProperty () || TerrainSupporter.ManhattanDistance (block.transform.position, startBlock.transform.position) < 2 || forceClear) {
+							if (block.IsOccupied () && !(block.occupyingUnit.isStealthed && TerrainSupporter.ManhattanDistance (block.transform.position, startBlock.transform.position) > 1)) {
 								block.occupyingUnit.gameObject.SetActive (true);
 								unitsFound++;
 							}
@@ -630,7 +622,7 @@ public class TerrainBuilder : MonoBehaviour
 		int blocksInZDirection = 1;
 		for (int i = 0; i < 2*maxRange + 1; i++) {
 			for (int k = 0; k < blocksInZDirection; k++) {
-				if (ManhattanDistance (startBlock.transform.position, new Vector3 (startPointX, 0, startPointZ - k)) >= minRange) {
+				if (TerrainSupporter.ManhattanDistance (startBlock.transform.position, new Vector3 (startPointX, 0, startPointZ - k)) >= minRange) {
 					if (startPointX >= lowerXMapBound && startPointX <= upperXMapBound && startPointZ - k >= lowerZMapBound && startPointZ - k <= upperZMapBound) {
 						if (terrain [startPointX, startPointZ - k] != null) {
 							ra (terrain [startPointX, startPointZ - k]);
@@ -665,7 +657,7 @@ public class TerrainBuilder : MonoBehaviour
 		int blocksInZDirection = 1;
 		for (int i = 0; i < 2*maxRange + 1; i++) {
 			for (int k = 0; k < blocksInZDirection; k++) {
-				if (ManhattanDistance (startBlock.transform.position, new Vector3 (startPointX, 0, startPointZ - k)) >= minRange) {
+				if (TerrainSupporter.ManhattanDistance (startBlock.transform.position, new Vector3 (startPointX, 0, startPointZ - k)) >= minRange) {
 					if (startPointX >= lowerXMapBound && startPointX <= upperXMapBound && startPointZ - k >= lowerZMapBound && startPointZ - k <= upperZMapBound) {
 						if (terrain [startPointX, startPointZ - k] != null) {
 							outList.Add (terrain [startPointX, startPointZ - k]);
@@ -694,35 +686,14 @@ public class TerrainBuilder : MonoBehaviour
 	/// <param name="querier">Querier.</param>
 	public List<AttackableObject> ObjectsWithinRange (TerrainBlock startBlock, int minRange, int maxRange, UnitController querier)
 	{
-		int startPointX = Mathf.RoundToInt (startBlock.transform.position.x);
-		int startPointZ = Mathf.RoundToInt (startBlock.transform.position.z);
-		startPointX -= maxRange;
-		List<AttackableObject> outList = new List<AttackableObject> ();
-		int blocksInZDirection = 1;
-		for (int i = 0; i < 2*maxRange + 1; i++) {
-			for (int k = 0; k < blocksInZDirection; k++) {
-				if (ManhattanDistance (startBlock.transform.position, new Vector3 (startPointX, 0, startPointZ - k)) >= minRange) {
-					if (startPointX >= lowerXMapBound && startPointX <= upperXMapBound && startPointZ - k >= lowerZMapBound && startPointZ - k <= upperZMapBound) {
-						if (terrain [startPointX, startPointZ - k] != null) {
-							TerrainBlock hitBlock = terrain [startPointX, startPointZ - k];
-							if (hitBlock.IsOccupied () && hitBlock.occupyingUnit != querier) {
-								outList.Add (hitBlock.occupyingUnit);
-							} else if (hitBlock.HasProperty ()) {
-								outList.Add (hitBlock.occupyingProperty);
-							}
-						}
-					}
-				}
+		var outList = new List<AttackableObject> ();
+		BlocksWithinRange (startBlock, minRange, maxRange, querier).ForEach (hitBlock => {
+			if (hitBlock.IsOccupied () && hitBlock.occupyingUnit != querier) {
+				outList.Add (hitBlock.occupyingUnit);
+			} else if (hitBlock.HasProperty ()) {
+				outList.Add (hitBlock.occupyingProperty);
 			}
-			startPointX++;
-			if (i >= maxRange) {
-				blocksInZDirection -= 2;
-				startPointZ--;
-			} else {
-				blocksInZDirection += 2;
-				startPointZ++;
-			}
-		}
+		});
 		return outList;
 	}
 	public int ClearFog (TerrainBlock startBlock, int distance, bool forceClear)
@@ -748,6 +719,10 @@ public class TerrainBuilder : MonoBehaviour
 			block.HideFog ();
 		}
 	}
+	
+}
+public static class TerrainSupporter
+{
 	/// <summary>
 	/// Creates, populates, and returns a MapData object
 	/// </summary>
@@ -846,5 +821,13 @@ public class TerrainBuilder : MonoBehaviour
 			vec [i] /= magnitude;
 		}
 		return vec;
+	}
+	public static int ManhattanDistance (Vector3 v1, Vector3 v2)
+	{
+		return Mathf.RoundToInt (Mathf.Abs (v1.x - v2.x) + Mathf.Abs (v1.z - v2.z));
+	}
+	public static int ManhattanDistance (TerrainBlock v1, TerrainBlock v2)
+	{
+		return Mathf.RoundToInt (Mathf.Abs (v1.transform.position.x - v2.transform.position.x) + Mathf.Abs (v1.transform.position.z - v2.transform.position.z));
 	}
 }

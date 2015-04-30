@@ -187,7 +187,7 @@ public class General : MonoBehaviour
 	public bool IsInZoneRange (Transform checkingObject)
 	{
 		if (isActive) {
-			if (TerrainBuilder.ManhattanDistance (checkingObject.position, transform.position) <= zoneSize + zoneSizeBoost || powerInEffect) {
+			if (TerrainSupporter.ManhattanDistance (checkingObject.position, transform.position) <= zoneSize + zoneSizeBoost || powerInEffect) {
 				return true;
 			}
 		}

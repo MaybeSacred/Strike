@@ -427,7 +427,7 @@ public class Property : MonoBehaviour, AttackableObject, IResettable
 	}
 	public bool IsInComTowerRange (TerrainBlock block)
 	{
-		if (TerrainBuilder.ManhattanDistance (block, currentBlock) <= comTowerRange) {
+		if (TerrainSupporter.ManhattanDistance (block, currentBlock) <= comTowerRange) {
 			return true;
 		}
 		return false;
@@ -440,7 +440,7 @@ public class Property : MonoBehaviour, AttackableObject, IResettable
 	{
 		List<UnitController> outObjects = new List<UnitController> ();
 		foreach (UnitController u in owner.units) {
-			if (TerrainBuilder.ManhattanDistance (u.awaitingOrdersBlock, currentBlock) <= comTowerRange) {
+			if (TerrainSupporter.ManhattanDistance (u.awaitingOrdersBlock, currentBlock) <= comTowerRange) {
 				outObjects.Add (u);
 			}
 		}

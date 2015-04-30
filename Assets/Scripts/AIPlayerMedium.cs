@@ -54,7 +54,7 @@ public class AIPlayerMedium : AIPlayer
 		foreach (List<UnitController> list in supportUnits.Values) {
 			foreach (UnitController checkUnit in list) {
 				if (checkUnit.target.HasTarget () && checkUnit.CanCarryUnit (inUnit)) {
-					float distance = TerrainBuilder.ManhattanDistance (checkUnit.currentBlock, inUnit.currentBlock);
+					float distance = TerrainSupporter.ManhattanDistance (checkUnit.currentBlock, inUnit.currentBlock);
 					if (distance < closestUnitDistance) {
 						closestUnit = checkUnit;
 						closestUnitDistance = distance;
@@ -167,7 +167,7 @@ public class AIPlayerMedium : AIPlayer
 		UnitController closestUnit = null;
 		float currentUnitDistance = 0;
 		foreach (UnitController u in units) {
-			currentUnitDistance = TerrainBuilder.ManhattanDistance (u.currentBlock, unit.currentBlock);
+			currentUnitDistance = TerrainSupporter.ManhattanDistance (u.currentBlock, unit.currentBlock);
 			if (currentUnitDistance < closestDistance && u.canSupply) {
 				closestDistance = currentUnitDistance;
 				closestUnit = u;
@@ -339,38 +339,6 @@ public class AIPlayerMedium : AIPlayer
 		outEvaluation.value += bestValueSoFar.value;
 		return outEvaluation;
 	}
-	
-	/*protected PositionEvaluation RecursiveEvaluatePosition(int depth, TerrainBlock block, ref int positionsEvaluated, int maxDepth)
-	{
-		positionsEvaluated++;
-		if(depth < maxDepth)
-		{
-			PositionEvaluation bestValueSoFar = new PositionEvaluation(float.NegativeInfinity);
-			List<TerrainBlock> blocks = InGameController.instance.currentTerrain.MovableBlocks(block, currentUnit, currentUnit.EffectiveMoveRange());
-			SortedList<PositionEvaluation, TerrainBlock> rankings = new SortedList<PositionEvaluation, TerrainBlock>(blocks.Count, new PositionEvaluationComparer());
-			foreach(TerrainBlock b in blocks)
-			{
-				rankings.Add(EvaluatePosition(b), b);
-			}
-			int min = Mathf.Min(rankings.Count, 10);
-			for(int i = 0; i < min; i++)
-			{
-				PositionEvaluation temp = RecursiveEvaluatePosition(depth + 1, rankings.Values[i], ref positionsEvaluated, maxDepth);
-				if(temp.value > bestValueSoFar.value)
-				{
-					bestValueSoFar = temp;
-				}
-			}
-			PositionEvaluation outputEvaluation = EvaluatePosition(block);
-			//depth is inverted, incorrect atm
-			outputEvaluation.value += (bestValueSoFar.value * Mathf.Pow(.5f, depth));
-			return outputEvaluation;
-		}
-		else
-		{
-			return EvaluatePosition(block);
-		}
-	}*/
 	
 	public class PositionEvaluationComparer : IComparer<PositionEvaluation>
 	{
@@ -574,19 +542,19 @@ public class AIPlayerMedium : AIPlayer
 		foreach (AttackableObject temp in otherUnits) {
 			if (temp is UnitController) {
 				other = temp as UnitController;
-				if (other.owner.IsSameSide (currentUnit.owner) && other.EffectiveMoveRange () >= TerrainBuilder.ManhattanDistance (other.currentBlock, block)) {
+				if (other.owner.IsSameSide (currentUnit.owner) && other.EffectiveMoveRange () >= TerrainSupporter.ManhattanDistance (other.currentBlock, block)) {
 					alliedUnits++;
-				} else if (!other.owner.IsSameSide (currentUnit.owner) && !other.owner.IsNeutralSide () && other.EffectiveMoveRange () + other.EffectiveAttackRange () >= TerrainBuilder.ManhattanDistance (other.currentBlock, block) && other.gameObject.activeSelf) {
+				} else if (!other.owner.IsSameSide (currentUnit.owner) && !other.owner.IsNeutralSide () && other.EffectiveMoveRange () + other.EffectiveAttackRange () >= TerrainSupporter.ManhattanDistance (other.currentBlock, block) && other.gameObject.activeSelf) {
 					if (other.canMoveAndAttack && other.minAttackRange > 0) {
 						List<TerrainBlock> otherBlocks = InGameController.instance.currentTerrain.MovableBlocks (other.currentBlock, other, other.EffectiveMoveRange ());
 						float otherMaxAttackRange = other.EffectiveAttackRange ();
 						foreach (TerrainBlock t in otherBlocks) {
-							if (TerrainBuilder.ManhattanDistance (t, block) <= otherMaxAttackRange) {
+							if (TerrainSupporter.ManhattanDistance (t, block) <= otherMaxAttackRange) {
 								totalEnemyDamage += DamageValues.CalculateDamage (other, currentUnit) * currentUnit.baseCost;
 								break;
 							}
 						}
-					} else if (TerrainBuilder.ManhattanDistance (other.currentBlock, block) >= other.minAttackRange && TerrainBuilder.ManhattanDistance (other.currentBlock, block) <= other.EffectiveAttackRange ()) {
+					} else if (TerrainSupporter.ManhattanDistance (other.currentBlock, block) >= other.minAttackRange && TerrainSupporter.ManhattanDistance (other.currentBlock, block) <= other.EffectiveAttackRange ()) {
 						totalEnemyDamage += DamageValues.CalculateDamage (other, currentUnit) * currentUnit.baseCost;
 					}
 				}

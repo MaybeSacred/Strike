@@ -220,7 +220,7 @@ public class MapDataExporter : Editor
 			if (GUILayout.Button (terrainImages [i])) {
 				Reset ();
 				selectedBlockToPaint = Instantiate (terrainPrefabs [i]) as GameObject;
-				selectedBlockToPaint.GetComponent<Collider>().enabled = false;
+				selectedBlockToPaint.GetComponent<Collider> ().enabled = false;
 				selectedBlockIndex = terrainPrefabs.IndexOf (terrainPrefabs [i]);
 			}
 			if ((i % 2) == 1 || i == terrainPrefabs.Count - 1) {
@@ -236,7 +236,7 @@ public class MapDataExporter : Editor
 			if (GUILayout.Button (buildingImages [i])) {
 				Reset ();
 				selectedBlockToPaint = Instantiate (buildingPrefabs [i]) as GameObject;
-				selectedBlockToPaint.GetComponent<Collider>().enabled = false;
+				selectedBlockToPaint.GetComponent<Collider> ().enabled = false;
 				selectedBuildingIndex = buildingPrefabs.IndexOf (buildingPrefabs [i]);
 			}
 			if ((i % 2) == 1 || i == buildingPrefabs.Count - 1) {
@@ -500,7 +500,7 @@ public class MapDataExporter : Editor
 			'/',
 			'\\'
 		});
-		MapData outgoingData = TerrainBuilder.CreateMapData (blocks, slicedMapName [slicedMapName.Length - 2]);
+		MapData outgoingData = TerrainSupporter.CreateMapData (blocks, slicedMapName [slicedMapName.Length - 2]);
 		Debug.Log (outgoingData.IsPlayable ());
 		Stream sw = File.Create (EditorApplication.currentScene.Split ('.') [0] + ".bin");
 		BinaryFormatter serializer = new BinaryFormatter ();

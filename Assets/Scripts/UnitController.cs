@@ -1047,8 +1047,8 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable, IRes
 				RankUp ();
 				return;
 			}
-			if (TerrainBuilder.ManhattanDistance (transform.position, other.transform.position) >= other.minAttackRange &&
-				TerrainBuilder.ManhattanDistance (transform.position, other.transform.position) <= other.modifier.ApplyModifiers (UnitPropertyModifier.PropertyModifiers.AttackRange, other.maxAttackRange) &&
+			if (TerrainSupporter.ManhattanDistance (transform.position, other.transform.position) >= other.minAttackRange &&
+				TerrainSupporter.ManhattanDistance (transform.position, other.transform.position) <= other.modifier.ApplyModifiers (UnitPropertyModifier.PropertyModifiers.AttackRange, other.maxAttackRange) &&
 				DamageValues.CanAttackUnit (other, this) && CanRetaliate (other.attackType, attackType) &&
 				other.primaryAmmoRemaining > 0) {
 				damageOut = DamageValues.CalculateDamage (other, this) + DamageValues.CalculateLuckDamage (other.health.GetRawHealth ());

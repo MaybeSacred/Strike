@@ -445,7 +445,7 @@ public class TerrainBlock : MonoBehaviour, System.IComparable<TerrainBlock>
 	}
 	public void PokeOnMovementAttackGraphic (UnitController unit, int moveRange, int attackRange)
 	{
-		if (!showingMoveTile && TerrainBuilder.ManhattanDistance (transform.position, unit.transform.position) <= moveRange) {
+		if (!showingMoveTile && TerrainSupporter.ManhattanDistance (transform.position, unit.transform.position) <= moveRange) {
 			showingMoveTile = true;
 			InGameController.instance.currentTerrain.illuminatedMovementRangeBlocks.Add (this);
 			for (int i = 0; i < adjacentBlocks.Length; i++) {

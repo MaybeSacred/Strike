@@ -31,6 +31,7 @@ public class Utilities : MonoBehaviour
 	public static KeyBindings bindings;
 	void Awake ()
 	{
+		generalPrototypes = generals;
 		bindings = new KeyBindings ();
 #if UNITY_WEBPLAYER || UNITY_STANDALONE
 		bindings.clearButton = KeyCode.C;
@@ -45,7 +46,6 @@ public class Utilities : MonoBehaviour
 	void Start ()
 	{
 		DontDestroyOnLoad (this);
-		generalPrototypes = generals;
 		units = new Dictionary<UnitName, MonoBehaviour> ();
 		foreach (var e in editorUnits) {
 			units.Add (e.name, e.prefab);
