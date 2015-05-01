@@ -66,13 +66,8 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable, IRes
 	public UnitPropertyModifier modifier;
 	public ParticleSystem moveIndicatorParticles { get; private set; }
 	public UnitTarget target;
-	//public AttackableObject AITarget;
-	//public TerrainBlock AITargetBlock{ get; set; }
-	//public bool canReachTarget{ get; set; }
 	public float AIDefensiveness;
 	public int comTowerEffect{ get; set; }
-	[HideInInspector]
-	//public TerrainBlock AICachedCurrentBlock;
 	public int
 		AIMovePriority;
 	// Use this for initialization
@@ -124,14 +119,6 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable, IRes
 		comTowerEffect = owner.ComTowersInRange (this, currentBlock);
 		target = new UnitTarget (this);
 	}
-	void OnMouseOver ()
-	{
-		OnMouseOverExtra ();
-	}
-	void OnMouseEnter ()
-	{
-		OnMouseEnterExtra ();
-	}
 
 	public TerrainBlock GetOccupyingBlock ()
 	{
@@ -150,31 +137,23 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable, IRes
 	{
 		return ((float)primaryAmmoRemaining) / (primaryAmmo > 0 ? primaryAmmo : 1);
 	}
-	public void OnMouseEnterExtra ()
+	public void OnMouseEnter ()
 	{
 		if (currentState == UnitState.UnMoved || !InGameController.instance.GetCurrentPlayer ().Equals (owner) && gameObject.activeSelf) {
 			
 		}
 	}
-	public void OnMouseOverExtra ()
+	public void OnMouseOver ()
 	{
 		if (Input.GetMouseButton (1) && (currentState == UnitState.UnMoved || currentState == UnitState.FinishedMove) && gameObject.activeSelf) {
 			ShowNextTurnAttackRange ();
 		}
 	}
-	void OnMouseExit ()
-	{
-		OnMouseExitExtra ();
-	}
-	public void OnMouseExitExtra ()
+	public void OnMouseExit ()
 	{
 		InGameController.instance.mouseOverParticles.gameObject.SetActive (false);
 	}
-	void OnMouseUp ()
-	{
-		OnMouseUpExtra ();
-	}
-	public void OnMouseUpExtra ()
+	public void OnMouseUp ()
 	{
 		//if (InGameController.instance.LeftClick && !InGameController.instance.RightClick) {
 		if (InGameController.instance.GetCurrentPlayer () == owner && !InGameController.instance.isPaused && currentState != UnitState.FinishedMove) {
@@ -200,7 +179,6 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable, IRes
 				}
 			}
 		}
-		
 	}
 	public List<UnitOrderOptions> CalculateAwaitingOrderOptions (TerrainBlock block)
 	{

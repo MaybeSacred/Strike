@@ -6,7 +6,6 @@ using System;
 public class Player : MonoBehaviour
 {
 	public static readonly int TotalUnitsAllowedPPlayer = 50;
-	public int currentHue;
 	public General selectedGeneral;
 	public string playerName {
 		get{ return name;}
@@ -19,9 +18,6 @@ public class Player : MonoBehaviour
 	public int side = 0;//0 is neutral, first player is 1
 	public List<UnitController> units { get; protected set; }
 	public bool loggingProductionData = false;
-	public int aISelectedInMenu;
-	public bool isAISelectedInMenu;
-	public bool isSideSelectedInMenu;
 	protected bool canIssueOrders;
 	public TerrainBlock hQBlock {
 		get;
@@ -31,7 +27,6 @@ public class Player : MonoBehaviour
 	public int funds { get; protected set; }
 	// Stores the last funds gained by player
 	public int deltaFunds { get; protected set; }
-	public int menuGeneralNumberSelected;
 	protected static int playerCount;
 	public UnitController currentGeneralUnit { get; protected set; }
 	public Color mainPlayerColor;

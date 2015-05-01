@@ -196,9 +196,15 @@ public class TerrainBlock : MonoBehaviour, System.IComparable<TerrainBlock>
 			}
 		}
 	}
-	public bool CanReachBlock (UnitController querier, TerrainBlock other)
+	/// <summary>
+	/// Determines whether this instance can reach the other block with the specified MovementType
+	/// </summary>
+	/// <returns><c>true</c> if this instance can reach block the specified querier other; otherwise, <c>false</c>.</returns>
+	/// <param name="querier">Querier.</param>
+	/// <param name="other">Other.</param>
+	public bool CanReachBlock (MovementType moveClass, TerrainBlock other)
 	{
-		if (reachability [(int)querier.moveClass] == other.reachability [(int)querier.moveClass]) {
+		if (reachability [(int)moveClass] == other.reachability [(int)moveClass]) {
 			return true;
 		}
 		return false;
@@ -206,33 +212,33 @@ public class TerrainBlock : MonoBehaviour, System.IComparable<TerrainBlock>
 	void OnMouseEnter ()
 	{
 		if (IsOccupied ()) {
-			occupyingUnit.OnMouseEnterExtra ();
+			occupyingUnit.OnMouseEnter ();
 		}
 	}
 	void OnMouseOver ()
 	{
 		if (IsOccupied ()) {
-			occupyingUnit.OnMouseOverExtra ();
+			occupyingUnit.OnMouseOver ();
 		} else if (HasProperty ()) {
-			occupyingProperty.OnMouseOverExtra ();
+			occupyingProperty.OnMouseOver ();
 		}
 	}
 	void OnMouseUp ()
 	{
 		if (IsOccupied ()) {
-			occupyingUnit.OnMouseUpExtra ();
+			occupyingUnit.OnMouseUp ();
 		} else if (HasProperty ()) {
-			occupyingProperty.OnMouseUpExtra ();
+			occupyingProperty.OnMouseUp ();
 		}
 		Utilities.selectedBlock = this;
 	}
 	void OnMouseExit ()
 	{
 		if (occupyingUnit != null) {
-			occupyingUnit.OnMouseExitExtra ();
+			occupyingUnit.OnMouseExit ();
 		}
 		if (occupyingProperty != null) {
-			occupyingProperty.OnMouseExitExtra ();
+			occupyingProperty.OnMouseExit ();
 		}
 	}
 	public bool HasProperty ()

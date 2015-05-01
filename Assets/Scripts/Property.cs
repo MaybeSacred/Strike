@@ -225,7 +225,7 @@ public class Property : MonoBehaviour, AttackableObject, IResettable
 			SetOwner (InGameController.instance.GetPlayer (0));
 		}
 	}
-	public void OnMouseOverExtra ()
+	public void OnMouseOver ()
 	{
 		infoBoxTimeoutCounter = 0;
 		if (propertyType == UnitName.ComTower) {
@@ -233,7 +233,7 @@ public class Property : MonoBehaviour, AttackableObject, IResettable
 				mouseOverEffect.GetComponent<ParticleSystem> ().Play ();
 		}
 	}
-	public void OnMouseUpExtra ()
+	public void OnMouseUp ()
 	{
 		if (InGameController.instance.GetCurrentPlayer () == owner && propertyClass.producableUnits.Length > 0 && !InGameController.instance.isPaused) {
 			if (!hasUnitSelectedMutex) {
@@ -269,7 +269,7 @@ public class Property : MonoBehaviour, AttackableObject, IResettable
 		hasUnitSelectedMutex = InGameController.instance.ReleaseUnitSelectedMutex ();
 		Utilities.gameCamera.otherMenuActive = false;
 	}
-	public void OnMouseExitExtra ()
+	public void OnMouseExit ()
 	{
 		if (propertyType == UnitName.ComTower) {
 			mouseOverEffect.GetComponent<ParticleSystem> ().Stop ();

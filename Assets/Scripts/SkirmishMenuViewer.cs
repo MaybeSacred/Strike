@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Collections;
+using System;
 
 
 public class SkirmishMenuViewer : MonoBehaviour
@@ -76,6 +77,7 @@ public class SkirmishMenuViewer : MonoBehaviour
 		SwitchToMapSelect ();
 		for (int i = 0; i < players.Length; i++) {
 			players [i].ChangeSide (i + 1);
+			players [i].thisPlayer.SetPlayerNumber (i + 1);
 		}
 		mapNamesOpenButton.interactable = false;
 		setPlayersButton.interactable = false;
@@ -176,6 +178,36 @@ public class SkirmishMenuViewer : MonoBehaviour
 		temp.localScale = new Vector3 (1, 1, 1);
 		temp.localRotation = Quaternion.identity;
 		return temp;
+	}
+	
+	public static RectTransform InstantiateDropdown<T> (RectTransform container, RectTransform buttonPrototype, System.Array buttonValues, float buttonOffset, System.Action<T> action, Func<T, string> mouseOverTextGenerator = null)
+	{
+		// Check whether its a higher or lower button, adjust to align with bottom or top edge
+		container.offsetMin = new Vector2 (0, 0);
+		container.offsetMax = new Vector2 (0, buttonValues.Length * buttonOffset);
+		var buttons = new List<RectTransform> ();
+		foreach (T name in buttonValues) {
+			RectTransform t = SkirmishMenuViewer.InstantiateUIPrefab (buttonPrototype, container);
+			t.GetComponentsInChildren<UnityEngine.UI.Text> (true) [0].text = name.ToString ();
+			buttons.Add (t);
+			if (mouseOverTextGenerator != null) {
+				buttons [buttons.Count - 1].gameObject.AddComponent<TooltipData> ().mouseOverText =
+					mouseOverTextGenerator (name);
+			}
+			var captured = name;
+			// add our delegate to the onClick handler, with appropriate indexing
+			t.GetComponent<UnityEngine.UI.Button> ().onClick.AddListener (() => {
+				action (captured);
+			});
+		}
+		var offset = -buttonOffset / 2;
+		foreach (RectTransform rt in buttons) {
+			rt.offsetMin = new Vector2 (0, 0);
+			rt.offsetMax = new Vector2 (0, buttonOffset);
+			rt.anchoredPosition3D = new Vector3 (0, offset, 0);
+			offset -= buttonOffset;
+		}
+		return container;
 	}
 	/// <summary>
 	/// Gets the map names from file

@@ -139,7 +139,7 @@ public class AIPlayerMedium : AIPlayer
 		float currentPropDistance = 0;
 		foreach (Property prop in enemyProperties) {
 			if (prop.propertyClass.capturable) {
-				if (unit.currentBlock.CanReachBlock (unit, prop.GetOccupyingBlock ())) {
+				if (unit.currentBlock.CanReachBlock (unit.moveClass, prop.GetOccupyingBlock ())) {
 					currentPropDistance = InGameController.instance.currentTerrain.MinDistanceToTile (unit.currentBlock, prop.GetOccupyingBlock (), unit);
 					if (currentPropDistance == float.PositiveInfinity) {
 						Debug.Log ("Positive infinity returned, probably error with canreachblock functions");
@@ -304,7 +304,7 @@ public class AIPlayerMedium : AIPlayer
 		
 		currentUnit.target.SetTerrainBlockStates ();
 		blockList = new List<GameObject> ();
-		List<TerrainBlock> blocks = InGameController.instance.currentTerrain.MovableBlocks (currentUnit.currentBlock, currentUnit, currentUnit.EffectiveMoveRange ());
+		List<TerrainBlock> blocks = InGameController.instance.currentTerrain.MinDistanceToTiles (currentUnit, currentUnit.currentBlock, currentUnit.EffectiveMoveRange ());
 		Debug.Log (blocks.Count);
 		
 		foreach (TerrainBlock block in blocks) {
@@ -327,7 +327,7 @@ public class AIPlayerMedium : AIPlayer
 	protected PositionEvaluation RecursiveEvaluatePosition (TerrainBlock block)
 	{
 		PositionEvaluation bestValueSoFar = new PositionEvaluation (float.NegativeInfinity);
-		List<TerrainBlock> blocks = InGameController.instance.currentTerrain.MovableBlocks (block, currentUnit, currentUnit.EffectiveMoveRange ());
+		List<TerrainBlock> blocks = InGameController.instance.currentTerrain.MinDistanceToTiles (currentUnit, block, currentUnit.EffectiveMoveRange ());
 		for (int i = 0; i < blocks.Count; i++) {
 			PositionEvaluation temp = EvaluatePosition (blocks [i]);
 			if (temp.value > bestValueSoFar.value) {
@@ -546,7 +546,7 @@ public class AIPlayerMedium : AIPlayer
 					alliedUnits++;
 				} else if (!other.owner.IsSameSide (currentUnit.owner) && !other.owner.IsNeutralSide () && other.EffectiveMoveRange () + other.EffectiveAttackRange () >= TerrainSupporter.ManhattanDistance (other.currentBlock, block) && other.gameObject.activeSelf) {
 					if (other.canMoveAndAttack && other.minAttackRange > 0) {
-						List<TerrainBlock> otherBlocks = InGameController.instance.currentTerrain.MovableBlocks (other.currentBlock, other, other.EffectiveMoveRange ());
+						List<TerrainBlock> otherBlocks = InGameController.instance.currentTerrain.MinDistanceToTiles (other, other.currentBlock, other.EffectiveMoveRange ());
 						float otherMaxAttackRange = other.EffectiveAttackRange ();
 						foreach (TerrainBlock t in otherBlocks) {
 							if (TerrainSupporter.ManhattanDistance (t, block) <= otherMaxAttackRange) {

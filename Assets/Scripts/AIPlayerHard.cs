@@ -15,7 +15,7 @@ public class AIPlayerHard : AIPlayer
 		float bestValueSoFar = 0;
 		UnitOrderOptions nullOrder = UnitOrderOptions.EndTurn;
 		for (int turn = 0; turn < numSearchTurns; turn++) {
-			List<TerrainBlock> blocks = InGameController.instance.currentTerrain.MovableBlocks (currentUnit.currentBlock, currentUnit, currentUnit.modifier.ApplyModifiers (UnitPropertyModifier.PropertyModifiers.MovementRange, currentUnit.movementRange));
+			List<TerrainBlock> blocks = InGameController.instance.currentTerrain.MinDistanceToTiles (currentUnit, currentUnit.currentBlock, currentUnit.modifier.ApplyModifiers (UnitPropertyModifier.PropertyModifiers.MovementRange, currentUnit.movementRange));
 			for (int i = 0; i < blocks.Count; i++) {
 				float temp = EvaluatePosition (blocks [i], out nullOrder);
 				if (temp > bestValueSoFar) {

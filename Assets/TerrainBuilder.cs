@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 public class TerrainBuilder : MonoBehaviour
 {
 	TerrainBlock[,] terrain;
@@ -279,7 +280,7 @@ public class TerrainBuilder : MonoBehaviour
 		TerrainBlock current;
 		while (openSet.Count() > 0) {
 			current = openSet.Peek ();
-			if (startTile.CanReachBlock (otherUnit, current)) {
+			if (startTile.CanReachBlock (otherUnit.moveClass, current)) {
 				return current;
 			}
 			if (current.fCost > maxDistance) {
@@ -508,23 +509,12 @@ public class TerrainBuilder : MonoBehaviour
 			tb.HideTileColor ();
 		}
 		illuminatedMovementRangeBlocks.Clear ();
-		MovableBlocks (startBlock, unit, moveRange).ForEach (x => {
+		MinDistanceToTiles (unit, startBlock, moveRange).ForEach (x => {
 			if (x.gCost <= moveRange) {
 				x.DisplaySupportTile ();
 				illuminatedMovementRangeBlocks.Add (x);
 			}
 		});
-	}
-	/// <summary>
-	/// Returns all movable blocks within 
-	/// </summary>
-	/// <returns>The blocks.</returns>
-	/// <param name="startBlock">Start block.</param>
-	/// <param name="unit">Unit.</param>
-	/// <param name="moveRange">Move range.</param>
-	public List<TerrainBlock> MovableBlocks (TerrainBlock startBlock, UnitController unit, float moveRange)
-	{
-		return MinDistanceToTiles (unit, startBlock, moveRange).Where (tile => tile.gCost <= moveRange).ToList ();
 	}
 	public void IlluminatePossibleAttackBlocksRange (TerrainBlock startBlock, int minRange, int maxRange)
 	{
@@ -532,7 +522,7 @@ public class TerrainBuilder : MonoBehaviour
 			tb.HideTileColor ();
 		}
 		illuminatedMovementRangeBlocks.Clear ();
-		RangeTraverser (startBlock, minRange, maxRange, 1 << LayerMask.NameToLayer ("Default"), RangeActionAttackMax);
+		RangeTraverser (startBlock, minRange, maxRange, RangeActionAttackMax);
 	}
 	public void IlluminatePossibleAttackBlocks (TerrainBlock startBlock, UnitController unit, float moveRange, int attackRange)
 	{
@@ -581,64 +571,53 @@ public class TerrainBuilder : MonoBehaviour
 	{
 		hit.DisplayAttackTile ();
 	}
-	int FogTraverser (TerrainBlock startBlock, int distance, int layer, bool forceClear)
+	int FogTraverser (TerrainBlock startBlock, int distance, bool forceClear)
 	{
-		int startPointX = Mathf.RoundToInt (startBlock.transform.position.x);
-		int startPointZ = Mathf.RoundToInt (startBlock.transform.position.z);
-		startPointX -= distance;
-		int blocksInZDirection = 1;
 		int unitsFound = 0;
-		for (int i = 0; i < 2*distance + 1; i++) {
-			for (int k = 0; k < blocksInZDirection; k++) {
-				if (startPointX >= lowerXMapBound && startPointX <= upperXMapBound && startPointZ - k >= lowerZMapBound && startPointZ - k <= upperZMapBound) {
-					if (terrain [startPointX, startPointZ - k] != null) {
-						TerrainBlock block = terrain [startPointX, startPointZ - k];
-						if (!block.hidesInFogOfWar || !block.HasProperty () || TerrainSupporter.ManhattanDistance (block.transform.position, startBlock.transform.position) < 2 || forceClear) {
-							if (block.IsOccupied () && !(block.occupyingUnit.isStealthed && TerrainSupporter.ManhattanDistance (block.transform.position, startBlock.transform.position) > 1)) {
-								block.occupyingUnit.gameObject.SetActive (true);
-								unitsFound++;
-							}
-							block.HideFog ();
-						}
-					}
+		BlocksWithinRange (startBlock, 0, distance).ForEach (x => {
+			if (!x.hidesInFogOfWar || !x.HasProperty () || TerrainSupporter.ManhattanDistance (x.transform.position, startBlock.transform.position) < 2 || forceClear) {
+				if (x.IsOccupied () && !(x.occupyingUnit.isStealthed && TerrainSupporter.ManhattanDistance (x.transform.position, startBlock.transform.position) > 1)) {
+					x.occupyingUnit.gameObject.SetActive (true);
+					unitsFound++;
 				}
+				x.HideFog ();
 			}
-			startPointX++;
-			if (i >= distance) {
-				blocksInZDirection -= 2;
-				startPointZ--;
-			} else {
-				blocksInZDirection += 2;
-				startPointZ++;
-			}
-		}
+		});
 		return unitsFound--;
+//		int startPointX = Mathf.RoundToInt (startBlock.transform.position.x);
+//		int startPointZ = Mathf.RoundToInt (startBlock.transform.position.z);
+//		startPointX -= distance;
+//		int blocksInZDirection = 1;
+//		int unitsFound = 0;
+//		for (int i = 0; i < 2 * distance + 1; i++) {
+//			for (int k = 0; k < blocksInZDirection; k++) {
+//				if (startPointX >= lowerXMapBound && startPointX <= upperXMapBound && startPointZ - k >= lowerZMapBound && startPointZ - k <= upperZMapBound) {
+//					if (terrain [startPointX, startPointZ - k] != null) {
+		//						TerrainBlock block = terrain [startPointX, startPointZ - k];
+//		if (!block.hidesInFogOfWar || !block.HasProperty () || TerrainSupporter.ManhattanDistance (block.transform.position, startBlock.transform.position) < 2 || forceClear) {
+//			if (block.IsOccupied () && !(block.occupyingUnit.isStealthed && TerrainSupporter.ManhattanDistance (block.transform.position, startBlock.transform.position) > 1)) {
+//				block.occupyingUnit.gameObject.SetActive (true);
+//				unitsFound++;
+//			}
+//			block.HideFog ();
+//		}
+//					}
+//				}
+//			}
+//			startPointX++;
+//			if (i >= distance) {
+//				blocksInZDirection -= 2;
+//				startPointZ--;
+//			} else {
+//				blocksInZDirection += 2;
+//				startPointZ++;
+//			}
+//		}
+//		return unitsFound--;
 	}
-	void RangeTraverser (TerrainBlock startBlock, int minRange, int maxRange, int layer, RangeAction ra)
+	void RangeTraverser (TerrainBlock startBlock, int minRange, int maxRange, Action<TerrainBlock> ra)
 	{
-		int startPointX = Mathf.RoundToInt (startBlock.transform.position.x);
-		int startPointZ = Mathf.RoundToInt (startBlock.transform.position.z);
-		startPointX -= maxRange;
-		int blocksInZDirection = 1;
-		for (int i = 0; i < 2*maxRange + 1; i++) {
-			for (int k = 0; k < blocksInZDirection; k++) {
-				if (TerrainSupporter.ManhattanDistance (startBlock.transform.position, new Vector3 (startPointX, 0, startPointZ - k)) >= minRange) {
-					if (startPointX >= lowerXMapBound && startPointX <= upperXMapBound && startPointZ - k >= lowerZMapBound && startPointZ - k <= upperZMapBound) {
-						if (terrain [startPointX, startPointZ - k] != null) {
-							ra (terrain [startPointX, startPointZ - k]);
-						}
-					}
-				}
-			}
-			startPointX++;
-			if (i >= maxRange) {
-				blocksInZDirection -= 2;
-				startPointZ--;
-			} else {
-				blocksInZDirection += 2;
-				startPointZ++;
-			}
-		}
+		BlocksWithinRange (startBlock, minRange, maxRange).ForEach (ra);
 	}
 	/// <summary>
 	/// Returns blocks between [minRange, maxRange] using Manhattan distance
@@ -648,7 +627,7 @@ public class TerrainBuilder : MonoBehaviour
 	/// <param name="minRange">Minimum range.</param>
 	/// <param name="maxRange">Max range.</param>
 	/// <param name="querier">Querier.</param>
-	public List<TerrainBlock> BlocksWithinRange (TerrainBlock startBlock, int minRange, int maxRange, UnitController querier)
+	public List<TerrainBlock> BlocksWithinRange (TerrainBlock startBlock, int minRange, int maxRange)
 	{
 		int startPointX = Mathf.RoundToInt (startBlock.transform.position.x);
 		int startPointZ = Mathf.RoundToInt (startBlock.transform.position.z);
@@ -687,7 +666,7 @@ public class TerrainBuilder : MonoBehaviour
 	public List<AttackableObject> ObjectsWithinRange (TerrainBlock startBlock, int minRange, int maxRange, UnitController querier)
 	{
 		var outList = new List<AttackableObject> ();
-		BlocksWithinRange (startBlock, minRange, maxRange, querier).ForEach (hitBlock => {
+		BlocksWithinRange (startBlock, minRange, maxRange).ForEach (hitBlock => {
 			if (hitBlock.IsOccupied () && hitBlock.occupyingUnit != querier) {
 				outList.Add (hitBlock.occupyingUnit);
 			} else if (hitBlock.HasProperty ()) {
@@ -699,7 +678,7 @@ public class TerrainBuilder : MonoBehaviour
 	public int ClearFog (TerrainBlock startBlock, int distance, bool forceClear)
 	{
 		if (Utilities.fogOfWarEnabled) {
-			return FogTraverser (startBlock, distance, 1 << LayerMask.NameToLayer ("Default"), forceClear);
+			return FogTraverser (startBlock, distance, forceClear);
 		}
 		return 0;
 	}

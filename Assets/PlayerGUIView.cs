@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System;
 
 public class PlayerGUIView : MonoBehaviour
 {
@@ -25,7 +26,7 @@ public class PlayerGUIView : MonoBehaviour
 	// Buttons within each dropdown
 	List<RectTransform> generalDropdownButtons, AIDropdownButtons;
 	// Offset for the spacing of dropdown buttons
-	public float mapNameButtonOffset;
+	public float buttonOffset;
 	
 	static PlayerGUIView playerSelected;
 	
@@ -54,78 +55,34 @@ public class PlayerGUIView : MonoBehaviour
 	void Start ()
 	{
 		thisPlayer = Instantiate (thisPlayer) as Player;
-		thisPlayer.Setup (Random.Range (1, 4), Generals.Taron, new Color (1, 0, 0), "");
+		thisPlayer.Setup (UnityEngine.Random.Range (1, 4), Generals.Taron, Color.red, "");
 		// Initialize sliders
 		playerSideSlider.value = thisPlayer.side;
 		ChangeSide (thisPlayer.side);
-		int tempRandom = Random.Range (0, 359);
+		int tempRandom = UnityEngine.Random.Range (0, 359);
 		ChangeSliderHue (tempRandom);
 		colorSelectSlider.value = tempRandom;
 		// Set up dropdowns
 		generalSelectDropdown = SkirmishMenuViewer.InstantiateUIPrefab (generalSelectDropdown, generalTopButton);
-		// Check whether its a higher or lower button, adjust to align with bottom or top edge
+		generalSelectDropdown = SkirmishMenuViewer.InstantiateDropdown<Generals> (generalSelectDropdown, buttonPrototype, System.Enum.GetValues (typeof(Generals)), buttonOffset,
+			SetGeneral, x => Utilities.GetGeneral (x).GetComponent<TooltipData> ().mouseOverText);
 		if (GetComponent<RectTransform> ().localPosition.y > 0) {
-			generalSelectDropdown.offsetMin = new Vector2 (0, -generalTopButton.rect.height - System.Enum.GetValues (typeof(Generals)).Length * mapNameButtonOffset);
+			generalSelectDropdown.offsetMin = new Vector2 (0, -generalTopButton.rect.height - System.Enum.GetValues (typeof(Generals)).Length * buttonOffset);
 			generalSelectDropdown.offsetMax = new Vector2 (0, -generalTopButton.rect.height);
-		} else {
-			generalSelectDropdown.offsetMin = new Vector2 (0, 0);
-			generalSelectDropdown.offsetMax = new Vector2 (0, System.Enum.GetValues (typeof(Generals)).Length * mapNameButtonOffset);
-		}
-		generalDropdownButtons = new List<RectTransform> ();
-		foreach (Generals name in System.Enum.GetValues(typeof(Generals))) {
-			RectTransform t = SkirmishMenuViewer.InstantiateUIPrefab (buttonPrototype, generalSelectDropdown.GetComponent<RectTransform> ());
-			t.GetComponentsInChildren<UnityEngine.UI.Text> (true) [0].text = name.ToString ();
-			generalDropdownButtons.Add (t);
-			generalDropdownButtons [generalDropdownButtons.Count - 1].gameObject.AddComponent<TooltipData> ().mouseOverText 
-				= Utilities.GetGeneral (name).GetComponent<TooltipData> ().mouseOverText;
-			Generals captured = name;
-			// add our delegate to the onClick handler, with appropriate indexing
-			t.GetComponent<UnityEngine.UI.Button> ().onClick.AddListener (() => {
-				SetGeneral (captured);});
-		}
-		var offset = -mapNameButtonOffset / 2;
-		foreach (RectTransform rt in generalDropdownButtons) {
-			rt.offsetMin = new Vector2 (0, 0);
-			rt.offsetMax = new Vector2 (0, mapNameButtonOffset);
-			rt.anchoredPosition3D = new Vector3 (0, offset, 0);
-			offset -= mapNameButtonOffset;
 		}
 		generalSelectDropdown.SetParent (GetComponent<RectTransform> ().parent);
 		generalSelectDropdown.gameObject.SetActive (false);
 		
 		AISelectDropdown = SkirmishMenuViewer.InstantiateUIPrefab (AISelectDropdown, AITopButton);
+		AISelectDropdown = SkirmishMenuViewer.InstantiateDropdown<AILevel> (AISelectDropdown, buttonPrototype, System.Enum.GetValues (typeof(AILevel)), buttonOffset, SetAILevel);
 		if (GetComponent<RectTransform> ().localPosition.y > 0) {
-			AISelectDropdown.offsetMin = new Vector2 (0, -AITopButton.rect.height - System.Enum.GetValues (typeof(AILevel)).Length * mapNameButtonOffset);
+			AISelectDropdown.offsetMin = new Vector2 (0, -AITopButton.rect.height - System.Enum.GetValues (typeof(AILevel)).Length * buttonOffset);
 			AISelectDropdown.offsetMax = new Vector2 (0, -AITopButton.rect.height);
-		} else {
-			AISelectDropdown.offsetMin = new Vector2 (0, 0);
-			AISelectDropdown.offsetMax = new Vector2 (0, System.Enum.GetValues (typeof(AILevel)).Length * mapNameButtonOffset);
-		}
-		AIDropdownButtons = new List<RectTransform> ();
-		foreach (AILevel name in System.Enum.GetValues(typeof(AILevel))) {
-			RectTransform t = SkirmishMenuViewer.InstantiateUIPrefab (buttonPrototype, AISelectDropdown.GetComponent<RectTransform> ());
-			t.GetComponentsInChildren<UnityEngine.UI.Text> (true) [0].text = name.ToString ();
-			AIDropdownButtons.Add (t);
-			AILevel captured = name;
-			t.GetComponent<UnityEngine.UI.Button> ().onClick.AddListener (() => {
-				SetAILevel (captured);});
-			// hotfix to disable AI modules that aren't ready
-			if (name == AILevel.Easy || name == AILevel.Hard) {
-				t.GetComponent<UnityEngine.UI.Button> ().enabled = false;
-			}
-		}
-		offset = -mapNameButtonOffset / 2;
-		foreach (RectTransform rt in AIDropdownButtons) {
-			rt.offsetMin = new Vector2 (0, 0);
-			rt.offsetMax = new Vector2 (0, mapNameButtonOffset);
-			rt.anchoredPosition3D = new Vector3 (0, offset, 0);
-			offset -= mapNameButtonOffset;
 		}
 		AISelectDropdown.SetParent (GetComponent<RectTransform> ().parent);
 		AISelectDropdown.gameObject.SetActive (false);
 		started = true;
 	}
-	
 	// Update is called once per frame
 	void Update ()
 	{
@@ -141,6 +98,7 @@ public class PlayerGUIView : MonoBehaviour
 	public void OpenGeneralSelectDropdown ()
 	{
 		if (playerSelected == null || playerSelected == this) {
+			AISelectDropdown.gameObject.SetActive (false);
 			generalSelectDropdown.gameObject.SetActive (true);
 			playerSelected = this;
 		}
@@ -162,6 +120,7 @@ public class PlayerGUIView : MonoBehaviour
 	{
 		if (playerSelected == null || playerSelected == this) {
 			AISelectDropdown.gameObject.SetActive (true);
+			generalSelectDropdown.gameObject.SetActive (false);
 			playerSelected = this;
 		}
 	}

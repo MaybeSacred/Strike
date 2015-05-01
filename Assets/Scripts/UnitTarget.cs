@@ -95,13 +95,13 @@ public class UnitTarget
 	bool CheckForReachableTarget (AttackableObject input)
 	{
 		// First check if we can reach the target directly
-		if (primaryTarget.GetOccupyingBlock ().CanReachBlock (parent, parent.currentBlock)) {
+		if (primaryTarget.GetOccupyingBlock ().CanReachBlock (parent.moveClass, parent.currentBlock)) {
 			canReachTarget = true;
 			targetBlock = primaryTarget.GetOccupyingBlock ();
 		}
 		// Next check if we can attack the target. Note that its possible we may not be able to attack, but can reach a target
-		foreach (TerrainBlock tb in InGameController.instance.currentTerrain.BlocksWithinRange(primaryTarget.GetOccupyingBlock(), parent.minAttackRange, parent.EffectiveAttackRange(), parent)) {
-			if (tb.CanReachBlock (parent, parent.currentBlock)) {
+		foreach (TerrainBlock tb in InGameController.instance.currentTerrain.BlocksWithinRange(primaryTarget.GetOccupyingBlock(), parent.minAttackRange, parent.EffectiveAttackRange())) {
+			if (tb.CanReachBlock (parent.moveClass, parent.currentBlock)) {
 				canAttackTarget = true;
 				targetBlock = tb;
 				break;
@@ -126,7 +126,7 @@ public class UnitTarget
 			Debug.Log ("No Target");
 			var tuple = InGameController.instance.ClosestEnemyHQ (parent.currentBlock, parent.moveClass, parent.owner);
 			targetBlock = tuple.Item2;
-			if (targetBlock.CanReachBlock (parent, parent.currentBlock)) {
+			if (targetBlock.CanReachBlock (parent.moveClass, parent.currentBlock)) {
 				canReachTarget = true;
 			} else {
 				canReachTarget = false;
