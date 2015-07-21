@@ -72,6 +72,8 @@
      <Compile Include="Assets\Scripts\ARFFDataHandler.cs" />
      <Compile Include="Assets\Scripts\AirProduction.cs" />
      <Compile Include="Assets\Scripts\AttackableObject.cs" />
+     <Compile Include="Assets\Scripts\BayesianNetwork.cs" />
+     <Compile Include="Assets\Scripts\BuildPGC.cs" />
      <Compile Include="Assets\Scripts\CameraArrowKeyController.cs" />
      <Compile Include="Assets\Scripts\Clusterer.cs" />
      <Compile Include="Assets\Scripts\CombinedForcesProduction.cs" />
@@ -106,6 +108,7 @@
      <Compile Include="Assets\Scripts\TooltipData.cs" />
      <Compile Include="Assets\Scripts\Tuple.cs" />
      <Compile Include="Assets\Scripts\UnitController.cs" />
+     <Compile Include="Assets\Scripts\UnitOrderView.cs" />
      <Compile Include="Assets\Scripts\UnitPropertyModifier.cs" />
      <Compile Include="Assets\Scripts\UnitSelectionDisplayer.cs" />
      <Compile Include="Assets\Scripts\UnitTarget.cs" />

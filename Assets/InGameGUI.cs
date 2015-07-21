@@ -53,6 +53,11 @@ public class InGameGUI : MonoBehaviour
 	
 	// Displays a health bar
 	public HealthBarView healthBarView;
+	/// <summary>
+	/// Displays unit's order options
+	/// </summary>
+	public RectTransform unitOrderOptionView;
+	
 	void Awake ()
 	{
 		instance = this;

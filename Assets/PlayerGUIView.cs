@@ -5,7 +5,7 @@ using System.Collections;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System;
-
+using System.Linq;
 public class PlayerGUIView : MonoBehaviour
 {
 	public Player thisPlayer;
@@ -64,19 +64,21 @@ public class PlayerGUIView : MonoBehaviour
 		colorSelectSlider.value = tempRandom;
 		// Set up dropdowns
 		generalSelectDropdown = SkirmishMenuViewer.InstantiateUIPrefab (generalSelectDropdown, generalTopButton);
-		generalSelectDropdown = SkirmishMenuViewer.InstantiateDropdown<Generals> (generalSelectDropdown, buttonPrototype, System.Enum.GetValues (typeof(Generals)), buttonOffset,
+		var generalEnumList = System.Enum.GetValues (typeof(Generals)).Cast<Generals> ().ToList ();
+		generalSelectDropdown = SkirmishMenuViewer.InstantiateDropdown<Generals> (generalSelectDropdown, buttonPrototype, generalEnumList, buttonOffset,
 			SetGeneral, x => Utilities.GetGeneral (x).GetComponent<TooltipData> ().mouseOverText);
 		if (GetComponent<RectTransform> ().localPosition.y > 0) {
-			generalSelectDropdown.offsetMin = new Vector2 (0, -generalTopButton.rect.height - System.Enum.GetValues (typeof(Generals)).Length * buttonOffset);
+			generalSelectDropdown.offsetMin = new Vector2 (0, -generalTopButton.rect.height - generalEnumList.Count * buttonOffset);
 			generalSelectDropdown.offsetMax = new Vector2 (0, -generalTopButton.rect.height);
 		}
 		generalSelectDropdown.SetParent (GetComponent<RectTransform> ().parent);
 		generalSelectDropdown.gameObject.SetActive (false);
 		
 		AISelectDropdown = SkirmishMenuViewer.InstantiateUIPrefab (AISelectDropdown, AITopButton);
-		AISelectDropdown = SkirmishMenuViewer.InstantiateDropdown<AILevel> (AISelectDropdown, buttonPrototype, System.Enum.GetValues (typeof(AILevel)), buttonOffset, SetAILevel);
+		var AIEnumList = System.Enum.GetValues (typeof(AILevel)).Cast<AILevel> ().ToList ();
+		AISelectDropdown = SkirmishMenuViewer.InstantiateDropdown<AILevel> (AISelectDropdown, buttonPrototype, AIEnumList, buttonOffset, SetAILevel);
 		if (GetComponent<RectTransform> ().localPosition.y > 0) {
-			AISelectDropdown.offsetMin = new Vector2 (0, -AITopButton.rect.height - System.Enum.GetValues (typeof(AILevel)).Length * buttonOffset);
+			AISelectDropdown.offsetMin = new Vector2 (0, -AITopButton.rect.height - AIEnumList.Count * buttonOffset);
 			AISelectDropdown.offsetMax = new Vector2 (0, -AITopButton.rect.height);
 		}
 		AISelectDropdown.SetParent (GetComponent<RectTransform> ().parent);

@@ -9,22 +9,9 @@ public class AIPlayerHard : AIPlayer
 			HardAIUpdate ();
 		}
 	}
-	protected override TerrainBlock StateSearch (int numSearchTurns, int statesKept)
+	protected override Tuple<TerrainBlock, PositionEvaluation> StateSearch (int numSearchTurns, int statesKept)
 	{
-		TerrainBlock bestBlockSoFar = null;
-		float bestValueSoFar = 0;
-		UnitOrderOptions nullOrder = UnitOrderOptions.EndTurn;
-		for (int turn = 0; turn < numSearchTurns; turn++) {
-			List<TerrainBlock> blocks = InGameController.instance.currentTerrain.MinDistanceToTiles (currentUnit, currentUnit.currentBlock, currentUnit.modifier.ApplyModifiers (UnitPropertyModifier.PropertyModifiers.MovementRange, currentUnit.movementRange));
-			for (int i = 0; i < blocks.Count; i++) {
-				float temp = EvaluatePosition (blocks [i], out nullOrder);
-				if (temp > bestValueSoFar) {
-					bestValueSoFar = temp;
-					bestBlockSoFar = blocks [i];
-				}
-			}
-		}
-		return bestBlockSoFar;
+		return null;
 	}
 	
 	protected override float EvaluatePosition (TerrainBlock position, out UnitOrderOptions order)
@@ -220,8 +207,8 @@ public class AIPlayerHard : AIPlayer
 				if (unitsToMove.Count == 0 && currentUnit.isInUnit) {
 					currentUnit = null;
 				} else {
-					TerrainBlock block = StateSearch (1, 3);
-					currentUnit.AIMoveTo (block);
+					var block = StateSearch (1, 3);
+					currentUnit.AIMoveTo (block.Item1);
 				}
 			} else {
 				ProduceUnits ();

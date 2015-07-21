@@ -18,6 +18,7 @@ public abstract class AIPlayer : Player
 	protected int[] countsOfEachUnit;
 	protected int producingProperties = 0;
 	protected int productionAttempts;
+	protected Dictionary<UnitName, BayesianNetwork> bayesNets;
 	protected override void Awake ()
 	{
 		base.Awake ();
@@ -28,9 +29,13 @@ public abstract class AIPlayer : Player
 			countsOfEachUnit [i] = 0;
 		}
 	}
-	void Start ()
+	protected void Start ()
 	{
-		
+		bayesNets = new Dictionary<UnitName, BayesianNetwork> ();
+		foreach (UnitName unit in System.Enum.GetValues(typeof(UnitName))) {
+			bayesNets.Add (unit, new BayesianNetwork (Mathf.RoundToInt (InGameController.instance.currentTerrain.upperXMapBound + 1), Mathf.RoundToInt (InGameController.instance.currentTerrain.upperZMapBound + 1)));
+		}
+		Debug.Log (Mathf.RoundToInt (InGameController.instance.currentTerrain.upperXMapBound));
 	}
 	public void Setup (Player oldPlayer)
 	{
@@ -111,7 +116,7 @@ public abstract class AIPlayer : Player
 			properties.Remove (inUnit);
 		}
 	}
-	protected abstract TerrainBlock StateSearch (int numSearchTurns, int statesKept);
+	protected abstract Tuple<TerrainBlock, PositionEvaluation> StateSearch (int numSearchTurns, int statesKept);
 
 	protected abstract float EvaluatePosition (TerrainBlock position, out UnitOrderOptions order);
 	public float MoveTowardsEnemyHQ (TerrainBlock block)
@@ -154,6 +159,10 @@ public abstract class AIPlayer : Player
 		for (int i = 0; i < units.Count; i++) {
 			unitsToMove.Push (units [i]);
 		}
+	}
+	public void UpdateBayesNet (UnitName unitClass, Vector3 position, float value)
+	{
+		bayesNets [unitClass].UpdateNetwork (position.x, position.z, value);
 	}
 }
 

@@ -180,11 +180,11 @@ public class SkirmishMenuViewer : MonoBehaviour
 		return temp;
 	}
 	
-	public static RectTransform InstantiateDropdown<T> (RectTransform container, RectTransform buttonPrototype, System.Array buttonValues, float buttonOffset, System.Action<T> action, Func<T, string> mouseOverTextGenerator = null)
+	public static RectTransform InstantiateDropdown<T> (RectTransform container, RectTransform buttonPrototype, List<T> buttonValues, float buttonOffset, System.Action<T> action, Func<T, string> mouseOverTextGenerator = null)
 	{
 		// Check whether its a higher or lower button, adjust to align with bottom or top edge
 		container.offsetMin = new Vector2 (0, 0);
-		container.offsetMax = new Vector2 (0, buttonValues.Length * buttonOffset);
+		container.offsetMax = new Vector2 (0, buttonValues.Count * buttonOffset);
 		var buttons = new List<RectTransform> ();
 		foreach (T name in buttonValues) {
 			RectTransform t = SkirmishMenuViewer.InstantiateUIPrefab (buttonPrototype, container);

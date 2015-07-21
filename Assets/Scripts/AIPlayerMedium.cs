@@ -2,6 +2,18 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+public class PositionEvaluation
+{
+	public UnitOrderOptions bestOrder;
+	public float value;
+	public TerrainBlock block;
+	public PositionEvaluation (float v)
+	{
+		value = v;
+		bestOrder = UnitOrderOptions.EndTurn;
+		block = null;
+	}
+}
 public class AIPlayerMedium : AIPlayer
 {
 	bool producingUnits;
@@ -45,6 +57,7 @@ public class AIPlayerMedium : AIPlayer
 	}
 	void Start ()
 	{
+		base.Start ();
 		productionEngine = new ProductionEngine ();
 	}
 	UnitController GetSupportUnit (UnitController inUnit)
@@ -297,7 +310,7 @@ public class AIPlayerMedium : AIPlayer
 		}
 	}
 	
-	protected override TerrainBlock StateSearch (int numSearchTurns, int statesKept)
+	protected override Tuple<TerrainBlock, PositionEvaluation> StateSearch (int numSearchTurns, int statesKept)
 	{
 		TerrainBlock bestBlockSoFar = null;
 		PositionEvaluation bestValueSoFar = new PositionEvaluation (float.NegativeInfinity);
@@ -321,7 +334,7 @@ public class AIPlayerMedium : AIPlayer
 		}
 		//Debug.Break ();
 		//Debug.Log(currentUnit.unitClass + " Positions evaluated: " + totalPositionsEvaluated);// + " / positions at depth 0: " + blocks.Count);
-		return bestBlockSoFar;
+		return Tuple.Create (bestBlockSoFar, bestValueSoFar);
 	}
 	
 	protected PositionEvaluation RecursiveEvaluatePosition (TerrainBlock block)
@@ -352,24 +365,11 @@ public class AIPlayerMedium : AIPlayer
 		}
 	}
 	
-	public class PositionEvaluation
-	{
-		public UnitOrderOptions bestOrder;
-		public float value;
-		public TerrainBlock block;
-		public PositionEvaluation (float v)
-		{
-			value = v;
-			bestOrder = UnitOrderOptions.EndTurn;
-			block = null;
-		}
-	}
-	
 	protected PositionEvaluation EvaluatePosition (TerrainBlock position)
 	{
 		PositionEvaluation bestOptionValue = new PositionEvaluation (0);
 		if (position.IsOccupied () && position.occupyingUnit != currentUnit && (!position.occupyingUnit.CanCarryUnit (currentUnit) || !position.occupyingUnit.owner.IsSameSide (currentUnit.owner))) {
-			bestOptionValue.value = -100000;
+			bestOptionValue.value = -10;
 			return bestOptionValue;
 		} else {
 			bestOptionValue.value = waitModifier;
@@ -523,6 +523,7 @@ public class AIPlayerMedium : AIPlayer
 			//float danger = EnemyDangerAtBlock(position);
 			//bestOptionValue.value -= danger;
 			bestOptionValue.value += MoveTowardsTarget (position);
+			bestOptionValue.value += bayesNets [currentUnit.unitClass].GetValue (position.transform.position.x, position.transform.position.z);
 			bestOptionValue.value += UnityEngine.Random.Range (0, randomnessModifier);
 			return bestOptionValue;
 		}
@@ -621,8 +622,9 @@ public class AIPlayerMedium : AIPlayer
 				} 
 			case UnitState.Selected:
 				{
-					TerrainBlock block = StateSearch (1, 3);
-					currentUnit.AIMoveTo (block);
+					var result = StateSearch (1, 3);
+					currentUnit.AIMoveTo (result.Item1);
+					bayesNets [currentUnit.unitClass].UpdateNetwork (currentUnit.transform.position.x, currentUnit.transform.position.z, result.Item2.value);
 					break;
 				} 
 			case UnitState.Moving:

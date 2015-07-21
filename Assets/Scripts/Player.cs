@@ -460,6 +460,8 @@ public class Player : MonoBehaviour
 			view.SetValues (playerName, funds.ToString (), properties.Count.ToString (), units.Count.ToString ());
 		}
 	}
+
+	
 }
 
 /// <summary>

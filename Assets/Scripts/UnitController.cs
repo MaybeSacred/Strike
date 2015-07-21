@@ -923,14 +923,16 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable, IRes
 	{
 		InGameController.instance.currentTerrain.ClearMoveBlocks ();
 	}
-	/*
+	
 	public void OnGUI ()
 	{
+		var actionDisplayHeight = 40;
+		var actionDisplayWidth = 100;
 		if (currentState == UnitState.AwaitingOrder) {
 			Vector3 unitPointOnScreen = Camera.main.WorldToScreenPoint (transform.position);
-			GUI.BeginGroup (new Rect (unitPointOnScreen.x + actionDisplayXOffset, Screen.height - unitPointOnScreen.y + actionDisplayYOffset, actionDisplayWidth, actionDisplayHeight * possibleOrders.Count));
+			GUI.BeginGroup (new Rect (unitPointOnScreen.x, Screen.height - unitPointOnScreen.y, actionDisplayWidth, actionDisplayHeight * possibleOrders.Count));
 			for (int i = 0; i < possibleOrders.Count; i++) {
-				if (GUI.Button (new Rect (0, i * actionDisplayHeight, actionDisplayWidth, actionDisplayHeight), Utilities.PrettifyVariableName (possibleOrders [i].ToString ()))) {
+				if (GUI.Button (new Rect (0, i * actionDisplayHeight, actionDisplayWidth, actionDisplayHeight), possibleOrders [i].ToString ())) {
 					EvaluateOrder (possibleOrders [i]);
 				}
 			}
@@ -939,7 +941,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable, IRes
 		if (currentState == UnitState.Unloading) {
 			if (currentlyUnloadingUnit == null) {
 				Vector3 unitPointOnScreen = Camera.main.WorldToScreenPoint (transform.position);
-				GUI.BeginGroup (new Rect (unitPointOnScreen.x + actionDisplayXOffset, Screen.height - unitPointOnScreen.y + actionDisplayYOffset, actionDisplayWidth, actionDisplayHeight * (carriedUnits.Count)));
+				GUI.BeginGroup (new Rect (unitPointOnScreen.x, Screen.height - unitPointOnScreen.y, actionDisplayWidth, actionDisplayHeight * (carriedUnits.Count)));
 				for (int i = 0; i < carriedUnits.Count; i++) {
 					if (!partiallyUnloadedUnits.Contains (carriedUnits [i])) {
 						if (GUI.Button (new Rect (0, i * actionDisplayHeight, actionDisplayWidth, actionDisplayHeight), carriedUnits [i].name)) {
@@ -950,13 +952,8 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable, IRes
 				GUI.EndGroup ();
 			}
 		}
-		if (infoBoxTimeoutCounter < .5f) {
-			if (hitFogOfWarUnit) {
-				ShowFOWSurprise ();
-			}
-		}
 	}
-	*/
+	
 	/// <summary>
 	/// Returns whether retaliator can retaliate (counter-attack) defender
 	/// </summary>
@@ -984,6 +981,8 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable, IRes
 				health.SetRawHealth (10);
 			}
 		}
+		if (owner is AIPlayer)
+			((AIPlayer)owner).UpdateBayesNet (unitClass, transform.position, -((float)inDamage * UnitCost ()) / 3000000);
 		if (health <= 0) {
 			owner.DeleteUnitFromGame (this);
 			return true;
@@ -1386,7 +1385,7 @@ public class UnitController : MonoBehaviour, AttackableObject, IComparable, IRes
 	/// </summary>
 	/// <param name="order">Order.</param>
 	/// <param name="trueOrder">If set to <c>true</c> true order.</param>
-	public void AIDoOrder (AIPlayerMedium.PositionEvaluation order, bool trueOrder)
+	public void AIDoOrder (PositionEvaluation order, bool trueOrder)
 	{
 		switch (order.bestOrder) {
 		case UnitOrderOptions.Attack:
