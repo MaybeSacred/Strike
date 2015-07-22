@@ -10,6 +10,11 @@
 //------------------------------------------------------------------------------
 using System;
 using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
+
 [System.Serializable]
 public class BayesianNetwork
 {
@@ -86,5 +91,24 @@ public class BayesianNetwork
 	{
 		return net [Mathf.RoundToInt (x)] [Mathf.RoundToInt (z)];
 	}
+
+	public void SaveNet(String name){
+		BinaryFormatter bf = new BinaryFormatter();
+		FileStream file = File.Create (Application.persistentDataPath + "/"+name+".gd");
+		bf.Serialize(file, net);
+		file.Close();
+	}
+
+
+	public void LoadNet(String name){
+
+		if(File.Exists(Application.persistentDataPath +  "/"+name+".gd")) {
+			BinaryFormatter bf = new BinaryFormatter();
+			FileStream file = File.Open(Application.persistentDataPath + "/"+name+".gd", FileMode.Open);
+			net = (float[][])bf.Deserialize(file);
+			file.Close();
+		}
+	}
+
 }
 
