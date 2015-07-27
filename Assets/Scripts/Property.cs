@@ -71,6 +71,7 @@ public class Property : MonoBehaviour, AttackableObject, IResettable
 	}
 	void Awake ()
 	{
+		name = name.Replace ("(Clone)", "");
 		health = new Health ();
 		if (GetComponent<Collider> () != null) {
 			GetComponent<Collider> ().enabled = false;
@@ -94,7 +95,6 @@ public class Property : MonoBehaviour, AttackableObject, IResettable
 	}
 	void Start ()
 	{
-		SetOwner (InGameController.instance.GetPlayer (startingOwner));
 		if (staticFireParticles == null) {
 			staticFireParticles = Resources.Load<ParticleSystem> ("BuildingFire");
 		}

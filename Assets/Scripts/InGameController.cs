@@ -43,15 +43,26 @@ public sealed class InGameController : MonoBehaviour
 	// Use this for initialization
 	void Awake ()
 	{
+		Debug.Log ("InGameController");
 		if (instance == null || instance == this) {
 			instance = this;
 			currentTurn = 1;
 			currentTerrain = GameObject.FindObjectOfType<TerrainBuilder> ();
 			mouseOverParticles = Instantiate (mouseParticles) as ParticleSystem;
 			mouseOverParticles.GetComponent<ParticleSystem> ().Stop ();
+			Utilities.loadTerrain ();
+			TerrainBlock[] blocks = GameObject.FindObjectsOfType<TerrainBlock> ();
+			foreach (var block in blocks) {
+				block.transform.parent = currentTerrain.transform;
+			}
+			var properties = GameObject.FindObjectsOfType<Property> ();
+			foreach (var property in properties) {
+				property.transform.parent = this.transform;
+			}
 		} else {
 			Destroy (this);
 		}
+		Debug.Log ("stillingamecontroller");
 	}
 	void Start ()
 	{

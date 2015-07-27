@@ -178,7 +178,7 @@ public class InGameGUI : MonoBehaviour
 	/// <param name="hoveredPlayer">Hovered player.</param>
 	public void SetHoveredPlayerDisplay (Player hoveredPlayer)
 	{
-		if (hoveredPlayer != InGameController.instance.GetCurrentPlayer ()) {
+		if (hoveredPlayer != null && hoveredPlayer != InGameController.instance.GetCurrentPlayer ()) {
 			hoveredPlayerView.gameObject.SetActive (true);
 			hoveredPlayer.SetPlayerGUIView (hoveredPlayerView);
 		}

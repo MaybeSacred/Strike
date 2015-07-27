@@ -84,7 +84,7 @@ public class TerrainBuilder : MonoBehaviour
 	}
 	void BuildTerrainArray ()
 	{
-		TerrainBlock[] blocks = GetComponentsInChildren<TerrainBlock> ();
+		TerrainBlock[] blocks = GameObject.FindObjectsOfType<TerrainBlock> ();
 		float largestX = 0;
 		float largestZ = 0;
 		for (int i = 0; i < blocks.Length; i++) {
@@ -702,6 +702,20 @@ public class TerrainBuilder : MonoBehaviour
 }
 public static class TerrainSupporter
 {
+	public static void GenerateMapFromData (MapData data, Dictionary<string, TerrainBlock> blocks, Dictionary<string, Property> properties)
+	{
+		for (int i = 0; i < data.mapData.Length; i++) {
+			for (int k = 0; k < data.mapData[i].Length; k++) {
+				var newBlock = (TerrainBlock)GameObject.Instantiate (blocks [data.mapData [i] [k].name], data.mapData [i] [k].position.ToVector3 (), data.mapData [i] [k].rotation.ToQuaternion ());
+				//newBlock.transform.parent = terrainHolder.transform;
+			}
+		}
+		foreach (var property in data.properties) {
+			var newProperty = (Property)GameObject.Instantiate (properties [property.name], property.position.ToVector3 (), property.rotation.ToQuaternion ());
+			newProperty.startingOwner = property.side;
+			//newProperty.transform.parent = gameController.transform;
+		}
+	}
 	/// <summary>
 	/// Creates, populates, and returns a MapData object
 	/// </summary>
@@ -723,7 +737,7 @@ public static class TerrainSupporter
 		MapData outgoingData = new MapData (mapName, Mathf.RoundToInt (largestX) + 1, Mathf.RoundToInt (largestZ) + 1, GameObject.Find ("Terrain").GetComponent<TooltipData> ().mouseOverText);
 		List<Vector3Serializer> HQLocations = new List<Vector3Serializer> ();
 		List<Property> properties = new List<Property> ();
-		List<TerrainObject> units = new List<TerrainObject> ();
+		List<PlayerObject> units = new List<PlayerObject> ();
 		RaycastHit hit;
 		for (int i = 0; i < blocks.Length; i++) {
 			if (outgoingData.mapData [Mathf.RoundToInt (blocks [i].transform.position.x)] [Mathf.RoundToInt (blocks [i].transform.position.z)] == null) {
@@ -774,16 +788,17 @@ public static class TerrainSupporter
 				}
 				if (Physics.Raycast (new Vector3 (Mathf.RoundToInt (blocks [i].transform.position.x), 100f, Mathf.RoundToInt (blocks [i].transform.position.z)), Vector3.down, out hit, 1000f, LayerMask.NameToLayer ("UnitLayer"))) {
 					outgoingData.isPreDeploy = true;
-					units.Add (new TerrainObject (hit.collider.gameObject));
+					
+					//units.Add (new PlayerObject (hit.collider.gameObject));
 				}
 			} else {
 				throw new UnityException ("Overlapping terrain blocks at " + Mathf.RoundToInt (blocks [i].transform.position.x) + " ," + Mathf.RoundToInt (blocks [i].transform.position.z) + "  " + outgoingData.mapData [(int)blocks [i].transform.position.x] [(int)blocks [i].transform.position.z]);
 			}
 		}
 		outgoingData.HQLocations = HQLocations.ToArray ();
-		outgoingData.properties = new TerrainObject[properties.Count];
+		outgoingData.properties = new PlayerObject[properties.Count];
 		for (int i = 0; i < outgoingData.properties.Length; i++) {
-			outgoingData.properties [i] = new TerrainObject (properties [i].gameObject);
+			outgoingData.properties [i] = new PlayerObject (properties [i].name, properties [i].GetPosition (), properties [i].transform.rotation, properties [i].startingOwner);
 		}
 		outgoingData.units = units.ToArray ();
 		outgoingData.blockStatistics = NormalizeVector (outgoingData.blockStatistics);

@@ -49,12 +49,14 @@ public class TerrainBlock : MonoBehaviour, System.IComparable<TerrainBlock>
 	
 	void Awake ()
 	{
+		name = name.Replace ("(Clone)", "");
 		reachability = new int[System.Enum.GetNames (typeof(MovementType)).Length];
-	}
-	// Use this for initialization
-	void Start ()
-	{
-		distancesToPlayerHQ = new float[InGameController.instance.NumberOfActivePlayers (), System.Enum.GetValues (typeof(MovementType)).Length];
+		attackTileColor = new Color (1, 0.55f, 0.55f, 1);
+		moveTileColor = new Color (0.55f, .55f, 1, 1);
+		supportTileColor = new Color (.55f, 1, .55f, 1);
+		offColor = new Color (0.8f, 0.8f, 0.8f, 1);
+		fogOnColor = new Color (0.5f, 0.5f, 0.5f, .5f);
+		fogOffColor = new Color (0, 0, 0, 0);
 		minDistanceSoFar = int.MaxValue;
 		beginningMoveSection.gameObject.SetActive (false);
 		lastMoveSection.gameObject.SetActive (false);
@@ -74,12 +76,11 @@ public class TerrainBlock : MonoBehaviour, System.IComparable<TerrainBlock>
 		if (randomizeOnStartup) {
 			transform.eulerAngles = new Vector3 (transform.eulerAngles.x, Random.Range (0, 3) * 90, transform.eulerAngles.z);
 		}
-		attackTileColor = new Color (1, 0.55f, 0.55f, 1);
-		moveTileColor = new Color (0.55f, .55f, 1, 1);
-		supportTileColor = new Color (.55f, 1, .55f, 1);
-		offColor = new Color (0.8f, 0.8f, 0.8f, 1);
-		fogOnColor = new Color (0.5f, 0.5f, 0.5f, .5f);
-		fogOffColor = new Color (0, 0, 0, 0);
+	}
+	// Use this for initialization
+	void Start ()
+	{
+		distancesToPlayerHQ = new float[InGameController.instance.NumberOfActivePlayers (), System.Enum.GetValues (typeof(MovementType)).Length];
 	}
 	public void SetDistanceToHQ (Player player, MovementType moveType)
 	{

@@ -17,8 +17,8 @@ public class MapData
 	public int comTowers;
 	public bool isPreDeploy;
 	public TerrainObject[][] mapData;
-	public TerrainObject[] properties;
-	public TerrainObject[] units;
+	public PlayerObject[] properties;
+	public PlayerObject[] units;
 	public string mapName, mapDescription;
 	public float[] blockStatistics;
 	public MapData (string name, int mapX, int mapY, string description)
@@ -93,6 +93,16 @@ public class MapData
 		}
 		return " " + mat.Value;
 	}
+	public static HashSet<string> AllNames (MapData map)
+	{
+		var set = new HashSet<string> ();
+		for (int i = 0; i < map.mapData.Length; i++) {
+			for (int k = 0; k < map.mapData[i].Length; k++) {
+				set.Add (map.mapData [i] [k].name);
+			}
+		}
+		return set;
+	}
 }
 /// <summary>
 /// Provides a serializable conversion for terrain blocks and other game objects
@@ -115,6 +125,27 @@ public class TerrainObject
 		position = new Vector3Serializer (go.transform.position);
 		rotation = new QuaternionSerializer (go.transform.rotation);
 	}
+}
+[System.Serializable]
+public class PlayerObject
+{
+	public string name;
+	public Vector3Serializer position;
+	public QuaternionSerializer rotation;
+	public int side;
+	public PlayerObject (string inName, Vector3 pos, Quaternion rot, int side)
+	{
+		name = inName;
+		position = new Vector3Serializer (pos);
+		rotation = new QuaternionSerializer (rot);
+		this.side = side;
+	}
+//	public PlayerObject (GameObject go)
+//	{
+//		name = go.name;
+//		position = new Vector3Serializer (go.transform.position);
+//		rotation = new QuaternionSerializer (go.transform.rotation);
+//	}
 }
 /// <summary>
 /// Serializable wrapper struct for Quaternion

@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System;
 
 public class Utilities : MonoBehaviour
 {
@@ -29,6 +30,9 @@ public class Utilities : MonoBehaviour
 	public AIPlayer easyAIPrototype, mediumAIPrototype, hardAIPrototype;
 	private static List<PlayerInGameStatistics> statistics;
 	public static KeyBindings bindings;
+	public static readonly string BlankMap = "BlankMap";
+	MapData mapData;
+	public static Action loadTerrain{ get; private set; }
 	void Awake ()
 	{
 		generalPrototypes = generals;
@@ -84,16 +88,34 @@ public class Utilities : MonoBehaviour
 #endif
 		Application.LoadLevel ("SkirmishEnd");
 	}
-	public void LoadSkirmishMap (Player[] players, string mapName, GameSettings gs)
+	public void LoadSkirmishMap (Player[] players, MapData inMapData, GameSettings gs)
 	{
 		isInMenu = false;
 		playersToAdd = players;
 		gameSettings = gs;
-		Application.LoadLevel (mapName);
+		mapData = inMapData;
+		Application.LoadLevel (BlankMap);
+		var set = MapData.AllNames (inMapData);
+		var nameBlock = new Dictionary<string, TerrainBlock> ();
+		foreach (var item in set) {
+			nameBlock.Add (item, Resources.Load (item, typeof(TerrainBlock)) as TerrainBlock);
+		}
+		var nameProperty = new Dictionary<string, Property> ();
+		foreach (var item in inMapData.properties) {
+			if (!nameProperty.ContainsKey (item.name))
+				nameProperty [item.name] = Resources.Load (item.name, typeof(Property)) as Property;
+		}
+		loadTerrain = () => {
+			TerrainSupporter.GenerateMapFromData (inMapData, nameBlock, nameProperty);
+		};
+		Debug.Log ("load skirmish map");
+		Debug.Break ();
 	}
+	
 	void OnLevelWasLoaded ()
 	{
 		if (!isInMenu) {
+			Debug.Log ("Onlevelwasloaded");
 			isInMenu = true;
 			for (int i = 0; i < playersToAdd.Length; i++) {
 				if (playersToAdd [i].aiLevel != AILevel.Human) {
@@ -131,6 +153,7 @@ public class Utilities : MonoBehaviour
 			for (int i = 0; i < allProperties.Length; i++) {
 				if (allProperties [i].propertyClass.baseFunds > 0) {
 					allProperties [i].propertyClass.baseFunds = gameSettings.propertyBaseFunds;
+					allProperties [i].SetOwner (InGameController.instance.GetPlayer (allProperties [i].startingOwner));
 				}
 			}
 			GameObject.FindObjectOfType<WeatherController> ().SetWeatherType (gameSettings.selectedWeather, new List<Player> (playersToAdd));

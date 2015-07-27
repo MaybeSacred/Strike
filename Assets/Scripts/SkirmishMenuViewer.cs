@@ -94,7 +94,7 @@ public class SkirmishMenuViewer : MonoBehaviour
 		scrollBar.gameObject.SetActive (true);
 		int smallestFontSize = int.MaxValue;
 		List<RectTransform> mapButtons = new List<RectTransform> ();
-		for (int i = 0; i < mapNames.Length; i++) {
+		for (int i = 0; i < maps.Count; i++) {
 			RectTransform t = InstantiateUIPrefab (mapNameLoadButton, mapNamePanel);
 			t.GetComponentsInChildren<UnityEngine.UI.Text> (true) [0].text = MapData.FormatMapName (mapNames [i]);
 			mapButtons.Add (t);
@@ -113,7 +113,7 @@ public class SkirmishMenuViewer : MonoBehaviour
 		if (Mathf.Abs (offset) > mapNamePanel.rect.height) {
 			mapNamePanel.SetInsetAndSizeFromParentEdge (RectTransform.Edge.Bottom, mapNamePanel.rect.height, -offset);
 		}
-		SetCurrentMap (mapNames [0]);
+		SetCurrentMap (maps [0].mapName);
 		mapNameOuterPanel.gameObject.SetActive (false);
 		scrollBar.gameObject.SetActive (false);
 		mapNamesOpenButton.interactable = true;
@@ -130,6 +130,13 @@ public class SkirmishMenuViewer : MonoBehaviour
 			SetCurrentMap (input);
 			OnMapSelected ();
 		});
+	}
+	public void GenerateRandomMap ()
+	{
+		var generatedMap = GetComponent<BuildPGC> ().BuildMap ();
+		selectedMap = generatedMap;
+		selectedMapName = generatedMap.mapName;
+		GetComponentInChildren<MenuBackgroundMapDisplayer> ().DisplayMap (selectedMap);
 	}
 	/// <summary>
 	/// Sets the current mapData from the provided map name
@@ -232,8 +239,12 @@ public class SkirmishMenuViewer : MonoBehaviour
 			}
 			ms = new MemoryStream (names.bytes);
 			deserializer = new BinaryFormatter ();
-			MapData obj = (MapData)deserializer.Deserialize (ms);
-			maps.Add (obj);
+			try {
+				MapData obj = (MapData)deserializer.Deserialize (ms);
+				maps.Add (obj);
+			} catch {
+				
+			}
 		}
 #endif
 #if UNITY_STANDALONE
@@ -450,7 +461,7 @@ public class SkirmishMenuViewer : MonoBehaviour
 				Destroy (players [i - 1].gameObject);
 			}
 		}
-		GameObject.FindObjectOfType<Utilities> ().LoadSkirmishMap (temp, selectedMapName, settings);
+		GameObject.FindObjectOfType<Utilities> ().LoadSkirmishMap (temp, selectedMap, settings);
 		Destroy (this.gameObject);
 	}
 }

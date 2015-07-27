@@ -63,10 +63,8 @@ public class BayesianNetwork
 			for (int k = 0; k < net[i].Length; k++) {
 				var dist = TerrainSupporter.ManhattanDistance (new Vector3 (i, 0, k), new Vector3 (center.x, 0, center.y));
 				if (dist <= gaussianCutoff) {
-					Debug.Log ("Before " + net [i] [k]);
 					var gauss = Gaussian (new Vector2 (center.x - i, center.y - k));
 					net [i] [k] = .5f * gauss * value + (1 - .5f * gauss) * net [i] [k];
-					Debug.Log ("After " + net [i] [k]);
 				}
 			}
 		}
@@ -91,24 +89,26 @@ public class BayesianNetwork
 	{
 		return net [Mathf.RoundToInt (x)] [Mathf.RoundToInt (z)];
 	}
-
-	public void SaveNet(String name){
-		BinaryFormatter bf = new BinaryFormatter();
-		FileStream file = File.Create (Application.persistentDataPath + "/"+name+".gd");
-		bf.Serialize(file, net);
-		file.Close();
+	
+	public static void SaveNet (String name, List<BayesianNetwork> net)
+	{
+		BinaryFormatter bf = new BinaryFormatter ();
+		FileStream file = File.Create (Application.persistentDataPath + "/" + name + ".gd");
+		bf.Serialize (file, net);
+		file.Close ();
 	}
 
 
-	public void LoadNet(String name){
-
-		if(File.Exists(Application.persistentDataPath +  "/"+name+".gd")) {
-			BinaryFormatter bf = new BinaryFormatter();
-			FileStream file = File.Open(Application.persistentDataPath + "/"+name+".gd", FileMode.Open);
-			net = (float[][])bf.Deserialize(file);
-			file.Close();
+	public static List<BayesianNetwork> LoadNet (String name)
+	{
+		if (File.Exists (Application.persistentDataPath + "/" + name + ".gd")) {
+			BinaryFormatter bf = new BinaryFormatter ();
+			FileStream file = File.Open (Application.persistentDataPath + "/" + name + ".gd", FileMode.Open);
+			var net = (List<BayesianNetwork>)bf.Deserialize (file);
+			file.Close ();
+			return net;
 		}
+		return null;
 	}
-
 }
 
